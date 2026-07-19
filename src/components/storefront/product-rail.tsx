@@ -21,7 +21,6 @@ export function ProductRail() {
               <Heart aria-hidden="true" className="storefront-product__heart" />
             </div>
             <div className="storefront-product__copy">
-              <p>{product.eyebrow}</p>
               <h3>{product.name}</h3>
               <span>{product.price}</span>
             </div>
