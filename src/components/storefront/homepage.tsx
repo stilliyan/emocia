@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Camera, MapPin, MessageCircle, Music2 } from "lucide-react";
+import { Camera, MessageCircle, Music2 } from "lucide-react";
 import { storefrontContact } from "@/lib/storefront-data";
 import { ProductRail } from "./product-rail";
 import { StorefrontLogo } from "./logo";
@@ -124,10 +124,18 @@ export function StorefrontHomepage() {
           </dl>
           <a className="storefront-button storefront-button--dark" href={`mailto:${storefrontContact.email}`}>Изпратете ни съобщение</a>
         </div>
-        <a className="storefront-contact__map" href="https://maps.google.com/?q=Varna+Vladislav+Varnenchik+69" target="_blank" rel="noreferrer">
-          <MapPin aria-hidden="true" />
-          <span>Отвори в Google Maps</span>
-        </a>
+        <div className="storefront-contact__map">
+          <iframe
+            title="Карта до Бутик Емоция във Варна"
+            src="https://www.google.com/maps?q=%D0%B3%D1%80.%20%D0%92%D0%B0%D1%80%D0%BD%D0%B0%2C%20%D0%B1%D1%83%D0%BB.%20%D0%92%D0%BB.%20%D0%92%D0%B0%D1%80%D0%BD%D0%B5%D0%BD%D1%87%D0%B8%D0%BA%2069&output=embed"
+            loading="lazy"
+            allowFullScreen
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+          <a href="https://maps.google.com/?q=Varna+Vladislav+Varnenchik+69" target="_blank" rel="noreferrer">
+            Отвори в Google Maps
+          </a>
+        </div>
       </section>
 
       <SiteFooter />
