@@ -278,7 +278,7 @@
   .storefront-hero__content { top: auto; right: 24px; bottom: 92px; left: 24px; width: auto; transform: none; }
   .storefront-hero__content h1 { max-width: 520px; font-size: clamp(39px, 9vw, 54px); }
   .storefront-hero__content p { margin-top: 20px; font-size: 16px; }
-  .storefront-hero__actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; width: 100%; margin-top: 24px; }
+  .storefront-hero__actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; width: min(100%, 300px); margin-top: 24px; }
   .storefront-hero__actions .storefront-button { width: 100%; }
   .storefront-hero__socials { display: none; }
   .storefront-categories { grid-template-columns: 1fr; padding: 12px 8px 8px; }
