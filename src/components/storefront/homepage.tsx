@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Camera, MessageCircle, Music2 } from "lucide-react";
 import { storefrontContact } from "@/lib/storefront-data";
 import { ProductRail } from "./product-rail";
+import { ScrollReelTestimonials } from "./scroll-reel-testimonials";
 import { StorefrontLogo } from "./logo";
 import { SiteHeader } from "./site-header";
 import "./storefront.css";
@@ -11,6 +12,30 @@ const socialLinks = [
   { label: "TikTok", icon: Music2 },
   { label: "Facebook", icon: MessageCircle },
   { label: "Instagram", icon: Camera },
+] as const;
+
+const testimonials = [
+  {
+    quote:
+      "От първата среща до последната проба усетих истинско внимание. Открих рокля, която не просто ми стои красиво, а се усеща като моя.",
+    author: "Мария Николова · Булка на Бутик Емоция",
+    image: "/storefront/product-emery.jpg",
+    alt: "Булчинска рокля от Бутик Емоция",
+  },
+  {
+    quote:
+      "Пробата беше спокойна и лична. Получих точните насоки, без натиск, и избрах модел, в който се почувствах напълно себе си.",
+    author: "Елена Петрова · Булка на Бутик Емоция",
+    image: "/storefront/product-nia.jpg",
+    alt: "Булка с рокля от Бутик Емоция",
+  },
+  {
+    quote:
+      "Всеки детайл беше обсъден с внимание. Резултатът беше елегантна рокля, която отговаряше на стила и усещането, които търсех.",
+    author: "Кристина Иванова · Булка на Бутик Емоция",
+    image: "/storefront/product-arlo.jpg",
+    alt: "Елегантна булчинска рокля от Бутик Емоция",
+  },
 ] as const;
 
 export function StorefrontHomepage() {
@@ -86,21 +111,8 @@ export function StorefrontHomepage() {
         </div>
       </section>
 
-      <section className="storefront-testimonial" aria-label="Отзив от клиент">
-        <div className="storefront-testimonial__summary">
-          <span aria-hidden="true">✦</span>
-          <p>Доверие от<br /><strong>20+ семейства.</strong></p>
-          <small>Вашите моменти са нашето вдъхновение</small>
-        </div>
-        <blockquote>
-          <div className="storefront-testimonial__dots" aria-hidden="true"><i /><i /><i /><i /></div>
-          <p>„От първата среща до последната проба усетих истинско внимание. Помогнаха ми да открия рокля, която не просто ми стои красиво, а се усеща като моя.“</p>
-          <footer>
-            <Image src="/storefront/avatar.png" alt="" width={48} height={48} />
-            <span><strong>Мария Николова</strong><small>Булка на Бутик Емоция</small></span>
-            <em>Емоция</em>
-          </footer>
-        </blockquote>
+      <section className="storefront-testimonial" aria-label="Отзиви от клиенти">
+        <ScrollReelTestimonials testimonials={[...testimonials]} />
       </section>
 
       <section className="storefront-appointment" aria-labelledby="appointment-title">
