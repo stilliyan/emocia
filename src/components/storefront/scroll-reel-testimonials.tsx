@@ -228,7 +228,7 @@ export function ScrollReelTestimonials({
           maskComposite: "intersect",
         }}
       >
-        <div className="absolute inset-0 flex items-center justify-center gap-2.5 md:translate-x-8">
+        <div className="absolute inset-0 flex items-center justify-center gap-2.5 md:translate-x-8 md:scale-[1.15]">
           {[sideY, middleY, sideY].map((offset, columnIndex) => (
             <div
               key={columnIndex}
