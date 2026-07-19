@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "Modelista Signature";
+  src: url("/fonts/modelista-signature.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 .storefront {
   --storefront-ink: #221d35;
   --storefront-muted: #787286;
@@ -82,7 +90,7 @@
 
 .storefront-manifesto { display: grid; min-height: 600px; place-content: center; padding: 100px 24px; text-align: center; }
 .storefront-manifesto blockquote { margin: 0; font-size: clamp(26px, 2.35vw, 40px); font-weight: 300; line-height: 1.25; letter-spacing: -.02em; }
-.storefront-manifesto p { margin-top: 30px; color: var(--storefront-muted); font-family: cursive; font-size: 36px; font-style: italic; }
+.storefront-manifesto p { margin-top: 30px; color: var(--storefront-muted); font-family: "Modelista Signature", cursive; font-size: 42px; font-style: normal; line-height: 1.35; }
 
 .storefront-feature, .storefront-about, .storefront-contact { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 0 16px; }
 .storefront-feature__copy, .storefront-about__copy, .storefront-contact__copy { display: flex; min-height: 690px; flex-direction: column; justify-content: center; padding: clamp(42px, 6vw, 80px); border-radius: 16px; background: #f1f3f6; }
@@ -228,7 +236,7 @@
   .storefront-hero__content p br { display: none; }
   .storefront-button { width: 100%; }
   .storefront-manifesto blockquote br { display: none; }
-  .storefront-manifesto p { font-size: 29px; }
+  .storefront-manifesto p { font-size: 34px; }
   .storefront-about__stats { gap: 8px; }
   .storefront-about__stats strong { font-size: 29px; }
   .storefront-testimonial__summary { padding: 28px; }
