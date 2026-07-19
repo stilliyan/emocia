@@ -18,7 +18,7 @@ export function StorefrontHomepage() {
     <main className="storefront">
       <section className="storefront-hero" aria-labelledby="hero-title">
         <Image
-          src="/storefront/hero.png"
+          src="/storefront/hero-ea.png"
           alt="Булка с елегантна рокля от Бутик Емоция"
           fill
           priority
