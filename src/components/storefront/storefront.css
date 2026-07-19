@@ -239,7 +239,7 @@
   .storefront-hero__content h1 { font-size: 34px; overflow-wrap: break-word; }
   .storefront-hero__content p { font-size: 16px; line-height: 1.5; overflow-wrap: break-word; }
   .storefront-hero__content p br { display: none; }
-  .storefront-button { width: 100%; }
+  .storefront-button { width: fit-content; max-width: 100%; }
   .storefront-manifesto blockquote br { display: none; }
   .storefront-manifesto .storefront-signature { font-size: 26px; }
   .storefront-about__stats { gap: 8px; }
