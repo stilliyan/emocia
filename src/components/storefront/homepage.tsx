@@ -22,6 +22,7 @@ export function StorefrontHomepage() {
           alt="Булка с елегантна рокля от Бутик Емоция"
           fill
           priority
+          quality={90}
           sizes="100vw"
           className="storefront-hero__image"
         />

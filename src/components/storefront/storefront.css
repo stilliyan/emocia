@@ -35,12 +35,12 @@
   isolation: isolate;
 }
 
-.storefront-hero__image { object-fit: cover; object-position: center 38%; z-index: -3; }
+.storefront-hero__image { object-fit: cover; object-position: center 38%; z-index: -3; filter: saturate(1.02) contrast(1.04) brightness(1.02); }
 .storefront-hero__veil {
   position: absolute;
   inset: 0;
   z-index: -2;
-  background: linear-gradient(90deg, rgba(20, 63, 95, .35) 0%, rgba(20, 63, 95, .05) 58%, transparent 100%);
+  background: linear-gradient(90deg, rgba(8,20,32,.3) 0%, rgba(8,20,32,.04) 56%, transparent 100%);
 }
 
 .storefront-header {
@@ -203,7 +203,7 @@
   .storefront-header__mobile-nav { display: block; }
   .storefront-logo { width: 132px; }
   .storefront-hero__image { object-position: 90% center; }
-  .storefront-hero__veil { background: linear-gradient(0deg, rgba(12,38,57,.78) 0%, rgba(12,38,57,.1) 72%); }
+  .storefront-hero__veil { background: linear-gradient(0deg, rgba(8,12,18,.64) 0%, rgba(8,12,18,.12) 50%, transparent 82%); }
   .storefront-hero__content { top: auto; right: 24px; bottom: 92px; left: 24px; width: auto; transform: none; }
   .storefront-hero__content h1 { max-width: 520px; font-size: clamp(39px, 9vw, 54px); }
   .storefront-hero__content p { margin-top: 20px; font-size: 16px; }
