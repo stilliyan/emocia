@@ -160,16 +160,16 @@ export function StorefrontHomepage() {
               <div className="storefront-contact-form__fields">
                 <label>
                   <span>Име</span>
-                  <input type="text" name="Име" autoComplete="name" required />
+                  <input type="text" name="Име" autoComplete="name" placeholder="Вашето име" required />
                 </label>
                 <label>
                   <span>Телефон</span>
-                  <input type="tel" name="Телефон" autoComplete="tel" required />
+                  <input type="tel" name="Телефон" autoComplete="tel" placeholder="Телефонен номер" required />
                 </label>
               </div>
               <label>
                 <span>Съобщение</span>
-                <textarea name="Съобщение" rows={3} required />
+                <textarea name="Съобщение" rows={3} placeholder="Напишете съобщението си…" required />
               </label>
               <button className="storefront-button storefront-button--dark" type="submit">Изпрати запитване</button>
             </form>
