@@ -65,9 +65,10 @@
 .storefront-header__desktop-nav a:hover { opacity: 1; }
 .storefront-header__contact { border: 1px solid rgba(255,255,255,.34); border-radius: 10px; padding: 7px 18px; }
 .storefront-header__mobile-nav { display: none; position: relative; }
-.storefront-header__mobile-nav summary { display: grid; width: 44px; height: 44px; cursor: pointer; place-items: center; list-style: none; border: 1px solid rgba(255,255,255,.45); border-radius: 12px; }
+.storefront-header__mobile-nav summary { display: grid; width: 36px; height: 36px; cursor: pointer; place-items: center; list-style: none; border: 1px solid rgba(255,255,255,.45); border-radius: 9px; background: transparent; }
+.storefront-header__mobile-nav summary:focus-visible { outline: 2px solid rgba(255,255,255,.72); outline-offset: 2px; }
 .storefront-header__mobile-nav summary::-webkit-details-marker { display: none; }
-.storefront-header__mobile-nav .mobile-icon { width: 24px; height: 24px; }
+.storefront-header__mobile-nav .mobile-icon { width: 30px; height: 24px; }
 .storefront-header__mobile-nav .mobile-icon rect { transform-box: fill-box; transform-origin: center; transition: transform .28s cubic-bezier(.22,1,.36,1); }
 .storefront-header__mobile-nav[open] .mobile-icon rect:first-child { transform: translateY(4px) rotate(45deg); }
 .storefront-header__mobile-nav[open] .mobile-icon rect:last-child { transform: translateY(-4px) rotate(-45deg); }
@@ -292,7 +293,8 @@
   .storefront-feature__collection { margin-top: 36px !important; }
   .storefront-feature dl { flex-wrap: wrap; gap: 32px; margin: 42px 0 25px; }
   .storefront-products { padding: 100px 0; }
-  .storefront-products__rail { grid-auto-columns: min(310px, 76vw); }
+  .storefront-products > h2 { font-size: 25px; }
+  .storefront-products__rail { grid-auto-columns: min(310px, 76vw); padding-left: 8px; scroll-padding-left: 8px; }
   .storefront-testimonial { margin: 72px 8px; }
   .storefront-appointment-sticky { position: sticky; top: 0; z-index: 1; height: 100svh; min-height: 640px; margin-bottom: 90px; }
   .storefront-appointment { height: 100%; min-height: 100%; margin: 0 8px; }
@@ -316,7 +318,7 @@
   .storefront-hero__content p br { display: none; }
   .storefront-button { width: fit-content; max-width: 100%; }
   .storefront-manifesto blockquote br { display: none; }
-  .storefront-manifesto .storefront-signature { font-size: 26px; }
+  .storefront-manifesto .storefront-signature { font-size: 22px; }
   .storefront-about__stats { gap: 8px; }
   .storefront-about__stats strong { font-size: 29px; }
   .storefront-appointment h2 { font-size: 42px; }
