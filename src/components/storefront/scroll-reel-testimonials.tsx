@@ -21,6 +21,7 @@ const GAP = 8;
 const STEP = 3 * (CELL + GAP);
 const EXIT_MS = 240;
 const SLIDE_MS = 800;
+const AUTOPLAY_MS = 6000;
 const EASE_IN_OUT = "cubic-bezier(0.65,0,0.35,1)";
 const FEATURED_SHADOW =
   "0 1px 1px rgba(0,0,0,.18), 0 7px 5px -2px rgba(0,0,0,.16), 0 19px 13px -3px rgba(0,0,0,.13), 0 33px 23px -4px rgba(0,0,0,.09), inset 0 1px 0 rgba(255,255,255,.7)";
@@ -102,7 +103,9 @@ export function ScrollReelTestimonials({
   const [displayIndex, setDisplayIndex] = React.useState(0);
   const [exiting, setExiting] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
+  const [paused, setPaused] = React.useState(false);
   const animating = React.useRef(false);
+  const autoplayDirection = React.useRef<1 | -1>(1);
   const timeouts = React.useRef<ReturnType<typeof setTimeout>[]>([]);
   const count = testimonials.length;
 
@@ -115,11 +118,9 @@ export function ScrollReelTestimonials({
     };
   }, []);
 
-  const paginate = React.useCallback(
-    (direction: 1 | -1) => {
-      if (animating.current) return;
-      const next = index + direction;
-      if (next < 0 || next >= count) return;
+  const transitionTo = React.useCallback(
+    (next: number) => {
+      if (animating.current || next < 0 || next >= count || next === index) return;
 
       animating.current = true;
       setIndex(next);
@@ -138,6 +139,31 @@ export function ScrollReelTestimonials({
     },
     [count, index],
   );
+
+  const paginate = React.useCallback(
+    (direction: 1 | -1) => {
+      autoplayDirection.current = direction;
+      transitionTo(index + direction);
+    },
+    [index, transitionTo],
+  );
+
+  React.useEffect(() => {
+    if (paused || count < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const timer = window.setTimeout(() => {
+      let next = index + autoplayDirection.current;
+
+      if (next < 0 || next >= count) {
+        autoplayDirection.current = autoplayDirection.current === 1 ? -1 : 1;
+        next = index + autoplayDirection.current;
+      }
+
+      transitionTo(next);
+    }, AUTOPLAY_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [count, index, paused, transitionTo]);
 
   const onKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "ArrowRight") {
@@ -179,6 +205,12 @@ export function ScrollReelTestimonials({
       aria-label="Отзиви от клиенти"
       tabIndex={0}
       onKeyDown={onKeyDown}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false);
+      }}
       className={cn(
         "storefront-testimonial__reel relative flex w-full max-w-[1160px] flex-col items-stretch gap-2.5 overflow-hidden rounded-2xl border border-border shadow-[inset_0_2px_0_rgba(255,255,255,1)] outline-none focus-visible:ring-2 focus-visible:ring-ring/30 md:min-h-[360px] md:flex-row",
         className,
@@ -227,7 +259,7 @@ export function ScrollReelTestimonials({
             <path d="M4.58 17.32C3.55 16.23 3 15 3 13.01c0-3.5 2.46-6.64 6.03-8.19l.9 1.38c-3.34 1.8-4 4.15-4.25 5.62.54-.28 1.24-.38 1.93-.31 1.8.17 3.23 1.65 3.23 3.49a3.5 3.5 0 0 1-3.5 3.5c-1.07 0-2.1-.49-2.75-1.18zm10 0C13.55 16.23 13 15 13 13.01c0-3.5 2.46-6.64 6.03-8.19l.9 1.38c-3.34 1.8-4 4.15-4.25 5.62.54-.28 1.24-.38 1.93-.31 1.8.17 3.23 1.65 3.23 3.49a3.5 3.5 0 0 1-3.5 3.5c-1.07 0-2.1-.49-2.75-1.18z" />
           </svg>
 
-          <div className="relative w-full max-w-[500px] overflow-hidden" aria-live="polite">
+          <div className="relative w-full max-w-[500px] overflow-hidden" aria-live={paused ? "polite" : "off"}>
             <div aria-hidden="true" className="invisible flex min-h-[150px] flex-col gap-5">
               <p className="m-0 text-xl font-medium leading-[1.35] tracking-[-.025em] md:text-[26px]">{current.quote}</p>
               <p className="m-0 text-sm font-medium text-muted-foreground">{current.author}</p>
