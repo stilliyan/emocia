@@ -176,6 +176,10 @@
 .storefront-footer__links a { color: rgba(255,255,255,.55); font-size: 13px; }
 .storefront-footer__bottom { grid-column: 1 / -1; align-self: end; border-top: 1px solid rgba(255,255,255,.12); padding-top: 24px; color: rgba(255,255,255,.45); font-size: 12px; }
 
+@media (min-width: 1025px) {
+  .storefront-header .storefront-logo { width: 240px; }
+}
+
 @media (max-width: 1024px) {
   .storefront-header { inset: 24px 56px auto; }
   .storefront-header .storefront-logo { width: 170px; }
