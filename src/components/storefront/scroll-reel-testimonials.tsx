@@ -16,8 +16,8 @@ interface ScrollReelTestimonialsProps {
   className?: string;
 }
 
-const CELL = 121.33;
-const GAP = 8;
+const CELL = 146;
+const GAP = 10;
 const STEP = 3 * (CELL + GAP);
 const EXIT_MS = 240;
 const SLIDE_MS = 800;
@@ -46,7 +46,7 @@ function Featured({ src, alt }: { src: string; alt?: string }) {
       className="relative shrink-0 overflow-hidden rounded-xl bg-muted"
       style={{ width: CELL, height: CELL, boxShadow: FEATURED_SHADOW }}
     >
-      <Image src={src} alt={alt ?? ""} fill sizes="122px" className="object-cover object-[center_30%]" />
+      <Image src={src} alt={alt ?? ""} fill sizes="146px" className="object-cover object-[center_30%]" />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-2 bg-white/80 mix-blend-saturation" />
       <div
         aria-hidden="true"
@@ -212,13 +212,13 @@ export function ScrollReelTestimonials({
         if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false);
       }}
       className={cn(
-        "storefront-testimonial__reel relative flex w-full max-w-[1160px] flex-col items-stretch gap-2.5 overflow-hidden rounded-2xl border border-border shadow-[inset_0_2px_0_rgba(255,255,255,1)] outline-none focus-visible:ring-2 focus-visible:ring-ring/30 md:min-h-[360px] md:flex-row",
+        "storefront-testimonial__reel relative flex w-full flex-col items-stretch overflow-hidden rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-ring/30 md:min-h-[430px] md:flex-row",
         className,
       )}
     >
       <div
         aria-hidden="true"
-        className="relative h-64 w-full shrink-0 self-stretch overflow-hidden md:h-auto md:w-[390px]"
+        className="relative h-72 w-full shrink-0 self-stretch overflow-hidden md:h-auto md:w-[46%]"
         style={{
           WebkitMaskImage:
             "linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
@@ -228,11 +228,11 @@ export function ScrollReelTestimonials({
           maskComposite: "intersect",
         }}
       >
-        <div className="absolute inset-0 flex items-center justify-center gap-2">
+        <div className="absolute inset-0 flex items-center justify-center gap-2.5">
           {[sideY, middleY, sideY].map((offset, columnIndex) => (
             <div
               key={columnIndex}
-              className="flex shrink-0 flex-col gap-2 will-change-transform motion-reduce:transition-none"
+              className="flex shrink-0 flex-col gap-2.5 will-change-transform motion-reduce:transition-none"
               style={columnStyle(offset)}
             >
               {columnIndex === 1
@@ -253,13 +253,13 @@ export function ScrollReelTestimonials({
         </div>
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col justify-between self-stretch px-6 py-8 md:px-10 md:py-11">
+      <div className="flex min-w-0 flex-1 flex-col justify-between self-stretch px-6 py-9 md:px-14 md:py-14 lg:px-20">
         <div className="flex flex-col gap-3">
           <svg className="block h-11 w-11 text-muted-foreground/35" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M4.58 17.32C3.55 16.23 3 15 3 13.01c0-3.5 2.46-6.64 6.03-8.19l.9 1.38c-3.34 1.8-4 4.15-4.25 5.62.54-.28 1.24-.38 1.93-.31 1.8.17 3.23 1.65 3.23 3.49a3.5 3.5 0 0 1-3.5 3.5c-1.07 0-2.1-.49-2.75-1.18zm10 0C13.55 16.23 13 15 13 13.01c0-3.5 2.46-6.64 6.03-8.19l.9 1.38c-3.34 1.8-4 4.15-4.25 5.62.54-.28 1.24-.38 1.93-.31 1.8.17 3.23 1.65 3.23 3.49a3.5 3.5 0 0 1-3.5 3.5c-1.07 0-2.1-.49-2.75-1.18z" />
           </svg>
 
-          <div className="relative w-full max-w-[500px] overflow-hidden" aria-live={paused ? "polite" : "off"}>
+          <div className="relative w-full max-w-[560px] overflow-hidden" aria-live={paused ? "polite" : "off"}>
             <div aria-hidden="true" className="invisible flex min-h-[150px] flex-col gap-5">
               <p className="m-0 text-xl font-medium leading-[1.35] tracking-[-.025em] md:text-[26px]">{current.quote}</p>
               <p className="m-0 text-sm font-medium text-muted-foreground">{current.author}</p>
