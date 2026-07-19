@@ -109,7 +109,6 @@
 .storefront-feature .storefront-button { align-self: flex-start; }
 
 .storefront-products { padding: 130px 0 150px; }
-.storefront-section-kicker { width: 9px; height: 9px; margin: 0 auto 24px; border-radius: 50%; background: #ec6da3; box-shadow: 0 0 0 7px rgba(236,109,163,.12); }
 .storefront-products > h2 { text-align: center; font-size: clamp(28px, 2.2vw, 36px); font-weight: 400; line-height: 1.1; letter-spacing: .015em; text-transform: uppercase; }
 .storefront-products__rail { display: grid; grid-auto-columns: min(384px, 72vw); grid-auto-flow: column; gap: 10px; margin-top: 36px; overflow-x: auto; padding: 0 16px; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; }
 .storefront-products__rail::-webkit-scrollbar { width: 0; height: 0; display: none; }

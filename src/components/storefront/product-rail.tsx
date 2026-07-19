@@ -5,7 +5,6 @@ import { storefrontProducts } from "@/lib/storefront-data";
 export function ProductRail() {
   return (
     <section id="нови-модели" className="storefront-products" aria-labelledby="new-products-title">
-      <div className="storefront-section-kicker" aria-hidden="true" />
       <h2 id="new-products-title">Нови рокли в бутика</h2>
       <div className="storefront-products__rail">
         {storefrontProducts.map((product, index) => (
