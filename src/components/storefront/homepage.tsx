@@ -160,7 +160,7 @@ function CollectionCard({ image, title }: { image: string; title: string }) {
   return (
     <Link href="#нови-модели" className="storefront-category">
       <Image src={image} alt={title} fill sizes="(max-width: 768px) 100vw, 50vw" />
-      <div className="storefront-category__gradient" />
+      <div className="storefront-category__blur" aria-hidden="true" />
       <div><h2>{title}</h2><p>Разгледай колекцията <span aria-hidden="true">→</span></p></div>
     </Link>
   );
