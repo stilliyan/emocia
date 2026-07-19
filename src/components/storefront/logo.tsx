@@ -8,9 +8,7 @@ export function StorefrontLogo({ inverted = false }: { inverted?: boolean }) {
       aria-label="Бутик Емоция — начална страница"
       className={`storefront-logo ${inverted ? "storefront-logo--inverted" : ""}`}
     >
-      <span className="storefront-logo__small">бутик</span>
-      <Image className="storefront-logo__wordmark" src="/storefront/logo-wordmark.svg" alt="Емоция" width={122} height={42} priority />
-      <Image className="storefront-logo__heart" src="/storefront/logo-heart.svg" alt="" width={42} height={42} priority />
+      <Image className="storefront-logo__image" src="/storefront/logo.svg" alt="Бутик Емоция" width={308} height={105} priority />
     </Link>
   );
 }
