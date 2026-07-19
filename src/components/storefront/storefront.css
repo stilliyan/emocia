@@ -59,7 +59,7 @@
 .storefront-header__desktop-nav { display: flex; align-items: center; gap: 34px; font-size: 16px; letter-spacing: .015em; }
 .storefront-header__desktop-nav a { opacity: .88; transition: opacity .18s ease; }
 .storefront-header__desktop-nav a:hover { opacity: 1; }
-.storefront-header__contact { border: 1px solid rgba(255,255,255,.34); border-radius: 11px; padding: 11px 20px; }
+.storefront-header__contact { border: 1px solid rgba(255,255,255,.34); border-radius: 10px; padding: 7px 18px; }
 .storefront-header__mobile-nav { display: none; position: relative; }
 .storefront-header__mobile-nav summary { display: grid; width: 42px; height: 42px; cursor: pointer; place-items: center; list-style: none; border: 1px solid rgba(255,255,255,.45); border-radius: 12px; }
 .storefront-header__mobile-nav summary::-webkit-details-marker { display: none; }
@@ -174,8 +174,8 @@
 .storefront-footer__socials { display: flex; gap: 18px; margin-top: 30px; }
 .storefront-footer__socials svg { width: 16px; height: 16px; }
 .storefront-footer__links { display: flex; flex-direction: column; gap: 19px; }
-.storefront-footer__links h2 { margin-bottom: 12px; font-size: 14px; font-weight: 500; }
-.storefront-footer__links a { color: rgba(255,255,255,.55); font-size: 13px; }
+.storefront-footer__links h2 { margin-bottom: 12px; font-size: 15px; font-weight: 500; }
+.storefront-footer__links a { color: rgba(255,255,255,.62); font-size: 15px; }
 .storefront-footer__bottom { grid-column: 1 / -1; align-self: end; border-top: 1px solid rgba(255,255,255,.12); padding-top: 24px; color: rgba(255,255,255,.45); font-size: 12px; }
 
 @media (min-width: 1025px) {
