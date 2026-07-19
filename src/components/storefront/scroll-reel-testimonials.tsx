@@ -212,7 +212,7 @@ export function ScrollReelTestimonials({
         if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false);
       }}
       className={cn(
-        "storefront-testimonial__reel relative flex w-full flex-col items-stretch overflow-hidden rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-ring/30 md:min-h-[430px] md:flex-row",
+        "relative flex w-full flex-col items-stretch overflow-hidden rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-ring/30 md:min-h-[430px] md:flex-row",
         className,
       )}
     >
