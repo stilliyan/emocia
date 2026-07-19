@@ -261,14 +261,14 @@ export function ScrollReelTestimonials({
 
           <div className="relative w-full max-w-[560px] overflow-hidden" aria-live={paused ? "polite" : "off"}>
             <div aria-hidden="true" className="invisible flex min-h-[150px] flex-col gap-5">
-              <p className="m-0 text-xl font-medium leading-[1.35] tracking-[-.025em] md:text-[26px]">{current.quote}</p>
+              <p className="m-0 text-xl font-light leading-[1.35] tracking-[-.025em] md:text-[26px]">{current.quote}</p>
               <p className="m-0 text-sm font-light text-muted-foreground">{current.author}</p>
             </div>
             <div
               key={displayIndex}
               className={cn("absolute inset-x-0 top-0 flex flex-col gap-5 will-change-[transform,opacity]", exiting && "scroll-reel-exit")}
             >
-              <p className="m-0 text-xl font-medium leading-[1.35] tracking-[-.025em] md:text-[26px]">
+              <p className="m-0 text-xl font-light leading-[1.35] tracking-[-.025em] md:text-[26px]">
                 <Chars text={current.quote} startIndex={0} staggerMs={charStaggerMs} />
               </p>
               <p className="m-0 text-sm font-light text-muted-foreground">

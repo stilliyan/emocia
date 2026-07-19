@@ -1,17 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Camera, MessageCircle, Music2 } from "lucide-react";
 import { storefrontContact } from "@/lib/storefront-data";
+import { AnimatedHeroTitle, AnimatedManifestoQuote } from "./animated-copy";
 import { ProductRail } from "./product-rail";
 import { ScrollReelTestimonials } from "./scroll-reel-testimonials";
 import { StorefrontLogo } from "./logo";
 import { SiteHeader } from "./site-header";
+import { FacebookIcon, InstagramIcon, TikTokIcon } from "./social-icons";
 import "./storefront.css";
 
 const socialLinks = [
-  { label: "TikTok", icon: Music2 },
-  { label: "Facebook", icon: MessageCircle },
-  { label: "Instagram", icon: Camera },
+  { label: "TikTok", icon: TikTokIcon },
+  { label: "Facebook", icon: FacebookIcon },
+  { label: "Instagram", icon: InstagramIcon },
 ] as const;
 
 const testimonials = [
@@ -41,37 +42,54 @@ const testimonials = [
 export function StorefrontHomepage() {
   return (
     <main className="storefront">
-      <section className="storefront-hero" aria-labelledby="hero-title">
-        <Image
-          src="/storefront/hero-ea.png"
-          alt="Булка с елегантна рокля от Бутик Емоция"
-          fill
-          priority
-          quality={90}
-          sizes="100vw"
-          className="storefront-hero__image"
-        />
-        <div className="storefront-hero__veil" />
-        <SiteHeader />
-        <div className="storefront-hero__content">
-          <h1 id="hero-title">Открийте роклята, в която се чувствате като себе си.</h1>
-          <p>Булчински и вечерни рокли във Варна.<br />Персонална консултация и внимателно подбрани модели за всеки стил.</p>
-          <Link className="storefront-button storefront-button--light" href="#контакти">Запазете час за проба</Link>
-        </div>
-        <div className="storefront-hero__socials" aria-label="Социални мрежи">
-          {socialLinks.map(({ label, icon: Icon }) => (
-            <a key={label} href="#footer" aria-label={label}><Icon aria-hidden="true" /></a>
-          ))}
-        </div>
-      </section>
+      <div className="storefront-hero-sticky">
+        <section className="storefront-hero" aria-labelledby="hero-title">
+          <Image
+            src="/storefront/hero-ea.png"
+            alt="Булка с елегантна рокля от Бутик Емоция"
+            fill
+            priority
+            quality={90}
+            sizes="100vw"
+            className="storefront-hero__image"
+          />
+          <div className="storefront-hero__veil" />
+          <SiteHeader />
+          <div className="storefront-hero__content">
+            <div className="storefront-hero__copy">
+              <AnimatedHeroTitle
+                id="hero-title"
+                text="Открийте роклята, в която се чувствате като себе си."
+                desktopBreakBeforeIndices={[3, 7]}
+              />
+              <p>Булчински и вечерни рокли във Варна.<br />Персонална консултация и внимателно подбрани модели за всеки стил.</p>
+            </div>
+            <div className="storefront-hero__actions">
+              <Link className="storefront-button storefront-button--light" href="#контакти">Запазете час за проба</Link>
+              <Link className="storefront-button storefront-button--outline-light" href="#нови-модели">Разгледайте колекциите</Link>
+            </div>
+          </div>
+          <div className="storefront-hero__socials" aria-label="Социални мрежи">
+            {socialLinks.map(({ label, icon: Icon }) => (
+              <a key={label} href="#footer" aria-label={label}><Icon aria-hidden="true" /></a>
+            ))}
+          </div>
+        </section>
+      </div>
 
-      <section id="колекции" className="storefront-categories" aria-label="Колекции">
-        <CollectionCard image="/storefront/category-bridal.jpg" title="Булчински рокли" />
-        <CollectionCard image="/storefront/category-evening.jpg" title="Вечерни рокли" />
-      </section>
+      <div className="storefront-content-stack">
+        <section id="колекции" className="storefront-categories" aria-label="Колекции">
+          <CollectionCard image="/storefront/category-bridal.jpg" title="Булчински рокли" />
+          <CollectionCard image="/storefront/category-evening.jpg" title="Вечерни рокли" />
+        </section>
 
       <section className="storefront-manifesto">
-        <blockquote>„Вярваме, че правилната рокля не променя жената.<br />Тя просто ѝ помага да се почувства напълно себе си.“</blockquote>
+        <AnimatedManifestoQuote
+          lines={[
+            "„Вярваме, че правилната рокля не променя жената.",
+            "Тя просто ѝ помага да се почувства напълно себе си.“",
+          ]}
+        />
         <p className="storefront-signature">Veselina M.</p>
       </section>
 
@@ -111,47 +129,73 @@ export function StorefrontHomepage() {
         </div>
       </section>
 
-      <section className="storefront-testimonial" aria-label="Отзиви от клиенти">
-        <ScrollReelTestimonials testimonials={[...testimonials]} />
-      </section>
+        <section className="storefront-testimonial" aria-label="Отзиви от клиенти">
+          <ScrollReelTestimonials testimonials={[...testimonials]} />
+        </section>
+      </div>
 
-      <section className="storefront-appointment" aria-labelledby="appointment-title">
-        <Image src="/storefront/boutique.png" alt="Булка на морския бряг" fill sizes="100vw" />
-        <div className="storefront-appointment__overlay" />
-        <div className="storefront-appointment__copy">
-          <h2 id="appointment-title">Готови ли сте за вашата проба?</h2>
-          <p>Запазете своя частен час за лична проба на най-подходящия модел за вас. Нашите консултанти ще се свържат с вас за потвърждение.</p>
-          <Link className="storefront-button storefront-button--light" href="#контакти">Запази час</Link>
-        </div>
-      </section>
+      <div className="storefront-appointment-sticky">
+        <section className="storefront-appointment" aria-labelledby="appointment-title">
+          <Image src="/storefront/boutique.png" alt="Булка на морския бряг" fill sizes="100vw" />
+          <div className="storefront-appointment__overlay" />
+          <div className="storefront-appointment__copy">
+            <h2 id="appointment-title">Готови ли сте за вашата проба?</h2>
+            <p>Запазете своя частен час за лична проба на най-подходящия модел за вас. Нашите консултанти ще се свържат с вас за потвърждение.</p>
+            <Link className="storefront-button storefront-button--light" href="#контакти">Запази час</Link>
+          </div>
+        </section>
+      </div>
 
-      <section id="контакти" className="storefront-contact" aria-labelledby="contact-title">
-        <div className="storefront-contact__copy">
-          <p className="storefront-eyebrow">Контакти</p>
-          <h2 id="contact-title">Свържете се с нас</h2>
-          <dl>
-            <ContactRow label="Адрес" value={storefrontContact.address} />
-            <ContactRow label="Телефон" value={storefrontContact.phone} href={`tel:${storefrontContact.phone.replace(/\s/g, "")}`} />
-            <ContactRow label="Електронна поща" value={storefrontContact.email} href={`mailto:${storefrontContact.email}`} />
-            <ContactRow label="Работно време" value={storefrontContact.hours} />
-          </dl>
-          <a className="storefront-button storefront-button--dark" href={`mailto:${storefrontContact.email}`}>Изпратете ни съобщение</a>
-        </div>
-        <div className="storefront-contact__map">
-          <iframe
-            title="Карта до Бутик Емоция във Варна"
-            src="https://www.google.com/maps?q=%D0%B3%D1%80.%20%D0%92%D0%B0%D1%80%D0%BD%D0%B0%2C%20%D0%B1%D1%83%D0%BB.%20%D0%92%D0%BB.%20%D0%92%D0%B0%D1%80%D0%BD%D0%B5%D0%BD%D1%87%D0%B8%D0%BA%2069&output=embed"
-            loading="lazy"
-            allowFullScreen
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-          <a href="https://maps.google.com/?q=Varna+Vladislav+Varnenchik+69" target="_blank" rel="noreferrer">
-            Отвори в Google Maps
-          </a>
-        </div>
-      </section>
+      <div className="storefront-content-stack">
+        <section id="контакти" className="storefront-contact" aria-labelledby="contact-title">
+          <div className="storefront-contact__copy">
+            <p className="storefront-eyebrow">Контакти</p>
+            <h2 id="contact-title">Свържете се с нас</h2>
+            <form
+              className="storefront-contact-form"
+              action={`mailto:${storefrontContact.email}?subject=${encodeURIComponent("Запитване от сайта")}`}
+              method="post"
+              encType="text/plain"
+            >
+              <div className="storefront-contact-form__fields">
+                <label>
+                  <span>Име</span>
+                  <input type="text" name="Име" autoComplete="name" required />
+                </label>
+                <label>
+                  <span>Телефон</span>
+                  <input type="tel" name="Телефон" autoComplete="tel" required />
+                </label>
+              </div>
+              <label>
+                <span>Съобщение</span>
+                <textarea name="Съобщение" rows={3} required />
+              </label>
+              <button className="storefront-button storefront-button--dark" type="submit">Изпрати запитване</button>
+            </form>
+            <dl>
+              <ContactRow label="Адрес" value={storefrontContact.address} />
+              <ContactRow label="Телефон" value={storefrontContact.phone} href={`tel:${storefrontContact.phone.replace(/\s/g, "")}`} />
+              <ContactRow label="Електронна поща" value={storefrontContact.email} href={`mailto:${storefrontContact.email}`} />
+              <ContactRow label="Работно време" value={storefrontContact.hours} />
+            </dl>
+          </div>
+          <div className="storefront-contact__map">
+            <iframe
+              title="Карта до Бутик Емоция във Варна"
+              src="https://www.google.com/maps?q=%D0%B3%D1%80.%20%D0%92%D0%B0%D1%80%D0%BD%D0%B0%2C%20%D0%B1%D1%83%D0%BB.%20%D0%92%D0%BB.%20%D0%92%D0%B0%D1%80%D0%BD%D0%B5%D0%BD%D1%87%D0%B8%D0%BA%2069&output=embed"
+              loading="lazy"
+              allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+            <a href="https://maps.google.com/?q=Varna+Vladislav+Varnenchik+69" target="_blank" rel="noreferrer">
+              Отвори в Google Maps
+            </a>
+          </div>
+        </section>
 
-      <SiteFooter />
+        <SiteFooter />
+      </div>
     </main>
   );
 }
@@ -173,6 +217,15 @@ function ContactRow({ label, value, href }: { label: string; value: string; href
 function SiteFooter() {
   return (
     <footer id="footer" className="storefront-footer">
+      <Image
+        src="/storefront/footer-bride.svg"
+        alt=""
+        width={1704}
+        height={512}
+        sizes="100vw"
+        className="storefront-footer__bride"
+        aria-hidden="true"
+      />
       <div className="storefront-footer__brand">
         <StorefrontLogo inverted />
         <p>Роклята е повече от избор. Тя е усещането, с което започва вашият специален ден.</p>

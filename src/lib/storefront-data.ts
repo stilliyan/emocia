@@ -16,7 +16,7 @@ export const storefrontProducts: StorefrontProduct[] = [
 
 export const storefrontContact = {
   address: "гр. Варна, бул. Вл. Варненчик 69",
-  phone: "+359 898 87 89 08",
+  phone: "+359 888 66 89 77",
   email: "emociabg@abv.bg",
   hours: "Понеделник – Събота: 10:00 – 19:00",
 };
