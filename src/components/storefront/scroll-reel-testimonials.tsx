@@ -218,7 +218,7 @@ export function ScrollReelTestimonials({
     >
       <div
         aria-hidden="true"
-        className="relative h-72 w-full shrink-0 self-stretch overflow-hidden md:h-auto md:w-[46%]"
+        className="relative h-72 w-full shrink-0 self-stretch overflow-hidden md:h-auto md:w-[40%]"
         style={{
           WebkitMaskImage:
             "linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
@@ -228,7 +228,7 @@ export function ScrollReelTestimonials({
           maskComposite: "intersect",
         }}
       >
-        <div className="absolute inset-0 flex items-center justify-center gap-2.5">
+        <div className="absolute inset-0 flex items-center justify-center gap-2.5 md:translate-x-8">
           {[sideY, middleY, sideY].map((offset, columnIndex) => (
             <div
               key={columnIndex}
@@ -253,7 +253,7 @@ export function ScrollReelTestimonials({
         </div>
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col justify-between self-stretch px-6 py-9 md:px-14 md:py-14 lg:px-20">
+      <div className="flex min-w-0 flex-1 flex-col justify-between self-stretch px-6 py-9 md:px-14 md:py-14">
         <div className="flex flex-col gap-3">
           <svg className="block h-11 w-11 text-muted-foreground/35" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M4.58 17.32C3.55 16.23 3 15 3 13.01c0-3.5 2.46-6.64 6.03-8.19l.9 1.38c-3.34 1.8-4 4.15-4.25 5.62.54-.28 1.24-.38 1.93-.31 1.8.17 3.23 1.65 3.23 3.49a3.5 3.5 0 0 1-3.5 3.5c-1.07 0-2.1-.49-2.75-1.18zm10 0C13.55 16.23 13 15 13 13.01c0-3.5 2.46-6.64 6.03-8.19l.9 1.38c-3.34 1.8-4 4.15-4.25 5.62.54-.28 1.24-.38 1.93-.31 1.8.17 3.23 1.65 3.23 3.49a3.5 3.5 0 0 1-3.5 3.5c-1.07 0-2.1-.49-2.75-1.18z" />
