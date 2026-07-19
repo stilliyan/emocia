@@ -56,7 +56,7 @@
 .storefront-logo--inverted { color: white; }
 .storefront-logo__image { display: block; width: 100%; height: auto; }
 
-.storefront-header__desktop-nav { display: flex; align-items: center; gap: 34px; font-size: 14px; letter-spacing: .015em; }
+.storefront-header__desktop-nav { display: flex; align-items: center; gap: 34px; font-size: 16px; letter-spacing: .015em; }
 .storefront-header__desktop-nav a { opacity: .88; transition: opacity .18s ease; }
 .storefront-header__desktop-nav a:hover { opacity: 1; }
 .storefront-header__contact { border: 1px solid rgba(255,255,255,.34); border-radius: 11px; padding: 11px 20px; }
@@ -65,7 +65,7 @@
 .storefront-header__mobile-nav summary::-webkit-details-marker { display: none; }
 .storefront-header__mobile-nav summary svg { width: 20px; }
 .storefront-header__mobile-nav nav { position: absolute; top: 50px; right: 0; display: grid; gap: 1px; width: 220px; overflow: hidden; border-radius: 14px; background: rgba(16,34,48,.96); box-shadow: 0 16px 40px rgba(0,0,0,.2); }
-.storefront-header__mobile-nav nav a { padding: 13px 16px; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,.09); }
+.storefront-header__mobile-nav nav a { padding: 14px 16px; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,.09); }
 
 .storefront-hero__content { position: absolute; top: 50%; left: clamp(40px, 7vw, 118px); width: min(540px, 42vw); transform: translateY(-42%); }
 .storefront-hero__content h1 { max-width: 520px; font-size: clamp(44px, 3.7vw, 64px); font-weight: 300; line-height: 1.01; letter-spacing: -.03em; }
@@ -92,23 +92,7 @@
 
 .storefront-manifesto { display: grid; min-height: 600px; place-content: center; padding: 100px 24px; text-align: center; }
 .storefront-manifesto blockquote { margin: 0; font-size: clamp(26px, 2.35vw, 40px); font-weight: 300; line-height: 1.25; letter-spacing: -.02em; }
-.storefront-manifesto .storefront-signature { width: min(460px, 84vw); margin: 30px auto 0; color: var(--storefront-muted); line-height: 1; }
-.storefront-signature__svg { display: block; width: 100%; height: auto; overflow: visible; }
-.storefront-signature__fill,
-.storefront-signature__stroke { font-family: "Modelista Signature", cursive; font-size: 96px; font-style: normal; font-weight: 400; }
-.storefront-signature__fill { fill: currentColor; opacity: 0; }
-.storefront-signature__stroke { fill: transparent; stroke: currentColor; stroke-width: 1.25px; stroke-linecap: round; stroke-linejoin: round; }
-.storefront-signature__stroke tspan { stroke-dasharray: 650; stroke-dashoffset: 650; }
-.storefront-signature.is-visible .storefront-signature__stroke tspan { animation: storefront-signature-letter .72s cubic-bezier(.45,0,.25,1) forwards; animation-delay: calc(var(--signature-index) * 140ms); }
-.storefront-signature.is-visible .storefront-signature__fill { animation: storefront-signature-fill .32s ease-out 1.75s forwards; }
-
-@keyframes storefront-signature-letter {
-  to { stroke-dashoffset: 0; }
-}
-
-@keyframes storefront-signature-fill {
-  to { opacity: 1; }
-}
+.storefront-manifesto .storefront-signature { margin-top: 30px; color: var(--storefront-muted); font-family: "Modelista Signature", cursive; font-size: 30px; font-style: normal; font-weight: 400; line-height: 1.35; }
 
 .storefront-feature, .storefront-about, .storefront-contact { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 0 16px; }
 .storefront-feature__copy, .storefront-about__copy, .storefront-contact__copy { display: flex; min-height: 690px; flex-direction: column; justify-content: center; padding: clamp(42px, 6vw, 80px); border-radius: 16px; background: #f1f3f6; }
@@ -195,7 +179,7 @@
 @media (max-width: 1024px) {
   .storefront-header { inset: 24px 56px auto; }
   .storefront-header .storefront-logo { width: 170px; }
-  .storefront-header__desktop-nav { gap: 18px; font-size: 12px; }
+  .storefront-header__desktop-nav { gap: 18px; font-size: 14px; }
   .storefront-hero { min-height: 760px; }
   .storefront-hero__content { left: 56px; width: 52vw; }
   .storefront-hero__socials { left: 56px; }
@@ -253,7 +237,7 @@
   .storefront-hero__content p br { display: none; }
   .storefront-button { width: 100%; }
   .storefront-manifesto blockquote br { display: none; }
-  .storefront-manifesto .storefront-signature { width: min(390px, 82vw); }
+  .storefront-manifesto .storefront-signature { font-size: 26px; }
   .storefront-about__stats { gap: 8px; }
   .storefront-about__stats strong { font-size: 29px; }
   .storefront-testimonial__summary { padding: 28px; }
@@ -266,7 +250,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .storefront-signature__stroke { display: none; }
-  .storefront-signature__fill { opacity: 1; animation: none !important; }
   .storefront *, .storefront *::before, .storefront *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
