@@ -246,7 +246,7 @@ export function ScrollReelTestimonials({
           </div>
         </div>
 
-        <div className="mt-10 flex items-center gap-2 md:mt-0">
+        <div className="mt-10 flex items-center gap-2">
           <ReelButton direction="previous" disabled={index === 0} onClick={() => paginate(-1)} />
           <ReelButton direction="next" disabled={index === count - 1} onClick={() => paginate(1)} />
         </div>
