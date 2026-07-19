@@ -5,6 +5,7 @@ import { storefrontContact } from "@/lib/storefront-data";
 import { ProductRail } from "./product-rail";
 import { StorefrontLogo } from "./logo";
 import { SiteHeader } from "./site-header";
+import { AnimatedSignature } from "./animated-signature";
 import "./storefront.css";
 
 const socialLinks = [
@@ -46,7 +47,7 @@ export function StorefrontHomepage() {
 
       <section className="storefront-manifesto">
         <blockquote>„Вярваме, че правилната рокля не променя жената.<br />Тя просто ѝ помага да се почувства напълно себе си.“</blockquote>
-        <p>Veselina M.</p>
+        <AnimatedSignature />
       </section>
 
       <section className="storefront-feature" aria-labelledby="feature-title">
