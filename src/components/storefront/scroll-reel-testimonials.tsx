@@ -180,7 +180,7 @@ export function ScrollReelTestimonials({
       tabIndex={0}
       onKeyDown={onKeyDown}
       className={cn(
-        "relative flex w-full max-w-[1060px] flex-col items-stretch gap-2.5 overflow-hidden rounded-2xl border border-border bg-muted shadow-[inset_0_2px_0_rgba(255,255,255,1)] outline-none focus-visible:ring-2 focus-visible:ring-ring/30 md:min-h-[360px] md:flex-row",
+        "relative flex w-full max-w-[1160px] flex-col items-stretch gap-2.5 overflow-hidden rounded-2xl border border-border bg-muted shadow-[inset_0_2px_0_rgba(255,255,255,1)] outline-none focus-visible:ring-2 focus-visible:ring-ring/30 md:min-h-[360px] md:flex-row",
         className,
       )}
     >

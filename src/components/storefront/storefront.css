@@ -129,7 +129,7 @@
 .storefront-about__stats span { color: var(--storefront-muted); font-size: 13px; }
 .storefront-about .storefront-button { align-self: flex-start; }
 
-.storefront-testimonial { display: flex; max-width: 1100px; margin: 160px auto; padding: 0 20px; justify-content: center; }
+.storefront-testimonial { display: flex; max-width: 1200px; margin: 160px auto; padding: 0 20px; justify-content: center; }
 .scroll-reel-char { display: inline-block; animation: scroll-reel-char-rise .5s cubic-bezier(.22,1,.36,1) both; }
 .scroll-reel-exit { animation: scroll-reel-copy-exit 240ms ease-in forwards; }
 
