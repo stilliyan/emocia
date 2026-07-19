@@ -11,6 +11,7 @@
   --storefront-action: #080808;
   --storefront-muted: #787286;
   --storefront-surface: #f7f8fa;
+  --storefront-panel: #f1f3f6;
   --storefront-blue: #1b364f;
   width: 100%;
   max-width: 100vw;
@@ -130,6 +131,7 @@
 .storefront-about .storefront-button { align-self: flex-start; }
 
 .storefront-testimonial { display: flex; max-width: 1200px; margin: 160px auto; padding: 0 20px; justify-content: center; }
+.storefront-testimonial__reel { background: var(--storefront-panel); }
 .scroll-reel-char { display: inline-block; animation: scroll-reel-char-rise .5s cubic-bezier(.22,1,.36,1) both; }
 .scroll-reel-exit { animation: scroll-reel-copy-exit 240ms ease-in forwards; }
 
