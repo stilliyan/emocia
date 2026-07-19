@@ -1,0 +1,2 @@
+import { PageHeader } from "@/components/page-header";import { ProductForm } from "@/components/product-form";import { getCategories } from "@/lib/data";
+export default async function NewProduct(){return <div className="mx-auto w-full max-w-5xl"><PageHeader title="Добави продукт" description="Попълнете основната информация и запазете модела."/><ProductForm categories={await getCategories()}/></div>}
