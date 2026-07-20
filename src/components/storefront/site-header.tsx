@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { StorefrontLogo } from "./logo";
 
 const navigation = [
@@ -9,9 +12,18 @@ const navigation = [
 ] as const;
 
 export function SiteHeader() {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const updateHeader = () => setScrolled(window.scrollY > 80);
+    updateHeader();
+    window.addEventListener("scroll", updateHeader, { passive: true });
+    return () => window.removeEventListener("scroll", updateHeader);
+  }, []);
+
   return (
-    <header className="storefront-header">
-      <StorefrontLogo inverted />
+    <header className={`storefront-header${scrolled ? " storefront-header--scrolled" : ""}`}>
+      <StorefrontLogo inverted alternateSrc="/storefront/logo-dark.svg" />
       <nav aria-label="Основна навигация" className="storefront-header__desktop-nav">
         {navigation.map(([label, href]) => <Link key={label} href={href}>{label}</Link>)}
         <Link className="storefront-header__contact" href="#контакти">Контакти</Link>

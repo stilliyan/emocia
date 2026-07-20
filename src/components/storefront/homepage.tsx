@@ -44,6 +44,7 @@ const testimonials = [
 export function StorefrontHomepage() {
   return (
     <main className="storefront">
+      <SiteHeader />
       <div className="storefront-hero-sticky">
         <section className="storefront-hero" aria-labelledby="hero-title">
           <Image
@@ -56,7 +57,6 @@ export function StorefrontHomepage() {
             className="storefront-hero__image"
           />
           <div className="storefront-hero__veil" />
-          <SiteHeader />
           <div className="storefront-hero__content">
             <div className="storefront-hero__copy">
               <AnimatedHeroTitle
@@ -81,6 +81,7 @@ export function StorefrontHomepage() {
 
       <div className="storefront-content-stack">
         <section id="колекции" className="storefront-categories" aria-label="Колекции">
+          <h2 className="storefront-categories__title">Открийте колекциите</h2>
           <CollectionCard image="/storefront/category-bridal.jpg" title="Булчински рокли" />
           <CollectionCard image="/storefront/category-evening.jpg" title="Вечерни рокли" />
         </section>
@@ -233,7 +234,10 @@ function SiteFooter() {
       </div>
       <FooterLinks title="Колекции" links={["Нови постъпления", "Булчински рокли", "Вечерни рокли", "Аксесоари"]} />
       <FooterLinks title="Информация" links={["За нас", "Контакти", "Доставка и връщане", "Политика за поверителност"]} />
-      <div className="storefront-footer__bottom">© 2026 Бутик Емоция — Всички права запазени</div>
+      <div className="storefront-footer__bottom">
+        <span>© 2026 Бутик Емоция — Всички права запазени</span>
+        <span className="storefront-footer__credit">Made with <span>♥</span> by Stiliyan S.</span>
+      </div>
     </footer>
   );
 }
