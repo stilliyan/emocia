@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -7,6 +7,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: "Емоция — CMS",
   description: "Управление на продуктите и съдържанието на Емоция",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#4A83AE",
 };
 
 export default function RootLayout({
@@ -18,6 +22,7 @@ export default function RootLayout({
     <html
       lang="bg"
       className="h-full antialiased"
+      style={{ backgroundColor: "#4A83AE" }}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
