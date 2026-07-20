@@ -47,11 +47,6 @@ function Featured({ src, alt }: { src: string; alt?: string }) {
       style={{ width: CELL, height: CELL, boxShadow: FEATURED_SHADOW }}
     >
       <Image src={src} alt={alt ?? ""} fill sizes="146px" className="object-cover object-[center_30%]" />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-2 bg-white/80 mix-blend-saturation" />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-3 bg-[linear-gradient(221deg,transparent_32%,rgba(236,109,163,.32)_45%,rgba(130,189,237,.18)_54%,transparent_65%)] blur-[6px] mix-blend-overlay"
-      />
     </div>
   );
 }
