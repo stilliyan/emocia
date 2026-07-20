@@ -216,12 +216,12 @@
 .storefront-contact-form__fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .storefront-contact-form label { display: grid; }
 .storefront-contact-form label > span { position: absolute; width: 1px; height: 1px; overflow: hidden; margin: -1px; padding: 0; border: 0; clip: rect(0 0 0 0); white-space: nowrap; }
-.storefront-contact-form input, .storefront-contact-form textarea { width: 100%; border: 1px solid transparent; border-radius: 12px; outline: none; background: rgba(255,255,255,.64); padding: 12px 14px; color: var(--storefront-ink); font: inherit; transition: box-shadow .16s ease, background-color .16s ease; }
+.storefront-contact-form input, .storefront-contact-form textarea { width: 100%; border: 1px solid rgba(34,29,57,.09); border-radius: 12px; outline: none; background: rgba(255,255,255,.64); padding: 12px 14px; color: var(--storefront-ink); font: inherit; transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease; }
 .storefront-contact-form input::placeholder, .storefront-contact-form textarea::placeholder { color: rgba(34,29,57,.46); font-size: 14px; font-weight: 300; opacity: 1; }
 .storefront-contact-form input { min-height: 46px; }
 .storefront-contact-form textarea { min-height: 94px; resize: vertical; }
-.storefront-contact-form input:hover, .storefront-contact-form textarea:hover { background: rgba(255,255,255,.78); }
-.storefront-contact-form input:focus-visible, .storefront-contact-form textarea:focus-visible { box-shadow: 0 0 0 2px rgba(34,29,57,.07); background: rgba(255,255,255,.88); }
+.storefront-contact-form input:hover, .storefront-contact-form textarea:hover { border-color: rgba(34,29,57,.15); background: rgba(255,255,255,.78); }
+.storefront-contact-form input:focus-visible, .storefront-contact-form textarea:focus-visible { border-color: rgba(34,29,57,.22); box-shadow: 0 0 0 2px rgba(34,29,57,.06); background: rgba(255,255,255,.88); }
 .storefront-contact-form .storefront-button { width: fit-content; margin-top: 8px; border: 0; cursor: pointer; }
 .storefront-contact__map { position: relative; min-height: 620px; overflow: hidden; border-radius: 16px; background: #e8e8e8; }
 .storefront-contact__map iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; filter: saturate(.72) contrast(.96); }
@@ -323,11 +323,14 @@
   .storefront-hero__actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; width: 100%; margin-top: 24px; }
   .storefront-hero__actions .storefront-button { width: 100%; }
   .storefront-hero__socials { display: none; }
-  .storefront-categories { grid-template-columns: 1fr; padding: 24px 8px 8px; }
+  .storefront-categories { grid-template-columns: 1fr; row-gap: 0; padding: 0 8px 8px; }
   .storefront-categories__title {
-    display: block;
+    display: flex;
     grid-column: 1 / -1;
-    margin: 0 0 12px;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 28px 0;
     color: var(--storefront-ink);
     font-size: 25px;
     font-weight: 300;
@@ -335,6 +338,7 @@
     letter-spacing: -.025em;
     text-align: center;
   }
+  .storefront-category + .storefront-category { margin-top: 12px; }
   .storefront-category { height: 108vw; max-height: 720px; }
   .storefront-category__blur { opacity: 1; }
   .storefront-category > div:last-child { left: 24px; bottom: 26px; }

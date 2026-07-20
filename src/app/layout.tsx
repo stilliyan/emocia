@@ -25,7 +25,7 @@ export default function RootLayout({
     <html
       lang="bg"
       className="h-full antialiased"
-      style={{ backgroundColor: "#4A83AE" }}
+      style={{ backgroundColor: "#f7f8fa" }}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
