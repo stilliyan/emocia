@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { StorefrontHomepage } from "@/components/storefront/homepage";
 
 export const metadata: Metadata = {
@@ -9,6 +9,14 @@ export const metadata: Metadata = {
     description: "Булчински и вечерни рокли във Варна с лично внимание и внимателно подбрани модели.",
     images: [{ url: "/storefront/hero.png", width: 1535, height: 1024, alt: "Бутик Емоция" }],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#4A83AE" },
+    { media: "(prefers-color-scheme: dark)", color: "#4A83AE" },
+  ],
+  viewportFit: "cover",
 };
 
 export default function Home() {

@@ -135,3 +135,13 @@
     @apply font-sans;
   }
 }
+
+body:has(.storefront) {
+  background-color: #f7f8fa;
+  background-image: linear-gradient(
+    to bottom,
+    #4a83ae 0,
+    #4a83ae 100svh,
+    #f7f8fa 100svh
+  );
+}
