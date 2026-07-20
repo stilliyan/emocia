@@ -322,7 +322,18 @@
   .storefront-hero__actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; width: 100%; margin-top: 24px; }
   .storefront-hero__actions .storefront-button { width: 100%; }
   .storefront-hero__socials { display: none; }
-  .storefront-categories { grid-template-columns: 1fr; padding: 12px 8px 8px; }
+  .storefront-categories { grid-template-columns: 1fr; padding: 24px 8px 8px; }
+  .storefront-categories__title {
+    display: block;
+    grid-column: 1 / -1;
+    margin: 0 0 12px;
+    color: var(--storefront-ink);
+    font-size: 25px;
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -.025em;
+    text-align: center;
+  }
   .storefront-category { height: 108vw; max-height: 720px; }
   .storefront-category__blur { opacity: 1; }
   .storefront-category > div:last-child { left: 24px; bottom: 26px; }
@@ -341,7 +352,7 @@
   .storefront-testimonial { margin: 72px 8px; }
   .storefront-appointment-sticky { position: sticky; top: 0; z-index: 1; height: 100svh; min-height: 640px; margin-bottom: 90px; }
   .storefront-appointment { height: 100%; min-height: 100%; margin: 0 8px; }
-  .storefront-appointment > img { object-position: 66% center; }
+  .storefront-appointment > img { object-position: 42% center; }
   .storefront-appointment__overlay { background: linear-gradient(0deg, rgba(17,42,57,.78) 0%, rgba(17,42,57,.06) 80%); }
   .storefront-appointment__copy { top: auto; right: 26px; bottom: 48px; left: 26px; transform: none; }
   .storefront-contact { padding-top: 56px; padding-bottom: 90px; }
