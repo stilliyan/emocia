@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { storefrontContact } from "@/lib/storefront-data";
 import { AnimatedHeroTitle, AnimatedManifestoQuote } from "./animated-copy";
+import { AnimatedStats } from "./animated-stats";
 import { ProductRail } from "./product-rail";
 import { ScrollReelTestimonials } from "./scroll-reel-testimonials";
 import { StorefrontLogo } from "./logo";
@@ -51,7 +52,7 @@ export function StorefrontHomepage() {
             fill
             priority
             quality={90}
-            sizes="100vw"
+            sizes="(max-width: 768px) 280vw, 100vw"
             className="storefront-hero__image"
           />
           <div className="storefront-hero__veil" />
@@ -121,11 +122,7 @@ export function StorefrontHomepage() {
           <p className="storefront-eyebrow">За Бутик Емоция</p>
           <h2 id="about-title">Вашето преживяване в Бутик Емоция</h2>
           <p>Търсенето на вашата специална рокля трябва да бъде незабравимо преживяване. В Бутик Емоция ви посрещаме с лично внимание, спокойна атмосфера и внимателно подбрана селекция от модели.</p>
-          <div className="storefront-about__stats">
-            <div><strong>300+</strong><span>Доволни булки</span></div>
-            <div><strong>15+</strong><span>Години опит</span></div>
-            <div><strong>98%</strong><span>Препоръчват ни</span></div>
-          </div>
+          <AnimatedStats />
           <AppointmentDialog className="storefront-button storefront-button--dark">Запази час за проба</AppointmentDialog>
         </div>
       </section>
@@ -236,7 +233,6 @@ function SiteFooter() {
       </div>
       <FooterLinks title="Колекции" links={["Нови постъпления", "Булчински рокли", "Вечерни рокли", "Аксесоари"]} />
       <FooterLinks title="Информация" links={["За нас", "Контакти", "Доставка и връщане", "Политика за поверителност"]} />
-      <FooterLinks title="Следвайте ни" links={["Instagram", "Facebook", "Pinterest", "TikTok"]} />
       <div className="storefront-footer__bottom">© 2026 Бутик Емоция — Всички права запазени</div>
     </footer>
   );
@@ -249,6 +245,5 @@ function FooterLinks({ title, links }: { title: string; links: string[] }) {
 function footerHref(label: string) {
   if (label === "Контакти") return "#контакти";
   if (label === "За нас") return "#за-нас";
-  if (["Instagram", "Facebook", "Pinterest", "TikTok"].includes(label)) return `https://${label.toLowerCase()}.com`;
   return "#нови-модели";
 }
