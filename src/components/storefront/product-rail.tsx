@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Heart } from "lucide-react";
 import { storefrontProducts } from "@/lib/storefront-data";
+import { AppointmentDialog } from "./appointment-dialog";
 
 export function ProductRail() {
   return (
@@ -18,6 +19,13 @@ export function ProductRail() {
                 priority={index < 2}
               />
               <Heart aria-hidden="true" className="storefront-product__heart" />
+              <AppointmentDialog
+                className="storefront-product__cta"
+                productName={product.name}
+                ariaLabel={`Запази проба за ${product.name}`}
+              >
+                Запази проба
+              </AppointmentDialog>
             </div>
             <div className="storefront-product__copy">
               <h3>{product.name}</h3>

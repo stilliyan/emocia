@@ -6,6 +6,7 @@ import { ProductRail } from "./product-rail";
 import { ScrollReelTestimonials } from "./scroll-reel-testimonials";
 import { StorefrontLogo } from "./logo";
 import { SiteHeader } from "./site-header";
+import { AppointmentDialog } from "./appointment-dialog";
 import { FacebookIcon, InstagramIcon, TikTokIcon } from "./social-icons";
 import "./storefront.css";
 
@@ -65,7 +66,7 @@ export function StorefrontHomepage() {
               <p>Булчински и вечерни рокли във Варна.<br />Персонална консултация и внимателно подбрани модели за всеки стил.</p>
             </div>
             <div className="storefront-hero__actions">
-              <Link className="storefront-button storefront-button--light" href="#контакти">Запазете час за проба</Link>
+              <AppointmentDialog className="storefront-button storefront-button--light">Запазете час за проба</AppointmentDialog>
               <Link className="storefront-button storefront-button--outline-light" href="#нови-модели">Разгледайте колекциите</Link>
             </div>
           </div>
@@ -125,7 +126,7 @@ export function StorefrontHomepage() {
             <div><strong>15+</strong><span>Години опит</span></div>
             <div><strong>98%</strong><span>Препоръчват ни</span></div>
           </div>
-          <Link className="storefront-button storefront-button--dark" href="#контакти">Запази час за проба</Link>
+          <AppointmentDialog className="storefront-button storefront-button--dark">Запази час за проба</AppointmentDialog>
         </div>
       </section>
 
@@ -141,7 +142,7 @@ export function StorefrontHomepage() {
           <div className="storefront-appointment__copy">
             <h2 id="appointment-title">Готови ли сте за вашата проба?</h2>
             <p>Запазете своя частен час за лична проба на най-подходящия модел за вас. Нашите консултанти ще се свържат с вас за потвърждение.</p>
-            <Link className="storefront-button storefront-button--light" href="#контакти">Запази час</Link>
+            <AppointmentDialog className="storefront-button storefront-button--light">Запази час</AppointmentDialog>
           </div>
         </section>
       </div>

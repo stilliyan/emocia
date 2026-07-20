@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
-import { CalendarDays, Check, ChevronLeft, ChevronRight, Clock, ImageIcon, Pencil, Plus, Trash2 } from "lucide-react";
+import { CalendarDays, Check, ChevronLeft, ChevronRight, Clock, ImageIcon, Pencil, Phone, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { changeCalendarEventStatus, deleteCalendarEvent, getCalendarEvents, saveCalendarEvent } from "@/app/actions";
+import { cancelAppointmentRequest, confirmAppointmentRequest } from "@/app/actions/appointments";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { NativeSelect } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
 import { calendarRange, dateKey, monthGrid, weekRange } from "@/lib/calendar";
-import type { CalendarEvent, Product, ProductImage } from "@/lib/data";
+import type { AppointmentRequest, CalendarEvent, Product, ProductImage } from "@/lib/data";
 import { createClient } from "@/lib/supabase/client";
 
 const statusLabels = { upcoming: "Предстоящо", completed: "Завършено", cancelled: "Отказано" };
@@ -46,7 +47,9 @@ function attentionIssues(product: Product) {
   return issues;
 }
 
-export function Dashboard({ products, initialEvents, initialCalendarError = "" }: { products: Product[]; initialEvents: CalendarEvent[]; initialCalendarError?: string }) {
+type DashboardProps = { products: Product[]; initialEvents: CalendarEvent[]; initialRequests: AppointmentRequest[]; initialCalendarError?: string; initialAppointmentError?: string };
+
+export function Dashboard({ products, initialEvents, initialRequests, initialCalendarError = "", initialAppointmentError = "" }: DashboardProps) {
   const today = new Date();
   const [month, setMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
   const [selectedDate, setSelectedDate] = useState(dateKey(today));
@@ -55,9 +58,12 @@ export function Dashboard({ products, initialEvents, initialCalendarError = "" }
   const [dialogOpen, setDialogOpen] = useState(false);
   const [formError, setFormError] = useState("");
   const [calendarError, setCalendarError] = useState(initialCalendarError);
+  const [requests, setRequests] = useState(initialRequests);
+  const [appointmentError, setAppointmentError] = useState(initialAppointmentError);
   const [showAllAgenda, setShowAllAgenda] = useState(false);
   const [calendarPending, startCalendarTransition] = useTransition();
   const [mutationPending, startMutationTransition] = useTransition();
+  const [appointmentPending, startAppointmentTransition] = useTransition();
   const days = useMemo(() => monthGrid(month), [month]);
   const groupedEvents = useMemo(() => events.reduce((groups, event) => {
     const key = dateKey(event.start_at);
@@ -107,6 +113,29 @@ export function Dashboard({ products, initialEvents, initialCalendarError = "" }
     startMutationTransition(async () => { const result = await deleteCalendarEvent(id); if (result.error) toast.error(result.error); else { toast.success(result.success); setDialogOpen(false); await refreshEvents(); } });
   }
 
+  function confirmRequest(id: string) {
+    if (appointmentPending) return;
+    setAppointmentError("");
+    startAppointmentTransition(async () => {
+      const result = await confirmAppointmentRequest(id);
+      if (result.error) { setAppointmentError(result.error); toast.error(result.error); return; }
+      setRequests((current) => current.filter((request) => request.id !== id));
+      toast.success(result.success);
+      await refreshEvents();
+    });
+  }
+
+  function cancelRequest(id: string) {
+    if (appointmentPending) return;
+    setAppointmentError("");
+    startAppointmentTransition(async () => {
+      const result = await cancelAppointmentRequest(id);
+      if (result.error) { setAppointmentError(result.error); toast.error(result.error); return; }
+      setRequests((current) => current.filter((request) => request.id !== id));
+      toast.success(result.success);
+    });
+  }
+
   return <div className="space-y-5">
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div><h1 className="text-2xl font-semibold tracking-tight">Табло</h1><p className="mt-1 text-sm text-muted-foreground">Преглед на каталога, срещите и задачите.</p></div>
@@ -134,6 +163,15 @@ export function Dashboard({ products, initialEvents, initialCalendarError = "" }
       </CardContent></Card>
     </div>
 
+    <Card>
+      <CardHeader><div className="flex items-center justify-between gap-3"><div><CardTitle>Заявки за проба</CardTitle><p className="mt-1 text-sm text-muted-foreground">Потвърдените заявки се добавят автоматично в календара.</p></div><Badge variant={requests.length ? "default" : "secondary"}>{requests.length}</Badge></div></CardHeader>
+      <CardContent>
+        {appointmentError && <p role="alert" className="mb-3 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{appointmentError}</p>}
+        {!appointmentError && requests.length === 0 && <p className="rounded-lg bg-muted/40 p-4 text-sm text-muted-foreground">Няма чакащи заявки за проба.</p>}
+        {requests.length > 0 && <div className="divide-y">{requests.map((request) => <AppointmentRequestRow key={request.id} request={request} pending={appointmentPending} onConfirm={confirmRequest} onCancel={cancelRequest} />)}</div>}
+      </CardContent>
+    </Card>
+
     <div className="grid gap-5 xl:grid-cols-2">
       <Card id="attention"><CardHeader><div className="flex items-center justify-between gap-3"><CardTitle>Изискват внимание</CardTitle><Button asChild variant="ghost" size="sm"><Link href="/admin/products">Виж всички</Link></Button></div></CardHeader><CardContent>{attention.length ? <div className="divide-y">{attention.slice(0, 5).map(({ product, issues }) => <ProductAttentionRow key={product.id} product={product} issues={issues} />)}</div> : <p className="rounded-lg bg-muted/40 p-4 text-sm text-muted-foreground">Каталогът е в добро състояние — няма продукти, които изискват внимание.</p>}</CardContent></Card>
       <Card><CardHeader><div className="flex items-center justify-between gap-3"><CardTitle>Последно обновени</CardTitle><Button asChild variant="ghost" size="sm"><Link href="/admin/products">Виж всички продукти</Link></Button></div></CardHeader><CardContent>{products.length ? <div className="divide-y">{products.slice(0, 5).map((product) => <RecentProductRow key={product.id} product={product} />)}</div> : <p className="rounded-lg bg-muted/40 p-4 text-sm text-muted-foreground">Все още няма продукти.</p>}</CardContent></Card>
@@ -155,6 +193,11 @@ function ProductThumb({ product }: { product: Product }) {
 }
 function ProductAttentionRow({ product, issues }: { product: Product; issues: string[] }) { return <div className="flex items-center gap-3 py-3"><ProductThumb product={product} /><div className="min-w-0 flex-1"><p className="truncate text-sm font-medium">{product.name}</p><p className="truncate text-xs text-muted-foreground">{issues.join(" · ")}</p></div><Badge variant="secondary">{productStatusLabels[product.status]}</Badge><Button asChild size="icon-sm" variant="ghost"><Link href={`/admin/products/${product.id}`} aria-label={`Редактирай ${product.name}`}><Pencil /></Link></Button></div>; }
 function RecentProductRow({ product }: { product: Product }) { return <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-3 py-3"><ProductThumb product={product} /><div className="min-w-0"><p className="truncate text-sm font-medium">{product.name}</p><p className="text-xs text-muted-foreground">{new Intl.DateTimeFormat("bg-BG").format(new Date(product.updated_at))}</p></div><Badge variant={product.status === "published" ? "default" : "secondary"}>{productStatusLabels[product.status]}</Badge><Button asChild size="icon-sm" variant="ghost"><Link href={`/admin/products/${product.id}`} aria-label={`Редактирай ${product.name}`}><Pencil /></Link></Button></div>; }
+
+function AppointmentRequestRow({ request, pending, onConfirm, onCancel }: { request: AppointmentRequest; pending: boolean; onConfirm: (id: string) => void; onCancel: (id: string) => void }) {
+  const date = new Intl.DateTimeFormat("bg-BG", { dateStyle: "medium" }).format(new Date(`${request.preferred_date}T12:00:00`));
+  return <div className="grid gap-3 py-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center"><div className="min-w-0"><div className="flex flex-wrap items-center gap-x-3 gap-y-1"><p className="font-medium">{request.name}</p><span className="text-sm text-muted-foreground">{date} · {request.preferred_time.slice(0, 5)}</span>{request.product_name && <Badge variant="outline">{request.product_name}</Badge>}</div><a href={`tel:${request.phone.replace(/\s/g, "")}`} className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"><Phone className="size-3.5" />{request.phone}</a>{request.message && <p className="mt-1 text-sm text-muted-foreground">{request.message}</p>}</div><div className="flex flex-wrap gap-2"><Button type="button" size="sm" disabled={pending} onClick={() => onConfirm(request.id)}><Check />Потвърди</Button><Button type="button" size="sm" variant="outline" disabled={pending} onClick={() => onCancel(request.id)}><X />Откажи</Button></div></div>;
+}
 
 function EventDialog({ open, onOpenChange, draft, setDraft, pending, error, onSubmit, onStatus, onDelete }: { open: boolean; onOpenChange: (open: boolean) => void; draft: Draft; setDraft: (draft: Draft) => void; pending: boolean; error: string; onSubmit: () => void; onStatus: (id: string, status: CalendarEvent["status"]) => void; onDelete: (id: string) => void }) {
   const update = <K extends keyof Draft>(key: K, value: Draft[K]) => setDraft({ ...draft, [key]: value });

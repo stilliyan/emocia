@@ -72,6 +72,18 @@ export const calendarRangeSchema = z.object({
   end: z.string().datetime(),
 }).refine((range) => new Date(range.end) > new Date(range.start), "Невалиден календарен период");
 
+export const appointmentRequestSchema = z.object({
+  name: z.string().trim().min(2, "Въведете вашето име").max(120, "Името е твърде дълго"),
+  phone: z.string().trim().min(7, "Въведете валиден телефонен номер").max(30, "Телефонът е твърде дълъг"),
+  preferred_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Изберете предпочитана дата"),
+  preferred_time: z.string().regex(/^\d{2}:\d{2}$/, "Изберете предпочитан час"),
+  message: z.string().trim().max(1000, "Съобщението е твърде дълго").optional().or(z.literal("")),
+  product_name: z.string().trim().max(160, "Името на модела е твърде дълго").optional().or(z.literal("")),
+  website: z.string().max(0).optional().or(z.literal("")),
+});
+
+export const appointmentStatusSchema = z.enum(["pending", "confirmed", "cancelled"]);
+
 export function reorderImages<T extends { id: string }>(items: T[], activeId: string, overId: string) {
   const from = items.findIndex((item) => item.id === activeId);
   const to = items.findIndex((item) => item.id === overId);

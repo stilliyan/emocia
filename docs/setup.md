@@ -30,3 +30,9 @@ CMS text fields opt out of common LanguageTool/Grammarly editor overlays. Browse
 ## Dashboard calendar
 
 The dashboard calendar uses `public.calendar_events` and requires `supabase/migrations/202607130001_calendar_events.sql`. For an existing hosted project, copy that complete file into Supabase Dashboard → SQL Editor and run it once, or use `supabase db push` only when the CLI is intentionally linked to the correct project. The migration keeps RLS enabled: authenticated administrators can read, update, and delete events, while inserts additionally require `created_by = auth.uid()`. The browser uses only the normal Supabase publishable/anon key; no service-role key is needed.
+
+## Public appointment requests
+
+The public “Запази час” buttons open a short form for a preferred date and time. Existing Supabase projects must run `supabase/migrations/202607200001_appointment_requests.sql` once in Supabase Dashboard → SQL Editor. Fresh manual installations already include the same setup in `supabase/manual-setup.sql`.
+
+Public visitors do not receive direct table access. The form uses the limited `submit_appointment_request` RPC, validates the input on the server and in PostgreSQL, and rate-limits repeated requests by phone. RLS remains enabled and only approved CMS administrators can read or manage requests. Confirming a request in `/admin` atomically creates a one-hour `calendar_events` entry in the `Europe/Sofia` time zone; overlapping upcoming events are rejected. No service-role key is used or required.
