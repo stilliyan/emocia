@@ -187,8 +187,19 @@ export function StorefrontHomepage() {
               allowFullScreen
               referrerPolicy="no-referrer-when-downgrade"
             />
-            <a href="https://maps.google.com/?q=Varna+Vladislav+Varnenchik+69" target="_blank" rel="noreferrer">
-              Отвори в Google Maps
+            <a
+              href="https://www.google.com/maps/@43.2121619,27.905135,3a,75y,203.77h,89.3t/data=!3m7!1e1!3m5!1sNS2LLaGNZbpyqNezIFknNw!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D0.6998632793665251%26panoid%3DNS2LLaGNZbpyqNezIFknNw%26yaw%3D203.77218534537914!7i16384!8i8192?entry=ttu&g_ep=EgoyMDI2MDcxNS4wIKXMDSoASAFQAw%3D%3D"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Image
+                src="/storefront/boutique-facade.png"
+                alt=""
+                width={184}
+                height={184}
+                className="storefront-contact__map-thumbnail"
+              />
+              <span>Намерете ни в Google Maps</span>
             </a>
           </div>
         </section>

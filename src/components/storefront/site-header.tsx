@@ -15,10 +15,21 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const updateHeader = () => setScrolled(window.scrollY > 80);
+    const contentSection = document.querySelector<HTMLElement>(".storefront-content-stack");
+
+    const updateHeader = () => {
+      const contentTop = contentSection?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
+      setScrolled(contentTop <= 144);
+    };
+
     updateHeader();
     window.addEventListener("scroll", updateHeader, { passive: true });
-    return () => window.removeEventListener("scroll", updateHeader);
+    window.addEventListener("resize", updateHeader);
+
+    return () => {
+      window.removeEventListener("scroll", updateHeader);
+      window.removeEventListener("resize", updateHeader);
+    };
   }, []);
 
   return (
