@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StorefrontLogo } from "./logo";
 
 const navigation = [
@@ -13,6 +13,8 @@ const navigation = [
 
 export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
+  const [mobileHidden, setMobileHidden] = useState(false);
+  const mobileMenuRef = useRef<HTMLDetailsElement>(null);
 
   useEffect(() => {
     const contentSection = document.querySelector<HTMLElement>(".storefront-content-stack");
@@ -32,14 +34,74 @@ export function SiteHeader() {
     };
   }, []);
 
+  useEffect(() => {
+    const footer = document.getElementById("footer");
+    const mobileViewport = window.matchMedia("(max-width: 768px)");
+
+    if (!footer) return;
+
+    let footerVisible = false;
+    let lastScrollY = window.scrollY;
+
+    const hideAtFooter = () => {
+      if (!mobileViewport.matches) return;
+
+      mobileMenuRef.current?.removeAttribute("open");
+      setMobileHidden(true);
+    };
+
+    const observer = new IntersectionObserver(([entry]) => {
+      footerVisible = entry.isIntersecting;
+
+      if (footerVisible) {
+        hideAtFooter();
+      } else {
+        setMobileHidden(false);
+      }
+    });
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const delta = currentScrollY - lastScrollY;
+
+      if (!mobileViewport.matches) {
+        setMobileHidden(false);
+      } else if (delta < -4) {
+        setMobileHidden(false);
+      } else if (delta > 4 && footerVisible) {
+        hideAtFooter();
+      }
+
+      lastScrollY = currentScrollY;
+    };
+
+    const handleViewportChange = () => {
+      lastScrollY = window.scrollY;
+
+      if (!mobileViewport.matches) {
+        setMobileHidden(false);
+      }
+    };
+
+    observer.observe(footer);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    mobileViewport.addEventListener("change", handleViewportChange);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", handleScroll);
+      mobileViewport.removeEventListener("change", handleViewportChange);
+    };
+  }, []);
+
   return (
-    <header className={`storefront-header${scrolled ? " storefront-header--scrolled" : ""}`}>
+    <header className={`storefront-header${scrolled ? " storefront-header--scrolled" : ""}${mobileHidden ? " storefront-header--mobile-hidden" : ""}`}>
       <StorefrontLogo inverted alternateSrc="/storefront/logo-dark.svg" />
       <nav aria-label="Основна навигация" className="storefront-header__desktop-nav">
         {navigation.map(([label, href]) => <Link key={label} href={href}>{label}</Link>)}
         <Link className="storefront-header__contact" href="#контакти">Контакти</Link>
       </nav>
-      <details className="storefront-header__mobile-nav">
+      <details ref={mobileMenuRef} className="storefront-header__mobile-nav">
         <summary aria-label="Отвори или затвори меню">
           <svg
             className="mobile-icon"

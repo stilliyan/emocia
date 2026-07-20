@@ -308,7 +308,8 @@
 @media (max-width: 768px) {
   .storefront-hero-sticky { position: sticky; top: 0; z-index: 1; height: 100svh; min-height: 640px; }
   .storefront-hero { height: 100%; min-height: 100%; margin: 0; }
-  .storefront-header { inset: 18px 18px auto; }
+  .storefront-header { inset: 18px 18px auto; opacity: 1; transform: translateY(0); transition: inset .35s cubic-bezier(.22,1,.36,1), padding .35s cubic-bezier(.22,1,.36,1), background-color .25s ease, backdrop-filter .25s ease, opacity .18s ease, transform .24s cubic-bezier(.22,1,.36,1); }
+  .storefront-header.storefront-header--mobile-hidden { opacity: 0; pointer-events: none; transform: translateY(calc(-100% - 32px)); }
   .storefront-header .storefront-logo { width: 200px; }
   .storefront-header.storefront-header--scrolled .storefront-logo { width: 150px; }
   .storefront-header__desktop-nav { display: none; }
