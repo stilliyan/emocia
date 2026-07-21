@@ -153,7 +153,6 @@ export function CollectionCatalogue({
         </details>
 
         <div className="storefront-collection-view" aria-label="Размер на изображенията">
-          <span className="storefront-collection-view__label" aria-hidden="true">Изглед</span>
           <button
             type="button"
             aria-label="Стандартен изглед"
