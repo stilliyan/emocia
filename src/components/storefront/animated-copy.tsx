@@ -32,10 +32,12 @@ export function AnimatedHeroTitle({
   id,
   text,
   desktopBreakBeforeIndices = [],
+  mobileBreakBeforeIndices = [],
 }: {
   id: string;
   text: string;
   desktopBreakBeforeIndices?: number[];
+  mobileBreakBeforeIndices?: number[];
 }) {
   const words = text.split(" ");
 
@@ -45,6 +47,9 @@ export function AnimatedHeroTitle({
         <React.Fragment key={`${word}-${index}`}>
           {desktopBreakBeforeIndices.includes(index) ? (
             <br className="storefront-hero-title__desktop-break" aria-hidden="true" />
+          ) : null}
+          {mobileBreakBeforeIndices.includes(index) ? (
+            <br className="storefront-hero-title__mobile-break" aria-hidden="true" />
           ) : null}
           <span
             aria-hidden="true"

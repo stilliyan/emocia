@@ -63,6 +63,7 @@ export function StorefrontHomepage() {
                 id="hero-title"
                 text="Роклята, в която сте себе си."
                 desktopBreakBeforeIndices={[3]}
+                mobileBreakBeforeIndices={[1, 4]}
               />
               <p>Булчински и вечерни рокли във Варна.<br />Персонална консултация и внимателно подбрани модели за всеки стил.</p>
             </div>
