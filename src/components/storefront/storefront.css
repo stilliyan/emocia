@@ -611,6 +611,10 @@
   line-height: 1.55;
 }
 
+@media (min-width: 1025px) {
+  .storefront-collection-hero__copy { bottom: 64px; }
+}
+
 .storefront-collection-content {
   background: #f7f8fa;
 }
