@@ -43,7 +43,7 @@ const testimonials = [
 
 export function StorefrontHomepage() {
   return (
-    <main className="storefront">
+    <main className="storefront storefront-homepage">
       <SiteHeader />
       <div className="storefront-hero-sticky">
         <section className="storefront-hero" aria-labelledby="hero-title">

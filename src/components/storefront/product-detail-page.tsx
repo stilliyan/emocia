@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 import { AppointmentDialog } from "./appointment-dialog";
 import { ProductGallery } from "./product-gallery";
 import { ScrollRevealSection } from "./scroll-reveal-section";
@@ -42,7 +43,8 @@ export function ProductDetailPage({ collection, product }: ProductDetailPageProp
         <section className="storefront-product-detail" aria-labelledby="product-title">
           <aside className="storefront-product-info">
             <Link href={`/${collection.slug}`} className="storefront-product-info__back">
-              <span aria-hidden="true">←</span> {collection.title}
+              <ChevronLeft aria-hidden="true" />
+              {collection.title}
             </Link>
             <p className="storefront-product-info__eyebrow">{collection.eyebrow}</p>
             <h1 id="product-title">{product.name}</h1>

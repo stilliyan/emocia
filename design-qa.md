@@ -1,3 +1,142 @@
+# Homepage CTA entrance motion QA — 2026-07-21
+
+- Source state: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-ed54a171-476f-478a-a34c-32eeac7b9a12.png`
+- Mid-animation capture: `/private/tmp/emotion-home-cta-motion-mid.png`
+- Final-state capture: `/private/tmp/emotion-home-cta-motion-final.png`
+- Viewport: 390 × 844 px
+- State: homepage hero CTA entrance and settled state
+
+## Findings
+
+- No actionable P0, P1, or P2 issue remains in the requested CTA-motion scope.
+- Motion: each CTA fades in while moving 16px upward and scaling from .99 to 1 with a restrained 4px blur.
+- Timing: both buttons use a 900ms ease-out entrance; the second begins 140ms after the first, creating a gentle visual sequence instead of a simultaneous pop.
+- Interaction: `animation-fill-mode: backwards` keeps the buttons hidden during their delay but releases the transform after completion, so the existing hover movement continues to work.
+- Performance: the motion is limited to two hero controls and uses opacity, transform, and a short-lived blur without affecting layout.
+- Accessibility: the existing `prefers-reduced-motion` rule removes the animation, transform, and blur completely.
+- Final state: both controls settle at opacity 1 with no remaining transform or filter.
+
+## Verification
+
+- The mobile mid-state reports the first CTA at 0.82 opacity and the second at 0.44 opacity, confirming the intended stagger.
+- The final state reports opacity 1, `transform: none`, and `filter: none` for both controls.
+- Lint, TypeScript, automated tests, and production build results are recorded after implementation verification.
+
+final result: passed
+
+# Mobile related-model carousel edge QA — 2026-07-21
+
+- Source visual truth: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-6884beff-f572-4621-a160-b6831adba78d.png`
+- Footer-spacing reference: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-8a87aed6-5411-4ee6-8d02-6fef6a2ccffc.png`
+- Implementation screenshot: `/private/tmp/emotion-related-carousel-flush-left.png`
+- Footer-spacing implementation: `/private/tmp/emotion-related-footer-spacing.png`
+- Combined comparison: `/private/tmp/emotion-related-source-vs-implementation.png`
+- Footer-spacing comparison: `/private/tmp/emotion-related-footer-source-vs-implementation.png`
+- Viewports: 390 × 844 px and 375 × 812 px
+- State: product page scrolled to `Модели, които може да харесате`
+
+## Full-view and focused comparison evidence
+
+The side-by-side comparison isolates the requested left edge. The original 16px section inset is visible in the reference, while the implementation begins the first product card exactly at the viewport edge. The heading keeps its own readable inset and centered alignment.
+
+## Findings
+
+- No actionable P0, P1, or P2 issue remains in the requested carousel-padding scope.
+- Layout: the mobile related-model section has zero horizontal padding; the grid and first card both begin at x = 0. A 112px bottom inset separates the carousel from the footer on the same 8px rhythm.
+- Heading hierarchy: the title retains 16px horizontal padding so its text does not touch the viewport edge.
+- Carousel behavior: horizontal scrolling and the right-side continuation cue remain unchanged.
+- Responsive behavior: both 390px and 375px checks report x = 0 for the first card and no document-level horizontal overflow.
+- Content and assets: product imagery, card names, typography, and animation remain unchanged.
+
+## Comparison history
+
+- Pass 1: the shared section padding placed the first product card 16px from the viewport edge (P2).
+- Fix: removed mobile horizontal padding from the section, expanded the carousel to the viewport width, moved the safe inset to the heading only, and increased the footer separation by 24px.
+- Final comparison: no remaining P0/P1/P2 issue.
+
+## Verification
+
+- Browser checks pass at 390 × 844px and 375 × 812px with no horizontal overflow.
+- Lint, TypeScript, automated tests, and production build results are recorded after implementation verification.
+
+final result: passed
+
+# Mobile collection toolbar clarity QA — 2026-07-21
+
+- Source visual truth: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-38b1b618-ef16-4c35-a655-cbafd1e56363.png`
+- Implementation screenshot: `/private/tmp/emotion-collection-toolbar-clean.png`
+- Focused implementation crop: `/private/tmp/emotion-toolbar-implementation-crop.png`
+- Combined comparison: `/private/tmp/emotion-toolbar-source-vs-implementation.png`
+- Viewports: 390 × 844 px and 375 × 812 px
+- State: collection toolbar in the standard two-column view, with additional checks for the open filter panel and large-image view
+
+## Full-view and focused comparison evidence
+
+The side-by-side focused comparison shows the original wrapped dash and product count beside the simplified implementation. The revised toolbar keeps the filter action and view controls on one clear line, removes the visual count, and groups related controls with an 8px rhythm.
+
+## Findings
+
+- No actionable P0, P1, or P2 issue remains in the requested toolbar scope.
+- Copy and comprehension: `Филтри и подреждане — 20` is replaced by the shorter, action-oriented `Филтри и сортиране`; the view controls gain the visible label `Изглед`.
+- Typography: mobile utility copy uses sentence case, 13px regular weight for the primary action and 12px for the secondary view label.
+- Spacing: the toolbar is 80px high with 8px vertical padding, 16px group separation, and 8px between view controls.
+- Interaction and accessibility: both view buttons are 48 × 48px, retain their Bulgarian accessible labels and `aria-pressed` state, and the selected view receives a subtle surface highlight.
+- Product count: the number is removed visually but remains available in a polite screen-reader status after filtering.
+- Responsive behavior: the complete toolbar fits at 390px and 375px without wrapping or horizontal overflow.
+- Functional behavior: the filter panel opens normally and both standard and large grid modes continue to work.
+
+## Comparison history
+
+- Pass 1: the product count and dash wrapped awkwardly, and the icon-only view controls were insufficiently grouped (P2).
+- Fix: removed the visible count and dash, simplified the copy, added a view label, and rebuilt the mobile spacing around 8px increments.
+- Pass 2: the first revised utility copy remained overly small and mechanical (P2); sentence case and regular 13px type improved readability without increasing density.
+- Final comparison: no remaining P0/P1/P2 issue.
+
+## Verification
+
+- Browser checks pass at 390 × 844px and 375 × 812px with no horizontal overflow.
+- Lint, TypeScript, automated tests, and production build results are recorded after implementation verification.
+
+final result: passed
+
+# Mobile Safari header threshold QA — 2026-07-21
+
+- Source visual truth: `/Users/s/Library/Messages/Attachments/f0/00/E000945B-28D2-4C7E-B21A-4221C2B49EC1/IMG_9872.png`
+- Initial product state: `/private/tmp/emotion-product-header-safari-safe-initial.png`
+- Product pill state: `/private/tmp/emotion-product-header-safari-safe-pill.png`
+- Homepage state: `/private/tmp/emotion-homepage-mobile-logo-restored.png`
+- Combined comparison: `/private/tmp/emotion-header-source-vs-implementation.png`
+- Viewport: 390 × 844 px
+- State: product page at an 8px Safari-style restored scroll position, product page at the white-information boundary, and homepage at scroll top
+
+## Full-view and focused comparison evidence
+
+The normalized source-versus-implementation comparison confirms that a tiny restored scroll no longer produces the large translucent pill seen in the iPhone Safari reference. The implementation retains a transparent initial product header, then switches to the established pill treatment only when the white product-information surface reaches 152px from the viewport top. The homepage capture confirms that its initial logo alone returns to the larger 200px presentation.
+
+## Findings
+
+- No actionable P0, P1, or P2 issue remains in the requested mobile-header scope.
+- Header state: an 8px restored scroll leaves the product header transparent; the state changes precisely as the product-information boundary crosses 152px.
+- Logo hierarchy: internal pages use a slightly larger 160px initial logo, the pill remains compact at 150px, and only the homepage uses the restored 200px initial logo.
+- Spacing and layout rhythm: the existing 14px top and 16px side insets remain unchanged and continue to follow the storefront's mobile spacing system.
+- Colors and assets: the original light/dark logo files and existing translucent pill surface are reused without introducing new visual tokens.
+- Image visibility: the product model and homepage hero remain unobstructed at the checked viewport.
+- Responsive behavior: the 390px viewport has no horizontal overflow.
+- Interaction: desktop light-header behavior remains unchanged; only the mobile product threshold now follows the content boundary instead of `scrollY > 1`.
+
+## Comparison history
+
+- Pass 1: the light product header activated at any scroll position above 1px, so Safari's restored scroll immediately produced a pill (P1).
+- Fix: tied mobile activation to the real `.storefront-product-info` boundary while preserving the existing desktop rule.
+- Pass 2: verified no pill at 8px, no pill with the boundary at 167.8px, and an active pill with the boundary at 151.8px. No P0/P1/P2 issue remains.
+
+## Verification
+
+- Browser checks pass at 390 × 844px with no horizontal overflow.
+- Lint, TypeScript, automated tests, and production build results are recorded after implementation verification.
+
+final result: passed
+
 # Mobile collection grid toggle QA — 2026-07-21
 
 - Source visual truth: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-f769f70d-7d51-4c05-b043-07614aa212ac.png` and `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-64eba88f-b180-4ae5-813a-d7be4e253cb2.png`

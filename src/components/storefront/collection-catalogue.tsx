@@ -107,7 +107,7 @@ export function CollectionCatalogue({
         <details className="storefront-collection-filter">
           <summary>
             <SlidersHorizontal aria-hidden="true" />
-            Филтри и подреждане — <span aria-live="polite">{sortedProducts.length}</span>
+            Филтри и сортиране
           </summary>
           <div className="storefront-collection-filter__panel">
             {hasSilhouetteFilter ? (
@@ -153,6 +153,7 @@ export function CollectionCatalogue({
         </details>
 
         <div className="storefront-collection-view" aria-label="Размер на изображенията">
+          <span className="storefront-collection-view__label" aria-hidden="true">Изглед</span>
           <button
             type="button"
             aria-label="Стандартен изглед"
@@ -170,6 +171,8 @@ export function CollectionCatalogue({
             <Square aria-hidden="true" />
           </button>
         </div>
+
+        <span className="sr-only" aria-live="polite">{sortedProducts.length} модела</span>
       </div>
 
       <div className={`storefront-collection-grid storefront-collection-grid--${gridView}`}>

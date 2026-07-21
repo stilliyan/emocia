@@ -46,10 +46,19 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
     const contentSection = isLight
       ? null
       : document.querySelector<HTMLElement>(".storefront-content-stack");
+    const productInfo = isLight
+      ? document.querySelector<HTMLElement>(".storefront-product-info")
+      : null;
+    const mobileViewport = window.matchMedia("(max-width: 768px)");
 
     const updateHeader = () => {
       if (isLight) {
-        setScrolled(window.scrollY > 1);
+        if (!mobileViewport.matches || !productInfo) {
+          setScrolled(window.scrollY > 1);
+          return;
+        }
+
+        setScrolled(productInfo.getBoundingClientRect().top <= 152);
         return;
       }
 
