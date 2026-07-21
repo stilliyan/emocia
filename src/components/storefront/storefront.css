@@ -678,7 +678,12 @@
 @media (max-width: 480px) {
   .storefront-hero { min-height: 100%; }
   .storefront-hero__content { bottom: 52px; }
-  .storefront-hero__content h1 { font-size: 34px; overflow-wrap: break-word; }
+  .storefront-hero__content h1 {
+    font-size: clamp(44px, 12.4vw, 52px);
+    line-height: .96;
+    letter-spacing: -.04em;
+    overflow-wrap: break-word;
+  }
   .storefront-hero__content p { font-size: 16px; line-height: 1.5; overflow-wrap: break-word; }
   .storefront-hero__content p br { display: none; }
   .storefront-button { width: fit-content; max-width: 100%; }
@@ -696,7 +701,7 @@
   .storefront-footer__links { gap: 16px; }
   .storefront-footer__links h2 { margin-bottom: 8px; font-size: 14px; }
   .storefront-footer__links a { font-size: 13px; line-height: 1.4; }
-  .storefront-footer__bottom { bottom: 16px; align-items: flex-start; gap: 8px; text-align: left; }
+  .storefront-footer__bottom { bottom: 16px; align-items: center; gap: 8px; text-align: center; }
   .storefront-footer__bottom > span:first-child { white-space: nowrap; }
   .storefront-mobile-drawer__header,
   .storefront-mobile-drawer__links { margin-right: 16px; margin-left: 16px; }
