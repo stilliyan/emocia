@@ -29,7 +29,7 @@ type ProductDetailPageProps = {
 };
 
 export function ProductDetailPage({ collection, product }: ProductDetailPageProps) {
-  const relatedProducts = collection.products.filter((item) => item.slug !== product.slug).slice(0, 3);
+  const relatedProducts = collection.products.filter((item) => item.slug !== product.slug).slice(0, 4);
   const silhouette = product.silhouette ? silhouetteLabels[product.silhouette] : "Индивидуален силует";
   const modelDescription = product.silhouette
     ? silhouetteDescriptions[product.silhouette]
@@ -93,7 +93,7 @@ export function ProductDetailPage({ collection, product }: ProductDetailPageProp
               >
                 <article className="storefront-collection-card">
                   <div className="storefront-collection-card__media">
-                    <Image src={relatedProduct.image} alt={relatedProduct.alt} fill sizes="(max-width: 768px) 88vw, 30vw" />
+                    <Image src={relatedProduct.image} alt={relatedProduct.alt} fill sizes="(max-width: 820px) 76vw, 24vw" />
                     <div className="storefront-collection-card__veil" aria-hidden="true" />
                     <span className="storefront-collection-card__action" aria-hidden="true">Разгледай</span>
                   </div>

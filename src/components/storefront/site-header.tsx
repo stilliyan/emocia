@@ -159,9 +159,11 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
             className="storefront-header__mobile-toggle"
             aria-label="Отвори меню"
             aria-expanded={mobileMenuOpen}
-            onClick={() => {
+            onClick={(event) => {
               setMobileMenuOpen(true);
-              requestAnimationFrame(() => mobileMenuCloseRef.current?.focus());
+              if (event.detail === 0) {
+                requestAnimationFrame(() => mobileMenuCloseRef.current?.focus());
+              }
             }}
           >
             <svg
@@ -194,9 +196,13 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
             type="button"
             className="storefront-mobile-drawer__close"
             aria-label="Затвори меню"
-            onClick={() => {
+            onClick={(event) => {
               closeMobileMenu();
-              mobileMenuToggleRef.current?.focus();
+              if (event.detail === 0) {
+                mobileMenuToggleRef.current?.focus();
+              } else {
+                mobileMenuToggleRef.current?.blur();
+              }
             }}
           >
             <X aria-hidden="true" />

@@ -2,11 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Check, Grid2X2, SlidersHorizontal, Square } from "lucide-react";
+import { Check, Grid2X2, SlidersHorizontal, Square, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { BridalSilhouette, StorefrontCollectionProduct } from "@/lib/storefront-collections";
 
-type SortOrder = "featured" | "name-asc" | "name-desc";
 type GridView = "standard" | "large";
 type SilhouetteFilter = BridalSilhouette | "all";
 const PRODUCTS_PER_PAGE = 4;
@@ -58,28 +57,45 @@ export function CollectionCatalogue({
   collectionSlug: string;
   products: StorefrontCollectionProduct[];
 }) {
-  const [sortOrder, setSortOrder] = useState<SortOrder>("featured");
   const [gridView, setGridView] = useState<GridView>("standard");
   const [silhouette, setSilhouette] = useState<SilhouetteFilter>("all");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PRODUCTS_PER_PAGE);
+  const filterTriggerRef = useRef<HTMLButtonElement>(null);
+  const filterDialogRef = useRef<HTMLDialogElement>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const hasSilhouetteFilter = collectionSlug === "bulchinski-rokli";
 
-  const sortedProducts = useMemo(() => {
-    const filteredProducts = silhouette === "all" || !hasSilhouetteFilter
+  const filteredProducts = useMemo(() => {
+    return silhouette === "all" || !hasSilhouetteFilter
       ? products
       : products.filter((product) => product.silhouette === silhouette);
+  }, [hasSilhouetteFilter, products, silhouette]);
 
-    if (sortOrder === "featured") return filteredProducts;
+  const visibleProducts = filteredProducts.slice(0, visibleCount);
+  const hasMoreProducts = visibleCount < filteredProducts.length;
 
-    return [...filteredProducts].sort((first, second) => {
-      const result = first.name.localeCompare(second.name, "bg");
-      return sortOrder === "name-asc" ? result : -result;
-    });
-  }, [hasSilhouetteFilter, products, silhouette, sortOrder]);
+  useEffect(() => {
+    const dialog = filterDialogRef.current;
+    if (!dialog) return;
 
-  const visibleProducts = sortedProducts.slice(0, visibleCount);
-  const hasMoreProducts = visibleCount < sortedProducts.length;
+    if (isFilterOpen && !dialog.open) {
+      dialog.showModal();
+    } else if (!isFilterOpen && dialog.open) {
+      dialog.close();
+    }
+  }, [isFilterOpen]);
+
+  useEffect(() => {
+    if (!isFilterOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isFilterOpen]);
 
   useEffect(() => {
     const target = loadMoreRef.current;
@@ -90,7 +106,7 @@ export function CollectionCatalogue({
         if (!entry.isIntersecting) return;
 
         setVisibleCount((currentCount) =>
-          Math.min(currentCount + PRODUCTS_PER_PAGE, sortedProducts.length),
+          Math.min(currentCount + PRODUCTS_PER_PAGE, filteredProducts.length),
         );
         observer.disconnect();
       },
@@ -99,58 +115,104 @@ export function CollectionCatalogue({
 
     observer.observe(target);
     return () => observer.disconnect();
-  }, [hasMoreProducts, sortedProducts.length, visibleCount]);
+  }, [filteredProducts.length, hasMoreProducts, visibleCount]);
 
   return (
     <section className="storefront-collection-catalogue" aria-label="Модели в колекцията">
       <div className="storefront-collection-toolbar">
-        <details className="storefront-collection-filter">
-          <summary>
-            <SlidersHorizontal aria-hidden="true" />
-            Филтри и сортиране
-          </summary>
-          <div className="storefront-collection-filter__panel">
-            {hasSilhouetteFilter ? (
-              <fieldset className="storefront-silhouette-filter">
-                <legend>Силует</legend>
-                <div className="storefront-silhouette-filter__options" role="radiogroup" aria-label="Филтър по силует">
-                  {SILHOUETTES.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      role="radio"
-                      aria-checked={silhouette === option.value}
-                      onClick={() => {
-                        setSilhouette(option.value);
-                        setVisibleCount(PRODUCTS_PER_PAGE);
-                      }}
-                    >
-                      <SilhouetteIcon type={option.value} />
-                      <span>{option.label}</span>
-                      <Check className="storefront-silhouette-filter__check" aria-hidden="true" />
-                    </button>
-                  ))}
-                </div>
-              </fieldset>
-            ) : null}
+        {hasSilhouetteFilter ? (
+          <div className="storefront-collection-filter">
+            <button
+              ref={filterTriggerRef}
+              className="storefront-collection-filter__trigger"
+              type="button"
+              aria-haspopup="dialog"
+              aria-expanded={isFilterOpen}
+              onClick={() => setIsFilterOpen(true)}
+            >
+              <SlidersHorizontal aria-hidden="true" />
+              Филтри
+            </button>
 
-            <div className="storefront-collection-sort">
-              <label htmlFor="collection-sort">Подреди по</label>
-              <select
-                id="collection-sort"
-                value={sortOrder}
-                onChange={(event) => {
-                  setSortOrder(event.target.value as SortOrder);
+            {silhouette !== "all" ? (
+              <button
+                className="storefront-collection-filter__reset"
+                type="button"
+                onClick={() => {
+                  setSilhouette("all");
                   setVisibleCount(PRODUCTS_PER_PAGE);
                 }}
               >
-                <option value="featured">Избрани модели</option>
-                <option value="name-asc">Име: А–Я</option>
-                <option value="name-desc">Име: Я–А</option>
-              </select>
-            </div>
+                <span>
+                  <X aria-hidden="true" />
+                  Изчисти
+                </span>
+              </button>
+            ) : null}
+
+            <dialog
+              ref={filterDialogRef}
+              className="storefront-collection-filter__dialog"
+              aria-labelledby="collection-filter-title"
+              onKeyDown={(event) => {
+                if (event.key !== "Escape") return;
+                event.preventDefault();
+                event.currentTarget.close();
+              }}
+              onClose={() => {
+                setIsFilterOpen(false);
+                filterTriggerRef.current?.focus();
+              }}
+              onClick={(event) => {
+                const bounds = event.currentTarget.getBoundingClientRect();
+                const isInside =
+                  event.clientX >= bounds.left &&
+                  event.clientX <= bounds.right &&
+                  event.clientY >= bounds.top &&
+                  event.clientY <= bounds.bottom;
+
+                if (!isInside) event.currentTarget.close();
+              }}
+            >
+              <div className="storefront-collection-filter__surface">
+                <header className="storefront-collection-filter__header">
+                  <h2 id="collection-filter-title">Избери силует</h2>
+                  <button
+                    className="storefront-collection-filter__close"
+                    type="button"
+                    aria-label="Затвори филтрите"
+                    onClick={() => filterDialogRef.current?.close()}
+                  >
+                    <X aria-hidden="true" />
+                  </button>
+                </header>
+
+                <fieldset className="storefront-silhouette-filter">
+                  <legend className="sr-only">Силует</legend>
+                  <div className="storefront-silhouette-filter__options" role="radiogroup" aria-label="Филтър по силует">
+                    {SILHOUETTES.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        role="radio"
+                        aria-checked={silhouette === option.value}
+                        onClick={() => {
+                          setSilhouette(option.value);
+                          setVisibleCount(PRODUCTS_PER_PAGE);
+                          filterDialogRef.current?.close();
+                        }}
+                      >
+                        <SilhouetteIcon type={option.value} />
+                        <span>{option.label}</span>
+                        <Check className="storefront-silhouette-filter__check" aria-hidden="true" />
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
+              </div>
+            </dialog>
           </div>
-        </details>
+        ) : null}
 
         <div className="storefront-collection-view" aria-label="Размер на изображенията">
           <button
@@ -171,7 +233,7 @@ export function CollectionCatalogue({
           </button>
         </div>
 
-        <span className="sr-only" aria-live="polite">{sortedProducts.length} модела</span>
+        <span className="sr-only" aria-live="polite">{filteredProducts.length} модела</span>
       </div>
 
       <div className={`storefront-collection-grid storefront-collection-grid--${gridView}`}>

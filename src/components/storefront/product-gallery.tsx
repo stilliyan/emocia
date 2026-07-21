@@ -20,7 +20,10 @@ const galleryViews = [
 export function ProductGallery({ product }: ProductGalleryProps) {
   const [open, setOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [lightboxSlide, setLightboxSlide] = useState(0);
   const galleryRef = useRef<HTMLDivElement | null>(null);
+  const lightboxRef = useRef<HTMLDivElement | null>(null);
+  const lightboxFramesRef = useRef<Array<HTMLButtonElement | null>>([]);
   const lastTriggerRef = useRef<HTMLButtonElement | null>(null);
   const dragStartRef = useRef({ x: 0, scrollLeft: 0 });
   const mouseDraggingRef = useRef(false);
@@ -110,6 +113,7 @@ export function ProductGallery({ product }: ProductGalleryProps) {
                 }
 
                 lastTriggerRef.current = event.currentTarget;
+                setLightboxSlide(index);
                 setOpen(true);
               }}
             >
@@ -149,32 +153,50 @@ export function ProductGallery({ product }: ProductGalleryProps) {
       </div>
 
       <DialogContent
+        ref={lightboxRef}
         showCloseButton={false}
-        overlayClassName="bg-black/80 backdrop-blur-md"
-        className="h-dvh w-screen max-w-none gap-0 rounded-none bg-[#111111] p-0 text-white ring-0 sm:max-w-none"
+        overlayClassName="bg-white"
+        className="storefront-product-lightbox !inset-0 !top-0 !left-0 !block !h-dvh !w-screen !max-w-none !translate-x-0 !translate-y-0 !overflow-y-auto !rounded-none !bg-white !p-0 !text-[#201b38] !ring-0 sm:!max-w-none"
+        onOpenAutoFocus={(event) => {
+          event.preventDefault();
+          window.requestAnimationFrame(() => {
+            const frame = lightboxFramesRef.current[lightboxSlide];
+            lightboxRef.current?.scrollTo({ top: frame?.offsetTop ?? 0, behavior: "instant" });
+          });
+        }}
         onCloseAutoFocus={(event) => {
           event.preventDefault();
           lastTriggerRef.current?.focus({ preventScroll: true });
         }}
       >
         <DialogTitle className="sr-only">{product.name} в голям размер</DialogTitle>
-        <div className="relative h-full min-h-0 w-full">
-          <Image
-            src={product.image}
-            alt={product.alt}
-            fill
-            priority
-            sizes="100vw"
-            className="object-contain p-4 sm:p-8"
-          />
+        <div className="storefront-product-lightbox__stack">
+          {galleryViews.map((view, index) => (
+            <button
+              ref={(element) => {
+                lightboxFramesRef.current[index] = element;
+              }}
+              type="button"
+              key={view.className}
+              className={`storefront-product-lightbox__frame ${view.className}`}
+              aria-label={`Затвори голямото изображение ${index + 1} на ${product.name}`}
+              onClick={() => setOpen(false)}
+            >
+              <Image
+                src={product.image}
+                alt={`${product.alt}, изображение ${index + 1}`}
+                fill
+                priority={index === lightboxSlide}
+                sizes="100vw"
+                draggable={false}
+              />
+            </button>
+          ))}
         </div>
-        <p className="pointer-events-none absolute bottom-5 left-5 text-sm font-light tracking-wide text-white/75 sm:bottom-7 sm:left-8">
-          {product.name}
-        </p>
         <DialogClose asChild>
           <button
             type="button"
-            className="absolute top-4 right-4 z-10 grid size-12 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:top-6 sm:right-6"
+            className="storefront-product-lightbox__close"
             aria-label="Затвори голямото изображение"
           >
             <X className="size-5" strokeWidth={1.5} />

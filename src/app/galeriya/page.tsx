@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
-import { StorefrontPlaceholderPage } from "@/components/storefront/storefront-placeholder-page";
+import { GalleryPage as StorefrontGalleryPage } from "@/components/storefront/gallery-page";
 
-export const metadata: Metadata = { title: "Галерия | Бутик Емоция" };
+export const metadata: Metadata = {
+  title: "Галерия с наши клиенти | Бутик Емоция",
+  description: "Истински моменти от сватби, балове и специални вечери с рокли от Бутик Емоция във Варна.",
+};
 
 export default function GalleryPage() {
-  return <StorefrontPlaceholderPage eyebrow="Вдъхновение" title="Галерия" description="Разгледайте моменти и модели от света на Бутик Емоция. Страницата се подготвя." />;
+  return <StorefrontGalleryPage />;
 }

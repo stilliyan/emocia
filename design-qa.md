@@ -1,3 +1,515 @@
+# Homepage testimonial split-layout QA — 2026-07-21
+
+- Source visual truth: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-d8ccff82-7e84-4d96-9f69-8af8f5b2537c.png`
+- Baseline screenshot: `/private/tmp/emotion-testimonial-before.png`
+- Desktop implementation screenshot: `/private/tmp/emotion-testimonial-after-desktop.png`
+- Mobile visual screenshot: `/private/tmp/emotion-testimonial-mobile.png`
+- Mobile copy screenshot: `/private/tmp/emotion-testimonial-mobile-copy.png`
+- Combined before/after comparison: `/private/tmp/emotion-testimonial-comparison.png`
+- Viewports: 1600 × 1000 px and 390 × 844 px
+
+## Audit findings
+
+- P1 — The former 1180 × 430px centered reel left most of the desktop section unused and reduced the active image to 146 × 146px, making the testimonial photo visually secondary.
+- P1 — The previous 26px quote was below the hierarchy established by the site's 38–54px split-section headings and did not use the available reading width.
+- P2 — The decorative blurred grid, copy, and controls behaved as three weakly related groups instead of one balanced testimonial composition.
+- P2 — The 40px carousel buttons were below the site's established 44px interaction minimum.
+
+## Implemented resolution
+
+- The section now reuses the homepage's established split-section system: two equal panels, 12px gap, 16px outer gutters, 16px radii, and matching `#f1f3f6` surfaces.
+- Desktop media and copy panels measure 690px high; the active image fills the entire left panel with a contained editorial crop, while the right panel uses the same responsive padding tier as the feature/about sections.
+- Quote typography now scales from 34px to 48px at 1.22 line-height and 300 weight; the author line is 17px, keeping the hierarchy elegant and readable.
+- The image transition is a restrained opacity/scale crossfade, the existing character rise remains, and both are disabled under `prefers-reduced-motion`.
+- The carousel counter and controls are grouped on the 8px spacing system. Both controls are semantic 48 × 48px buttons with Bulgarian accessible labels, visible focus states, and disabled states.
+- Mobile collapses to a single column with an 8px panel gap, 460px active image at 390px viewport width, 29.25px quote text, 24px side padding, and no page-level horizontal overflow.
+
+## Interaction and verification
+
+- Browser interaction advanced the carousel from `02 / 03` to `03 / 03` and updated the author to `Кристина Иванова · Булка на Бутик Емоция`.
+- Autoplay pauses on pointer hover and keyboard focus; Left/Right Arrow keyboard navigation remains available.
+- Desktop and mobile screenshots confirm equal panel alignment, full-image visibility, stable content height, and consistent spacing with adjacent homepage sections.
+- Mobile measurements confirm 0px horizontal overflow and two 48 × 48px accessible controls.
+- Browser console returned no errors during desktop, mobile, and interaction passes.
+
+final result: passed
+
+# Homepage collection-card consistency QA — 2026-07-21
+
+- Source visual truth: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-00acc679-9a2a-48b3-9ea2-b1dca6297797.png`
+- Desktop implementation screenshot: `/private/tmp/emotion-home-collection-cards-desktop.png`
+- Mobile implementation screenshot: `/private/tmp/emotion-home-collection-cards-mobile.png`
+- Combined comparison: `/private/tmp/emotion-home-collection-cards-comparison.png`
+- Viewports: 2048 × 930 px and 390 × 844 px
+
+## Findings
+
+- No actionable P0, P1, or P2 issue remains in the requested homepage card scope.
+- Homepage now reuses the exact collection card structure and shared classes used on `Булчински рокли`.
+- The legacy heart, price block, dark appointment button, and duplicate hover CSS are removed from this rail.
+- Cards use the same 2:3 media ratio, 14px radius, subtle image zoom, bottom veil, white pill `Разгледай`, regular-weight product name, focus ring, and responsive behavior as the collection page.
+- Each entire card is now a semantic link to its matching product detail page; the first card was verified at `/bulchinski-rokli/lincoln`.
+- Desktop preserves the horizontal discovery rail with 384px cards and six visible cards at 2048px; mobile preserves 76vw cards, touch scrolling, and hides hover-only controls.
+- Both tested viewports have 0px page-level horizontal overflow, and the browser console returned no errors.
+
+## Comparison history
+
+- Pass 1: homepage used a separate legacy card design and appointment action, creating conflicting visual and interaction language (P1).
+- Fix: replaced the duplicate card markup with the shared collection card markup and removed the obsolete card-specific CSS.
+- Final comparison: homepage and collection cards now share one visual system and one direct product-discovery interaction.
+
+## Verification
+
+- Browser inspection confirms seven shared collection cards, correct product links, 2:3 media ratios, touch rail behavior, and no page overflow.
+- Browser navigation confirms a card opens the matching product page and Back restores the homepage.
+- Lint, TypeScript, automated tests, production build, and diff whitespace checks are recorded after implementation verification.
+
+final result: passed
+
+# Product gallery custom cursor QA — 2026-07-21
+
+- Source visual truth: the exact 60 × 60 plus and 60 × 4 minus SVG paths supplied by the user
+- Cursor asset preview: `/private/tmp/emotion-product-cursor-assets.png`
+- Product page screenshot: `/private/tmp/emotion-product-custom-cursors.png`
+- Viewport: 1280 × 720 px
+- State: product gallery closed, opened, and closed again by clicking a fullscreen image
+
+## Findings
+
+- No actionable P0, P1, or P2 issue remains in the requested cursor scope.
+- The gallery uses the supplied plus SVG with a centered `30 30` hotspot and retains `zoom-in` as a safe browser fallback.
+- The fullscreen viewer and every image frame use the supplied minus SVG with a centered `30 2` hotspot and retain `zoom-out` as a safe fallback.
+- Clicking any fullscreen image closes the viewer; Escape and the existing close button remain available.
+- The cursor assets load from the local public storefront asset directory and browser-computed styles resolve to their exact URLs.
+- Product images, crops, layout, accessible labels, focus behavior, and mobile touch interactions are unchanged.
+- Browser console check returned no errors.
+
+## Comparison history
+
+- Pass 1: the native browser zoom cursors did not match the supplied 60px editorial cursor language (P2).
+- Fix: replaced them with the exact user-supplied SVG files and explicit center hotspots.
+- Final comparison: the plus and minus assets preserve the requested stroke geometry and the close interaction remains functional.
+
+## Verification
+
+- Browser inspection confirms the plus cursor while closed and the minus cursor on both the open viewer and its image frames.
+- Browser interaction confirms click-to-open and image-click-to-close behavior.
+- Lint, TypeScript, automated tests, production build, and diff whitespace checks are recorded after implementation verification.
+
+final result: passed
+
+# Desktop footer brand spacing QA — 2026-07-21
+
+- Source visual truth: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-fec0481a-f6ff-47df-8deb-429bdb1d6919.png`
+- Desktop implementation screenshot: `/private/tmp/emotion-footer-brand-spacing-after.png`
+- Combined comparison: `/private/tmp/emotion-footer-brand-spacing-comparison.png`
+- Viewports: 1280 × 720 px and 390 × 844 px
+
+## Findings
+
+- No actionable P0, P1, or P2 issue remains in the requested footer scope.
+- Desktop paragraph margin is reduced from 35px to 24px, bringing the measured visual gap from 41px to 30px.
+- Logo dimensions, paragraph typography, text width, colors, footer columns, and social links are unchanged.
+- Mobile keeps its existing 16px paragraph margin and is unaffected by the desktop adjustment.
+- Browser console check returned no errors.
+
+## Comparison history
+
+- Pass 1: the paragraph read as detached from the logo because of the 41px visual gap (P2).
+- Fix: aligned the desktop margin to a 24px step in the existing 8px spacing system.
+- Final comparison: logo and copy now read as one brand group without feeling crowded.
+
+## Verification
+
+- Browser measurements confirm a 30px visual desktop gap and the unchanged 16px mobile margin.
+- Lint, TypeScript, automated tests, production build, and diff whitespace checks are recorded after implementation verification.
+
+final result: passed
+
+# Desktop collection toolbar spacing QA — 2026-07-21
+
+- Source visual truth: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-d27475f3-0e65-478a-842a-25615ed18392.png`
+- Desktop implementation screenshot: `/private/tmp/emotion-toolbar-spacing-after.png`
+- Viewports: 1280 × 720 px and 390 × 844 px
+- State: collection toolbar between the hero and the first product row
+
+## Findings
+
+- No actionable P0, P1, or P2 issue remains in the requested toolbar scope.
+- Desktop rhythm: toolbar height is reduced from 92px to 72px, removing 10px of excess whitespace from both the upper and lower sides.
+- Controls: the existing 44px filter trigger and view controls remain unchanged and vertically centered.
+- Mobile regression: the established 64px toolbar with 8px top and bottom padding remains unchanged at 390px.
+- Typography, colors, icons, copy, grid gutters, card geometry, and hero layout are unchanged.
+- Browser console check returned no errors after the desktop and mobile passes.
+
+## Comparison history
+
+- Pass 1: the 92px desktop toolbar separated the hero and product grid more than the rest of the 8px spacing rhythm (P2).
+- Fix: reduced the desktop-only minimum height to 72px while preserving control sizes and responsive overrides.
+- Final comparison: the controls retain comfortable breathing room, but the products begin sooner and the transition from hero to catalogue reads as one compact group.
+
+## Verification
+
+- Browser measurements confirm a 72px desktop toolbar and the unchanged 64px mobile toolbar.
+- Lint, TypeScript, automated tests, production build, and diff whitespace checks are recorded after implementation verification.
+
+final result: passed
+
+# KYHA-matched related-model wave QA — 2026-07-21
+
+- Source layout reference: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-58e71797-023d-41b3-b30d-7bbf139cc963.png`
+- Live motion reference: `https://kyhastudios.com/products/leo-corset?variant=undefined`
+- Mid-animation screenshot: `/private/tmp/emotion-related-wave-mid.png`
+- Completed-animation screenshot: `/private/tmp/emotion-related-wave-final.png`
+- Mobile regression screenshot: `/private/tmp/emotion-related-wave-mobile.png`
+- Combined source/mid/final comparison: `/private/tmp/emotion-related-wave-comparison.png`
+- Viewports: 1440 × 900 px and 390 × 844 px
+- State: `Още модели за вас` entering the viewport, followed by the completed four-card row
+
+## Full-view and focused comparison evidence
+
+The combined image places the supplied five-plus-preview implementation above the revised four-card section, first during the wave and then after it settles. The mid-state makes the left-to-right stagger visible without introducing scale, bounce, blur, or layout movement; the final state preserves a quiet four-column bridal presentation.
+
+## Findings
+
+- No actionable P0, P1, or P2 issue remains in the requested section scope.
+- Live-source matching: KYHA computes to a 600ms `slide-in` animation, `cubic-bezier(0, 0, 0.3, 1)`, an 80px vertical start, and 125ms cascade increments; the local section now uses the same values.
+- Sequence: the four cards start at 125ms, 250ms, 375ms, and 500ms, producing the requested left-to-right Mexican-wave rhythm.
+- Density: desktop now renders exactly four related models in four equal columns, avoiding the crowded fifth-card preview.
+- Wheel behavior: the desktop row is no longer a nested horizontal scroll container. A real 420px wheel gesture over the second card moved the page by 420px while the row remained at `scrollLeft: 0`.
+- Layout: desktop grid width and scroll width both measure 1354px, with `overflow-x: visible`, so there is no wheel trap or clipped focus target.
+- Motion quality: only opacity and transform animate; the section heading remains stable and the cards stay interactive throughout the entrance.
+- Accessibility: the existing reduced-motion query sets the cards immediately to their final state and disables the animation.
+- Responsive behavior: mobile keeps the established three-card horizontal gallery, renders four products in the data set, shows the first three as before, and has 0px page-level horizontal overflow.
+- Browser console check returned no errors after the final desktop and mobile interaction passes.
+
+## Comparison history
+
+- Pass 1: the previous desktop row used a horizontally scrollable 4.25-column track, which captured trackpad/wheel gestures and redirected vertical scrolling sideways (P1).
+- Fix: changed desktop to a non-scrollable four-column grid and limited related-product data to four models.
+- Pass 2: the prior 700ms/24px transition with 80ms spacing felt generic and did not reproduce the pronounced KYHA cascade (P2).
+- Fix: measured KYHA live and matched its 600ms duration, 80px travel, easing, and 125ms stagger exactly.
+- Final comparison: four cards enter as a clear but restrained wave, vertical wheel scrolling remains uninterrupted, and no P0/P1/P2 issue remains.
+
+## Verification
+
+- Browser sampling confirms the four computed delays, 600ms duration, KYHA easing curve, progressive opacity/translation values, and complete settle by 1.2s.
+- Desktop wheel testing confirms vertical scrolling is passed to the page with no horizontal row movement.
+- Mobile verification confirms three visible cards, no page overflow, and the existing touch carousel behavior.
+- Lint, TypeScript, automated tests, production build, and diff whitespace checks are recorded after implementation verification.
+
+final result: passed
+
+# Full-screen product image gallery QA — 2026-07-21
+
+- Source visual truth: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-6ecff427-8ca1-4134-af71-c7df7d77e563.png`
+- Desktop implementation screenshot: `/private/tmp/emotion-product-lightbox-final.png`
+- Mobile implementation screenshot: `/private/tmp/emotion-product-lightbox-mobile.png`
+- Scrolled gap evidence: `/private/tmp/emotion-product-lightbox-gap.png`
+- Combined comparison: `/private/tmp/emotion-product-lightbox-comparison.png`
+- Viewports: 1440 × 900 px and 390 × 844 px
+- State: product image viewer open on the selected frame, with the next frame available through vertical scrolling
+
+## Full-view and focused comparison evidence
+
+The combined image places the supplied KYHA viewer reference above the browser-rendered implementation. The final desktop frame preserves the same quiet, full-width image-first treatment; the mobile capture keeps the complete first image, the fixed close control, the 16px white transition, and the start of the following image in one view.
+
+## Findings
+
+- No actionable P0, P1, or P2 issue remains in the requested gallery scope.
+- Interaction: every product image opens the viewer at its own matching frame; the third trigger was verified against the third frame with a 0px position delta.
+- Scrolling: all four images form one vertical viewer with an exact 16px white gap and proximity snapping between frames.
+- Cursor language: gallery triggers compute to `zoom-in`, while the open viewer computes to `zoom-out`, providing the requested plus/minus affordance without an additional decorative control.
+- Layout: desktop frames retain the source asset's full-width portrait proportion at 1440 × 2160px; mobile frames use the same natural crop at 390 × 607.8px.
+- Colors and surfaces: the viewer, inter-image gap, and overlay remain clean white; the close control uses the existing storefront ink and translucent-white surface.
+- Image quality: the existing optimized product assets and per-view crop positions are reused without stretching or replacement imagery.
+- Accessibility: the viewer keeps a hidden descriptive title, individual Bulgarian labels, a 48px close target, Escape dismissal, click-to-close images, and focus restoration to the original trigger.
+- Responsive behavior: both tested viewports have 0px horizontal overflow; the mobile close button respects the safe-area offset.
+
+## Comparison history
+
+- Pass 1: the previous black single-image modal interrupted the light storefront language and did not support browsing the full image set (P1).
+- Fix: rebuilt it as a full-screen white vertical gallery with four frames, the requested cursor states, and 16px separation.
+- Pass 2: viewport-height frames used an aggressive `object-cover` crop that brought the model too close and clipped the editorial composition (P2).
+- Fix: switched the open frames to the natural portrait ratio at full viewport width and preserved the existing crop variants.
+- Final comparison: the result matches the reference's image-first hierarchy and interaction model with no remaining P0/P1/P2 issue.
+
+## Verification
+
+- Browser measurements confirm four frames, exact 16px gaps, correct selected-frame positioning, `zoom-in`/`zoom-out` cursors, a 48px close target, and 0px horizontal overflow.
+- Browser console error check returned no errors after the final interaction pass.
+- Lint, TypeScript, automated tests, production build, and diff whitespace checks are recorded after implementation verification.
+
+final result: passed
+
+# Desktop related-model carousel density QA — 2026-07-21
+
+- Source visual truth: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-04403ac4-2c12-4287-8464-ac62ff8af294.png`
+- Previous implementation reference: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-f1cba4a8-318a-4c65-8ae8-d2551434ebc7.png`
+- Desktop implementation screenshot: `/private/tmp/emotion-related-carousel-desktop.png`
+- Mobile regression screenshot: `/private/tmp/emotion-related-carousel-mobile.png`
+- Combined comparison: `/private/tmp/emotion-related-carousel-comparison.png`
+- Viewports: 1440 × 900 px and 390 × 844 px
+- State: product detail page at the `Още модели за вас` section
+
+## Full-view and focused comparison evidence
+
+The combined image places the supplied editorial carousel reference directly above the browser-rendered implementation. Both views show four complete portrait cards plus a partial fifth card, allowing a focused comparison of density, image proportion, gutters, heading hierarchy, and the next-card affordance.
+
+## Findings
+
+- No actionable P0, P1, or P2 issue remains in the requested carousel scope.
+- Layout and rhythm: desktop card width is reduced from roughly one third of the content area to 313px at 1440px, with four full cards and a visible fifth-card edge separated by the existing 8px grid gap.
+- Image proportion and quality: desktop media now uses the reference-like 2:3 portrait ratio (313 × 469px) while retaining the original optimized product assets, object-fit treatment, radii, and hover zoom.
+- Typography: the existing storefront font, regular product-name weight, centered section heading, and product-page type tokens are preserved.
+- Colors and tokens: the existing surface, ink, muted text, veil, focus, and hover tokens are unchanged.
+- Copy and content: the Bulgarian heading and model names are unchanged; the section now has five relevant products available on desktop.
+- Interaction: the track keeps horizontal scrolling and proximity snap behavior, and the partial fifth card communicates that more content is available.
+- Responsive behavior: mobile remains visually and behaviorally unchanged with three visible products, 76vw cards, an 8px gap, and no page-level horizontal overflow.
+
+## Comparison history
+
+- Pass 1: the existing three-column layout made secondary recommendation cards nearly as dominant as the primary product gallery (P2).
+- Fix: increased the related-product set to five and changed the desktop track to 4.25 visible columns with hidden scrollbars and snap behavior.
+- Pass 2: the new widths matched the reference density, but the inherited 4:5 crop looked shorter and less editorial than the 2:3 source cards (P2).
+- Fix: applied the 2:3 ratio only above 1024px; mobile retained the previous 4:5 presentation and three-item count.
+- Final comparison: the implementation matches the source's four-plus-preview rhythm and portrait proportion with no remaining P0/P1/P2 issue.
+
+## Verification
+
+- Browser measurements at 1440px confirm five rendered products, four full cards plus a partial fifth, 313px card widths, a 469px media height, and no page-level horizontal overflow.
+- Browser measurements at 390px confirm only the original three cards remain visible, each about 296px wide, with no page-level horizontal overflow.
+- Console error check and automated project checks are recorded after implementation verification.
+
+final result: passed
+
+# Concise homepage hero copy QA — 2026-07-21
+
+- Source visual truth: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-2cfff8d3-9cd5-4b9b-affc-ae112c9a63e2.png`
+- Desktop implementation screenshot: `/private/tmp/emotion-home-short-h1.png`
+- Mobile implementation screenshot: `/private/tmp/emotion-home-short-h1-mobile.png`
+- Combined comparison: `/private/tmp/emotion-home-short-h1-comparison.png`
+- Viewports: 1440 × 900 px and 390 × 844 px
+- State: homepage hero at page load with shortened H1
+
+## Full-view and focused comparison evidence
+
+The comparison keeps the original long headline and the revised hero in one frame. The shorter message preserves the emotional positioning while reducing the desktop title from three lines to two and opening clearer space around the model and supporting conversion copy.
+
+## Findings
+
+- No actionable P0, P1, or P2 issue remains in the requested copy scope.
+- Copy: `Роклята, в която сте себе си.` is concise, natural Bulgarian, and aligned with the existing Open Graph positioning.
+- SEO: the keyword-rich page title, meta description, and supporting hero paragraph continue to state `булчински и вечерни рокли във Варна`; shortening the visible H1 does not remove that page context.
+- Typography: the shared desktop display size remains unchanged at 83.52px and the title now forms two controlled lines.
+- Layout: the shorter H1 reduces its desktop height from about 253px to 169px and its mobile height from about 103px to 69px.
+- Responsive behavior: the mobile H1 remains 34px, fits two lines, keeps both CTAs visible, and introduces no horizontal overflow.
+- Colors and tokens: the hero copy color, light weight, veil, and storefront design tokens are unchanged.
+- Image quality: hero artwork, crop, filtering, and rendering are unchanged.
+
+## Comparison history
+
+- Pass 1: the original sentence occupied three large desktop lines and competed with the model for attention (P2).
+- Fix: shortened the H1 to the existing brand phrase and set one intentional desktop break after `която`.
+- Final comparison: no remaining P0/P1/P2 issue in the requested scope.
+
+## Verification
+
+- Browser measurements confirm a two-line H1 at both target viewports and no horizontal overflow.
+- Lint, TypeScript, automated tests, and production build results are recorded after implementation verification.
+
+final result: passed
+
+# Shared desktop hero H1 scale QA — 2026-07-21
+
+- Homepage source: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-41f22650-6dcb-48de-b42e-33f887b816c8.png`
+- Collection H1 reference: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-d20fd0d1-5ebc-4593-bfc3-4dcd6a49fdd4.png`
+- Desktop implementation screenshot: `/private/tmp/emotion-home-display-h1.png`
+- Mobile implementation screenshot: `/private/tmp/emotion-home-display-h1-mobile.png`
+- Combined comparison: `/private/tmp/emotion-home-h1-qa-comparison.png`
+- Viewports: 1440 × 900 px and 390 × 844 px
+- State: homepage hero at page load, compared with collection hero H1 scale
+
+## Full-view and focused comparison evidence
+
+The combined comparison shows the earlier homepage hierarchy, the collection H1 reference, and the revised homepage in context. The desktop implementation now uses the exact same responsive display-size token as the collection H1 while preserving the homepage's controlled three-line composition.
+
+## Findings
+
+- No actionable P0, P1, or P2 issue remains in the requested typography scope.
+- Typography: both desktop H1 elements compute to 83.52px at 1440px, with the same light weight and near-1 line height.
+- Layout: the homepage copy width is expanded to 74vw with a 1060px cap, preventing accidental extra wrapping at the larger size.
+- Hierarchy: the larger homepage title now transitions naturally into the collection page instead of appearing one display step smaller.
+- Responsive behavior: the mobile homepage remains at 34px in the 390px viewport, avoiding an excessively tall hero and preserving the CTA above the fold.
+- Colors and tokens: existing white hero copy, veil, and semantic storefront tokens are unchanged.
+- Image quality: the supplied homepage and collection hero imagery, crop, filters, and rendering are unchanged.
+- Copy and content: no Bulgarian copy or controlled line-break wording was changed.
+- Overflow: neither the 1440px desktop nor the 390px mobile viewport introduces horizontal scrolling.
+
+## Comparison history
+
+- Pass 1: the desktop homepage H1 used a separate 64px cap while the collection H1 used a 92px responsive cap, producing a visible hierarchy jump between routes (P2).
+- Fix: introduced one shared display-H1 token and widened the desktop homepage copy measure to support the longer title.
+- Final comparison: both desktop H1s share the same computed size and no P0/P1/P2 issue remains.
+
+## Verification
+
+- Browser measurements confirm matching 83.52px desktop H1 sizes, a stable three-line homepage title, and no horizontal overflow.
+- Mobile verification confirms the existing 34px H1 remains unchanged.
+- Lint, TypeScript, automated tests, and production build results are recorded after implementation verification.
+
+final result: passed
+
+# Active silhouette reset control QA — 2026-07-21
+
+- Source visual truth: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-91592c43-19f3-4338-a1ee-0b4ab7df814d.png`
+- Refinement reference: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-812c2920-d320-4fd3-874f-db4af203dbfa.png`
+- Mobile implementation screenshot: `/private/tmp/emotion-filter-reset-mobile-toolbar.png`
+- Desktop implementation screenshot: `/private/tmp/emotion-filter-reset-desktop-toolbar.png`
+- Combined focused comparison: `/private/tmp/emotion-filter-reset-qa-comparison.png`
+- Viewports: 390 × 844 px and 1440 × 900 px
+- State: `А-линия` selected, five matching models visible, compact `Изчисти` action present
+
+## Full-view and focused comparison evidence
+
+The mobile and desktop captures keep the active reset action, grid controls, and first product row in the same frame. The focused comparison isolates the requested toolbar region and verifies that the new action reads as a subordinate reset control rather than another primary filter.
+
+## Findings
+
+- No actionable P0, P1, or P2 issue remains in the requested reset-control scope.
+- Interaction: `Изчисти` appears only when a silhouette is active, resets the silhouette to `Всички`, restores the live count from 5 to 20, and then removes itself.
+- State preservation: clearing the silhouette does not overwrite the bride's chosen image-grid size.
+- Touch and spacing: the control keeps a 44px interactive height and an 8px gap from `Филтри`, while its visible pill is reduced to a lighter 32px height.
+- Typography and icons: the existing storefront font, regular weight, secondary ink token, and Lucide 1.5px stroke language are preserved.
+- Colors and tokens: the subtle pill uses the existing storefront ink as a low-opacity surface and gains contrast only on hover.
+- Image quality: product imagery, crops, radii, and rendering are unchanged.
+- Copy and content: the concise Bulgarian action `Изчисти` is clear and appropriate for a non-technical storefront audience.
+- Responsive behavior: the toolbar fits at 390px and 1440px with no horizontal overflow.
+
+## Comparison history
+
+- Pass 1: the reset worked correctly, but its fully filled 44px pill looked too tall and visually heavy beside the toolbar controls (P2).
+- Fix: separated the 44px touch target from a 32px visible pill, reduced the pill padding, and retained the quiet secondary treatment.
+- Final comparison: no remaining P0/P1/P2 issue in the requested scope.
+
+## Verification
+
+- Browser interaction checks confirm 5 models after selecting `А-линия`, 20 models after clearing, conditional reset visibility, and no horizontal overflow.
+- Lint, TypeScript, automated tests, and production build results are recorded after implementation verification.
+
+final result: passed
+
+# Desktop collection toolbar stroke QA — 2026-07-21
+
+- Source visual truth: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-3bee863d-afed-4d35-8699-fbda0aef8028.png`
+- Implementation screenshot: `/private/tmp/emotion-collection-no-toolbar-stroke.png`
+- Focused implementation crop: `/private/tmp/emotion-collection-no-toolbar-stroke-focus.png`
+- Combined comparison: `/private/tmp/emotion-toolbar-stroke-source-vs-fix.png`
+- Viewport: 1440 × 900 px
+- State: desktop collection scrolled to the toolbar-to-product-grid boundary
+
+## Full-view and focused comparison evidence
+
+The full implementation capture keeps the toolbar and first product row visible together. The focused comparison isolates the exact horizontal edge from the source and confirms that the 1px rule no longer appears above the product cards.
+
+## Findings
+
+- No actionable P0, P1, or P2 issue remains in the requested stroke-removal scope.
+- Layout: the toolbar bottom and grid top share the same measured coordinate, with a 0px gap.
+- Border: the toolbar now reports `border-bottom-width: 0px` and `border-bottom-style: none` on desktop.
+- Typography: toolbar copy, font weight, and icon alignment remain unchanged.
+- Colors and tokens: the existing collection surface and card backgrounds are preserved; only the decorative divider is removed.
+- Image quality: product imagery, crops, radii, and Next.js image rendering are unchanged.
+- Copy and content: no storefront text changes were made.
+- Responsive behavior: the existing borderless mobile rule is preserved, and desktop now matches it without horizontal overflow.
+
+## Comparison history
+
+- Pass 1: a 1px gray toolbar divider remained visible above the desktop product grid (P2).
+- Fix: removed the toolbar bottom border globally while preserving the grid position and card styling.
+- Final comparison: no remaining P0/P1/P2 issue in the requested scope.
+
+## Verification
+
+- Browser measurement confirms a 0px border and a 0px toolbar-to-grid gap.
+- Lint, TypeScript, automated tests, and production build results are recorded after implementation verification.
+
+final result: passed
+
+# Desktop collection hero alignment QA — 2026-07-21
+
+- Source visual truth: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-9326174c-6a7b-4323-a012-c5d4a294e170.png`
+- Implementation screenshot: `/private/tmp/emotion-collection-hero-left-aligned.png`
+- Combined comparison: `/private/tmp/emotion-collection-hero-alignment-comparison.png`
+- Viewport: 1440 × 900 px
+- State: desktop bridal collection hero at page load
+
+## Full-view and focused comparison evidence
+
+The implementation capture verifies the whole hero in page context, while the combined comparison isolates the requested typography region. The eyebrow, title, and description now share one measured left edge; the eyebrow-to-title gap is tightened to the next 8px spacing step.
+
+## Findings
+
+- No actionable P0, P1, or P2 issue remains in the requested alignment scope.
+- Typography: the existing storefront font family, light display weight, description sizing, and white hierarchy remain unchanged.
+- Alignment: the eyebrow, h1, and description all begin at x = 100.8px in the 1440px viewport and explicitly use left alignment.
+- Spacing: the eyebrow bottom margin is reduced from 14px to 8px, bringing `Колекция 2026` closer to the title without crowding it.
+- Colors and tokens: the existing white and translucent-white hero colors are preserved.
+- Image quality: the original collection hero asset, crop, veil, and image pipeline are unchanged.
+- Copy and content: all Bulgarian copy remains unchanged.
+- Responsive behavior: the adjustment is scoped to desktop widths from 1025px upward; mobile layout is unaffected and no horizontal overflow is introduced.
+
+## Comparison history
+
+- Pass 1: the eyebrow sat too far above the title and the common left alignment was implicit rather than guaranteed (P2).
+- Fix: moved the eyebrow to an 8px title gap and explicitly left-aligned all three text levels on desktop.
+- Final comparison: no remaining P0/P1/P2 issue in the requested scope.
+
+## Verification
+
+- Browser measurement confirms identical left coordinates for eyebrow, title, and description.
+- Lint, TypeScript, automated tests, and the production build results are recorded after implementation verification.
+
+final result: passed
+
+# Mobile silhouette filter modal QA — 2026-07-21
+
+- Source visual truth: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-5c334ec3-94dc-404a-bd55-ee6e4ffdf4bd.png`
+- Implementation screenshot: `/private/tmp/emotion-silhouette-filter-modal.png`
+- Combined comparison: `/private/tmp/emotion-silhouette-filter-source-vs-modal.png`
+- Viewports: 390 × 844 px and 1440 × 900 px
+- State: collection filter open with `Всички` selected, followed by an `А-линия` selection
+
+## Full-view and focused comparison evidence
+
+The combined comparison preserves the existing silhouette-card language from the supplied filter while moving it into a true modal surface. The implementation isolates the choice with a blurred scrim, keeps the same two-column mobile grid, adds a clear title and X, and removes the unrelated sorting controls.
+
+## Findings
+
+- No actionable P0, P1, or P2 issue remains in the requested filter-modal scope.
+- Hierarchy: the modal contains one task only — `Избери силует` — followed directly by the five silhouette choices.
+- Interaction: selecting a silhouette applies the filter and closes the modal immediately; the `А-линия` check updates the live result count from 20 to 5 models.
+- Dismissal: the X control and Escape both close the modal without changing the active filter; native modal focus containment and focus restoration remain intact.
+- Background treatment: a 42% ink scrim with a 10px blur visually separates the modal without obscuring page context.
+- Spacing: the surface uses a 16px mobile inset, 16px header rhythm, 8px card gaps, and 48px dismissal control.
+- Accessibility: the trigger exposes `aria-haspopup`, the dialog has a labelled heading, options use radio semantics with checked state, and all touch targets exceed 44px.
+- Motion: the entrance uses opacity and transform over 260ms; the reduced-motion media query removes it completely.
+- Responsive behavior: mobile uses two columns in a 16px viewport inset; desktop uses a centered 600px modal with three columns and no horizontal overflow.
+
+## Comparison history
+
+- Pass 1: the source filter was attached to the toolbar and mixed silhouette selection with sorting, leaving the page visually active behind it (P1).
+- Fix: replaced the dropdown with a native modal dialog, blurred scrim, dedicated close action, and silhouette-only content.
+- Pass 2: explicit Escape handling was added after the keyboard check did not close consistently through the controlled React state (P1).
+- Final comparison: no remaining P0/P1/P2 issue.
+
+## Verification
+
+- Browser interaction checks pass for opening, X dismissal, Escape dismissal, automatic close on selection, and real product filtering.
+- ESLint, TypeScript, all 18 automated tests, and the production build pass.
+
+final result: passed
+
 # Homepage CTA entrance motion QA — 2026-07-21
 
 - Source state: `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-ed54a171-476f-478a-a34c-32eeac7b9a12.png`

@@ -61,8 +61,8 @@ export function StorefrontHomepage() {
             <div className="storefront-hero__copy">
               <AnimatedHeroTitle
                 id="hero-title"
-                text="Открийте роклята, в която се чувствате като себе си."
-                desktopBreakBeforeIndices={[3, 7]}
+                text="Роклята, в която сте себе си."
+                desktopBreakBeforeIndices={[3]}
               />
               <p>Булчински и вечерни рокли във Варна.<br />Персонална консултация и внимателно подбрани модели за всеки стил.</p>
             </div>
