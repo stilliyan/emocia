@@ -1470,6 +1470,7 @@
     padding: 0 16px;
     font-size: var(--storefront-product-type-section);
     line-height: 1.25;
+    text-align: left;
   }
 
   .storefront-product-info__appointment {

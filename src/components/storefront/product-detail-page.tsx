@@ -83,7 +83,7 @@ export function ProductDetailPage({ collection, product }: ProductDetailPageProp
         </section>
 
         <ScrollRevealSection className="storefront-product-related" labelledBy="related-title">
-          <h2 id="related-title">Модели, които може да харесате</h2>
+          <h2 id="related-title">Още модели за вас</h2>
           <div className="storefront-product-related__grid">
             {relatedProducts.map((relatedProduct) => (
               <Link
