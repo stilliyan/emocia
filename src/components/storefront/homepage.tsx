@@ -5,8 +5,8 @@ import { AnimatedHeroTitle, AnimatedManifestoQuote } from "./animated-copy";
 import { AnimatedStats } from "./animated-stats";
 import { ProductRail } from "./product-rail";
 import { ScrollReelTestimonials } from "./scroll-reel-testimonials";
-import { StorefrontLogo } from "./logo";
 import { SiteHeader } from "./site-header";
+import { SiteFooter } from "./site-footer";
 import { AppointmentDialog } from "./appointment-dialog";
 import { FacebookIcon, InstagramIcon, TikTokIcon } from "./social-icons";
 import "./storefront.css";
@@ -82,8 +82,8 @@ export function StorefrontHomepage() {
       <div className="storefront-content-stack">
         <section id="колекции" className="storefront-categories" aria-label="Колекции">
           <h2 className="storefront-categories__title">Открийте колекциите</h2>
-          <CollectionCard image="/storefront/category-bridal.jpg" title="Булчински рокли" />
-          <CollectionCard image="/storefront/category-evening.jpg" title="Вечерни рокли" />
+          <CollectionCard href="/bulchinski-rokli" image="/storefront/category-bridal.jpg" title="Булчински рокли" />
+          <CollectionCard href="#нови-модели" image="/storefront/category-evening.jpg" title="Вечерни рокли" />
         </section>
 
       <section className="storefront-manifesto">
@@ -210,9 +210,9 @@ export function StorefrontHomepage() {
   );
 }
 
-function CollectionCard({ image, title }: { image: string; title: string }) {
+function CollectionCard({ href, image, title }: { href: string; image: string; title: string }) {
   return (
-    <Link href="#нови-модели" className="storefront-category">
+    <Link href={href} className="storefront-category">
       <Image src={image} alt={title} fill sizes="(max-width: 768px) 100vw, 50vw" />
       <div className="storefront-category__blur" aria-hidden="true" />
       <div><h2>{title}</h2><p>Разгледай колекцията <span aria-hidden="true">→</span></p></div>
@@ -222,43 +222,4 @@ function CollectionCard({ image, title }: { image: string; title: string }) {
 
 function ContactRow({ label, value, href }: { label: string; value: string; href?: string }) {
   return <div><dt>{label}</dt><dd>{href ? <a href={href}>{value}</a> : value}</dd></div>;
-}
-
-function SiteFooter() {
-  return (
-    <footer id="footer" className="storefront-footer">
-      <Image
-        src="/storefront/footer-bride.svg"
-        alt=""
-        width={1704}
-        height={512}
-        sizes="100vw"
-        className="storefront-footer__bride"
-        aria-hidden="true"
-      />
-      <div className="storefront-footer__brand">
-        <StorefrontLogo inverted />
-        <p>Роклята е повече от избор. Тя е усещането, с което започва вашият специален ден.</p>
-        <div className="storefront-footer__socials">
-          {socialLinks.map(({ label, icon: Icon }) => <a href={`https://${label.toLowerCase()}.com`} target="_blank" rel="noreferrer" aria-label={label} key={label}><Icon aria-hidden="true" /></a>)}
-        </div>
-      </div>
-      <FooterLinks title="Колекции" links={["Нови постъпления", "Булчински рокли", "Вечерни рокли", "Аксесоари"]} />
-      <FooterLinks title="Информация" links={["За нас", "Контакти", "Доставка и връщане", "Политика за поверителност"]} />
-      <div className="storefront-footer__bottom">
-        <span>© 2026 Бутик Емоция — Всички права запазени</span>
-        <span className="storefront-footer__credit">Made with <span>♥</span> by Stiliyan S.</span>
-      </div>
-    </footer>
-  );
-}
-
-function FooterLinks({ title, links }: { title: string; links: string[] }) {
-  return <div className="storefront-footer__links"><h2>{title}</h2>{links.map(link => <a href={footerHref(link)} key={link}>{link}</a>)}</div>;
-}
-
-function footerHref(label: string) {
-  if (label === "Контакти") return "#контакти";
-  if (label === "За нас") return "#за-нас";
-  return "#нови-модели";
 }

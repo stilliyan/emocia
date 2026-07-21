@@ -1,25 +1,34 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { StorefrontLogo } from "./logo";
+import { isPublicNavigationActive, publicNavigation } from "./public-navigation";
 
-const navigation = [
-  ["Булчински рокли", "#колекции"],
-  ["Вечерни рокли", "#колекции"],
-  ["Аксесоари", "#нови-модели"],
-  ["За нас", "#за-нас"],
-] as const;
+type SiteHeaderProps = {
+  variant?: "overlay" | "light";
+};
 
-export function SiteHeader() {
+export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
+  const pathname = usePathname();
+  const isLight = variant === "light";
   const [scrolled, setScrolled] = useState(false);
   const [mobileHidden, setMobileHidden] = useState(false);
   const mobileMenuRef = useRef<HTMLDetailsElement>(null);
+  const closeMobileMenu = () => mobileMenuRef.current?.removeAttribute("open");
 
   useEffect(() => {
-    const contentSection = document.querySelector<HTMLElement>(".storefront-content-stack");
+    const contentSection = isLight
+      ? null
+      : document.querySelector<HTMLElement>(".storefront-content-stack");
 
     const updateHeader = () => {
+      if (isLight) {
+        setScrolled(window.scrollY > 1);
+        return;
+      }
+
       const contentTop = contentSection?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
       setScrolled(contentTop <= 144);
     };
@@ -32,7 +41,7 @@ export function SiteHeader() {
       window.removeEventListener("scroll", updateHeader);
       window.removeEventListener("resize", updateHeader);
     };
-  }, []);
+  }, [isLight]);
 
   useEffect(() => {
     const footer = document.getElementById("footer");
@@ -95,11 +104,19 @@ export function SiteHeader() {
   }, []);
 
   return (
-    <header className={`storefront-header${scrolled ? " storefront-header--scrolled" : ""}${mobileHidden ? " storefront-header--mobile-hidden" : ""}`}>
+    <header className={`storefront-header${isLight ? " storefront-header--light" : ""}${scrolled ? " storefront-header--scrolled" : ""}${mobileHidden ? " storefront-header--mobile-hidden" : ""}`}>
       <StorefrontLogo inverted alternateSrc="/storefront/logo-dark.svg" />
       <nav aria-label="Основна навигация" className="storefront-header__desktop-nav">
-        {navigation.map(([label, href]) => <Link key={label} href={href}>{label}</Link>)}
-        <Link className="storefront-header__contact" href="#контакти">Контакти</Link>
+        {publicNavigation.map(({ label, href }) => (
+          <Link
+            key={href}
+            href={href}
+            aria-current={isPublicNavigationActive(pathname, href) ? "page" : undefined}
+            className={href === "/kontakti" ? "storefront-header__contact" : undefined}
+          >
+            {label}
+          </Link>
+        ))}
       </nav>
       <details ref={mobileMenuRef} className="storefront-header__mobile-nav">
         <summary aria-label="Отвори или затвори меню">
@@ -116,8 +133,16 @@ export function SiteHeader() {
           </svg>
         </summary>
         <nav aria-label="Мобилна навигация">
-          {navigation.map(([label, href]) => <Link key={label} href={href}>{label}</Link>)}
-          <Link href="#контакти">Контакти</Link>
+          {publicNavigation.map(({ label, href }) => (
+            <Link
+              key={href}
+              href={href}
+              aria-current={isPublicNavigationActive(pathname, href) ? "page" : undefined}
+              onClick={closeMobileMenu}
+            >
+              {label}
+            </Link>
+          ))}
         </nav>
       </details>
     </header>
