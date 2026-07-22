@@ -6,11 +6,18 @@ create table if not exists public.appointment_requests (
   preferred_time time not null,
   message text,
   product_name text,
+  product_id text,
+  source text not null default 'other',
+  current_url text,
   status text not null default 'pending' check (status in ('pending', 'confirmed', 'cancelled')),
   calendar_event_id uuid references public.calendar_events(id) on delete set null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.appointment_requests add column if not exists product_id text;
+alter table public.appointment_requests add column if not exists source text not null default 'other';
+alter table public.appointment_requests add column if not exists current_url text;
 
 create index if not exists appointment_requests_status_date_idx
 on public.appointment_requests(status, preferred_date, preferred_time);
@@ -43,13 +50,18 @@ using (public.is_admin());
 revoke all on public.appointment_requests from anon;
 grant select, update, delete on public.appointment_requests to authenticated;
 
+drop function if exists public.submit_appointment_request(text, text, date, time, text, text);
+
 create or replace function public.submit_appointment_request(
   p_name text,
   p_phone text,
   p_preferred_date date,
   p_preferred_time time,
   p_message text default null,
-  p_product_name text default null
+  p_product_name text default null,
+  p_product_id text default null,
+  p_source text default 'other',
+  p_current_url text default null
 ) returns uuid
 language plpgsql
 security definer
@@ -71,8 +83,17 @@ begin
   if p_preferred_time < time '10:00' or p_preferred_time > time '18:00' then
     raise exception 'invalid_time';
   end if;
-  if char_length(coalesce(p_message, '')) > 1000 or char_length(coalesce(p_product_name, '')) > 160 then
+  if char_length(coalesce(p_message, '')) > 1000
+    or char_length(coalesce(p_product_name, '')) > 160
+    or char_length(coalesce(p_product_id, '')) > 160
+    or char_length(coalesce(p_current_url, '')) > 500 then
     raise exception 'invalid_content';
+  end if;
+  if coalesce(p_source, 'other') not in ('home', 'contact', 'product', 'blog', 'gallery', 'collection', 'accessories', 'about', 'other') then
+    raise exception 'invalid_source';
+  end if;
+  if coalesce(p_current_url, '') <> '' and (left(p_current_url, 1) <> '/' or left(p_current_url, 2) = '//') then
+    raise exception 'invalid_url';
   end if;
   if (
     select count(*)
@@ -84,19 +105,23 @@ begin
   end if;
 
   insert into public.appointment_requests (
-    name, phone, preferred_date, preferred_time, message, product_name
+    name, phone, preferred_date, preferred_time, message, product_name,
+    product_id, source, current_url
   ) values (
     trim(p_name), trim(p_phone), p_preferred_date, p_preferred_time,
     nullif(trim(coalesce(p_message, '')), ''),
-    nullif(trim(coalesce(p_product_name, '')), '')
+    nullif(trim(coalesce(p_product_name, '')), ''),
+    nullif(trim(coalesce(p_product_id, '')), ''),
+    coalesce(nullif(trim(coalesce(p_source, '')), ''), 'other'),
+    nullif(trim(coalesce(p_current_url, '')), '')
   ) returning id into request_id;
 
   return request_id;
 end;
 $$;
 
-revoke all on function public.submit_appointment_request(text, text, date, time, text, text) from public;
-grant execute on function public.submit_appointment_request(text, text, date, time, text, text) to anon, authenticated;
+revoke all on function public.submit_appointment_request(text, text, date, time, text, text, text, text, text) from public;
+grant execute on function public.submit_appointment_request(text, text, date, time, text, text, text, text, text) to anon, authenticated;
 
 create or replace function public.confirm_appointment_request(p_request_id uuid)
 returns uuid

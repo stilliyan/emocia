@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StorefrontLogo } from "./logo";
 import { isPublicNavigationActive } from "./public-navigation";
@@ -28,7 +27,6 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mobileDrawerRef = useRef<HTMLDivElement>(null);
   const mobileMenuToggleRef = useRef<HTMLButtonElement>(null);
-  const mobileMenuCloseRef = useRef<HTMLButtonElement>(null);
   const closeMobileMenu = useCallback(() => {
     setMobileMenuOpen(false);
   }, []);
@@ -36,7 +34,14 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
   useEffect(() => {
     if (!mobileMenuOpen) return;
 
-    const previousOverflow = document.body.style.overflow;
+    const lockedScrollY = window.scrollY;
+    const previousBodyStyles = {
+      overflow: document.body.style.overflow,
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+    };
+    const previousRootOverflow = document.documentElement.style.overflow;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
@@ -47,11 +52,14 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
 
       if (event.key !== "Tab") return;
 
-      const focusableElements = Array.from(
+      const drawerFocusableElements = Array.from(
         mobileDrawerRef.current?.querySelectorAll<HTMLElement>(
           'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
         ) ?? [],
       );
+      const focusableElements = mobileMenuToggleRef.current
+        ? [mobileMenuToggleRef.current, ...drawerFocusableElements]
+        : drawerFocusableElements;
       const firstFocusable = focusableElements[0];
       const lastFocusable = focusableElements.at(-1);
 
@@ -70,11 +78,19 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
     };
 
     document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${lockedScrollY}px`;
+    document.body.style.width = "100%";
+    document.documentElement.style.overflow = "hidden";
     window.addEventListener("keydown", handleKeyDown);
-    requestAnimationFrame(() => mobileMenuCloseRef.current?.focus());
 
     return () => {
-      document.body.style.overflow = previousOverflow;
+      document.body.style.overflow = previousBodyStyles.overflow;
+      document.body.style.position = previousBodyStyles.position;
+      document.body.style.top = previousBodyStyles.top;
+      document.body.style.width = previousBodyStyles.width;
+      document.documentElement.style.overflow = previousRootOverflow;
+      window.scrollTo(0, lockedScrollY);
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [closeMobileMenu, mobileMenuOpen]);
@@ -175,7 +191,7 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
 
   return (
     <>
-      <header className={`storefront-header${isLight ? " storefront-header--light" : ""}${scrolled ? " storefront-header--scrolled" : ""}${mobileHidden ? " storefront-header--mobile-hidden" : ""}`}>
+      <header className={`storefront-header${isLight ? " storefront-header--light" : ""}${scrolled ? " storefront-header--scrolled" : ""}${mobileHidden ? " storefront-header--mobile-hidden" : ""}${mobileMenuOpen ? " storefront-header--menu-open" : ""}`}>
         <StorefrontLogo inverted alternateSrc="/storefront/logo-dark.svg" />
         <nav aria-label="Основна навигация" className="storefront-header__desktop-nav">
           {desktopNavigation.map(({ label, href }) => (
@@ -194,27 +210,20 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
             ref={mobileMenuToggleRef}
             type="button"
             className="storefront-header__mobile-toggle"
-            aria-label="Отвори меню"
+            aria-label={mobileMenuOpen ? "Затвори меню" : "Отвори меню"}
             aria-expanded={mobileMenuOpen}
             aria-controls="storefront-mobile-menu"
             onClick={(event) => {
-              setMobileMenuOpen(true);
-              if (event.detail === 0) {
-                requestAnimationFrame(() => mobileMenuCloseRef.current?.focus());
+              setMobileMenuOpen((open) => !open);
+              if (mobileMenuOpen && event.detail !== 0) {
+                mobileMenuToggleRef.current?.blur();
               }
             }}
           >
-            <svg
-              className="mobile-icon"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <rect x="2" y="7.25" width="20" height="1.5" rx="0.75" />
-              <rect x="2" y="15.25" width="20" height="1.5" rx="0.75" />
-            </svg>
+            <span className="mobile-icon" aria-hidden="true">
+              <span />
+              <span />
+            </span>
           </button>
         </div>
       </header>
@@ -235,28 +244,6 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
         }}
       >
         <div className="storefront-mobile-drawer__panel">
-          <div className="storefront-mobile-drawer__header">
-            <div className="storefront-mobile-drawer__brand">
-              <StorefrontLogo alternateSrc="/storefront/logo-dark.svg" />
-            </div>
-            <button
-              ref={mobileMenuCloseRef}
-              type="button"
-              className="storefront-mobile-drawer__close"
-              aria-label="Затвори меню"
-              onClick={(event) => {
-                closeMobileMenu();
-                if (event.detail === 0) {
-                  mobileMenuToggleRef.current?.focus();
-                } else {
-                  mobileMenuToggleRef.current?.blur();
-                }
-              }}
-            >
-              <X aria-hidden="true" />
-            </button>
-          </div>
-
           <nav aria-label="Мобилна навигация" className="storefront-mobile-drawer__links">
             {desktopNavigation.map(({ label, href }) => (
               <Link

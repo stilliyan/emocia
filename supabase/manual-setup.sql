@@ -12,7 +12,7 @@ create table public.categories (id uuid primary key default gen_random_uuid(), n
 create table public.products (
  id uuid primary key default gen_random_uuid(), category_id uuid not null references public.categories(id) on delete restrict,
  name text not null, slug text not null unique, short_description text, description text, status public.product_status not null default 'draft', featured boolean not null default false,
- product_code text, sizes text[] not null default '{}', color text, material text, collection text, year integer check(year between 1900 and 2200), sort_order integer not null default 0,
+ product_code text, sizes text[] not null default '{}', color text, material text, collection text, year integer check(year between 1900 and 2200), price numeric(10,2) check(price is null or price >= 0), silhouette text check(silhouette is null or silhouette in ('a-line','mermaid','princess','straight')), accessory_category text check(accessory_category is null or accessory_category in ('veils','hair','jewellery','gloves','glasses','shoes','decorations')), sort_order integer not null default 0,
  seo_title text, meta_description text, canonical_url text, created_at timestamptz not null default now(), updated_at timestamptz not null default now(), published_at timestamptz, archived_at timestamptz
 );
 create table public.product_images (id uuid primary key default gen_random_uuid(), product_id uuid not null references public.products(id) on delete cascade, storage_path text not null unique, alt_text text not null default '', caption text, sort_order integer not null default 0, is_cover boolean not null default false, mime_type text, byte_size bigint, content_hash text, created_at timestamptz not null default now());
@@ -22,7 +22,7 @@ create index products_status_updated_idx on public.products(status,updated_at de
 create index product_images_order_idx on public.product_images(product_id,sort_order);
 
 create table public.site_content (id boolean primary key default true check(id), hero_title text, hero_description text, hero_image_path text, about_title text, about_content text, contact_phone text, contact_email text, address text, working_hours text, instagram_url text, facebook_url text, maps_url text, updated_at timestamptz not null default now());
-create table public.site_settings (id boolean primary key default true check(id), shop_name text not null default 'Емоция', default_seo_title text, default_meta_description text, social_image_path text, contact_phone text, contact_email text, address text, working_hours text, instagram_url text, facebook_url text, maps_url text, updated_at timestamptz not null default now());
+create table public.site_settings (id boolean primary key default true check(id), shop_name text not null default 'Емоция', default_seo_title text, default_meta_description text, social_image_path text, contact_phone text, contact_email text, address text, working_hours text, instagram_url text, facebook_url text, tiktok_url text, maps_url text, updated_at timestamptz not null default now());
 create table public.calendar_events (
  id uuid primary key default gen_random_uuid(), title text not null check(char_length(title) between 2 and 160),
  description text, start_at timestamptz not null, end_at timestamptz, all_day boolean not null default false,

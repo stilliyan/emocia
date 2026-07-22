@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { storefrontContact } from "@/lib/storefront-data";
+import { getStorefrontContent, getStorefrontSettings } from "@/lib/storefront-data";
 import { AppointmentDialog } from "./appointment-dialog";
 import { ScrollRevealSection } from "./scroll-reveal-section";
 import { SiteFooter } from "./site-footer";
@@ -45,7 +45,8 @@ const values = [
   },
 ] as const;
 
-export function AboutPage() {
+export async function AboutPage() {
+  const [content, settings] = await Promise.all([getStorefrontContent(), getStorefrontSettings()]);
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "AboutPage",
@@ -53,20 +54,20 @@ export function AboutPage() {
     url: "https://emocia.vercel.app/za-nas",
     mainEntity: {
       "@type": "ClothingStore",
-      name: "Бутик Емоция",
+      name: settings.shop_name,
       description: "Бутиково пространство за булчински и официални рокли във Варна с лично отношение и повече от две десетилетия опит.",
       address: {
         "@type": "PostalAddress",
-        streetAddress: "бул. Вл. Варненчик 69",
+        streetAddress: settings.address,
         addressLocality: "Варна",
         addressCountry: "BG",
       },
-      telephone: storefrontContact.phone,
-      email: storefrontContact.email,
+      telephone: settings.contact_phone,
+      email: settings.contact_email,
       sameAs: [
-        "https://www.instagram.com/butik.emocia/",
-        "https://www.facebook.com/p/%D0%91%D1%83%D1%82%D0%B8%D0%BA-%D0%95%D0%BC%D0%BE%D1%86%D0%B8%D1%8F-100021298455926/",
-        "https://www.tiktok.com/@emocia_butik",
+        settings.instagram_url,
+        settings.facebook_url,
+        settings.tiktok_url,
       ],
     },
   };
@@ -97,9 +98,9 @@ export function AboutPage() {
           className="storefront-about-page__intro storefront-about-page__reveal"
           labelledBy="about-intro-title"
         >
-          <h2 id="about-intro-title">Повече от две десетилетия близо до най-важния избор.</h2>
+          <h2 id="about-intro-title">{content.about_title || "Повече от две десетилетия близо до най-важния избор."}</h2>
           <div>
-            <p>Бутик Емоция не е създаден наведнъж. Той израства през годините — с много работа, смели нови начала и вяра, че всяка жена заслужава да бъде видяна и разбрана, когато избира роклята за своя специален ден.</p>
+            <p>{content.about_content || "Бутик Емоция не е създаден наведнъж. Той израства през годините — с много работа, смели нови начала и вяра, че всяка жена заслужава да бъде видяна и разбрана, когато избира роклята за своя специален ден."}</p>
             <p>За нас луксът не е показност. Той е времето, което отделяме, спокойствието по време на пробата и увереността, с която си тръгвате.</p>
           </div>
         </ScrollRevealSection>
@@ -168,7 +169,7 @@ export function AboutPage() {
             <h2 id="about-appointment-title">Вашата история може да започне тук.</h2>
             <p>Заповядайте на лична проба в Бутик Емоция във Варна.</p>
           </div>
-          <AppointmentDialog className="storefront-button storefront-button--dark">
+          <AppointmentDialog source="about" className="storefront-button storefront-button--dark">
             Запази час за проба
           </AppointmentDialog>
         </section>

@@ -11,7 +11,7 @@ Prerequisites: Node.js 20+, npm, a Supabase project, and optionally Vercel.
 
 For Vercel, import the repository, add the two public Supabase environment variables, and deploy with `vercel` or the dashboard. Never add a service-role key to browser-visible variables. Enable Supabase backups/PITR appropriate to the shop and periodically test exports.
 
-A future public website should use a server-side Supabase anon client and query only `status = 'published'` products plus active categories. RLS already supports that access; keep admin-only/internal fields out of the public response mapper.
+The public website uses a server-side Supabase anon client and queries only `status = 'published'` products plus active categories. RLS enforces that access, and the public response mapper keeps admin-only/internal fields out of the storefront.
 
 ## AI product copy
 
@@ -26,6 +26,8 @@ CMS text fields opt out of common LanguageTool/Grammarly editor overlays. Browse
 ## Settings and content ownership
 
 `site_settings` is the single CMS source for the shop name, contact details, address, working hours, social links, Google Maps URL, and default SEO values. `site_content` is used only for editorial homepage copy (`hero_*` and `about_*`). Legacy contact columns in `site_content` remain in the database for compatibility but are not edited by the CMS.
+
+Existing hosted projects must also run `supabase/migrations/202607230001_storefront_cms_fields.sql` once. It adds the optional product price, silhouette and accessory type fields plus the TikTok setting used by the connected storefront. If CMS data is missing, the existing storefront content remains visible as a fallback.
 
 ## Dashboard calendar
 

@@ -17,6 +17,9 @@ export const productSchema = z.object({
   material: z.string().trim().max(160).optional().or(z.literal("")),
   collection: z.string().trim().max(120).optional().or(z.literal("")),
   year: z.coerce.number().int().min(1900).max(2200).optional(),
+  price: z.coerce.number().min(0, "Цената не може да бъде отрицателна").optional(),
+  silhouette: z.enum(["a-line", "mermaid", "princess", "straight"]).optional().or(z.literal("")),
+  accessory_category: z.enum(["veils", "hair", "jewellery", "gloves", "glasses", "shoes", "decorations"]).optional().or(z.literal("")),
   seo_title: z.string().trim().max(60, "SEO заглавието е до 60 знака").optional().or(z.literal("")),
   meta_description: z.string().trim().max(160, "Мета описанието е до 160 знака").optional().or(z.literal("")),
 });
@@ -41,6 +44,7 @@ export const siteSettingsSchema = z.object({
   contact_email: z.string().trim().email("Въведете валиден имейл").optional().or(z.literal("")),
   instagram_url: shortSetting,
   facebook_url: shortSetting,
+  tiktok_url: shortSetting,
   maps_url: z.string().trim().max(2000, "Адресът е твърде дълъг").optional().or(z.literal("")),
   default_seo_title: z.string().trim().max(60, "SEO заглавието е до 60 знака").optional().or(z.literal("")),
   default_meta_description: z.string().trim().max(160, "Мета описанието е до 160 знака").optional().or(z.literal("")),
@@ -75,10 +79,13 @@ export const calendarRangeSchema = z.object({
 export const appointmentRequestSchema = z.object({
   name: z.string().trim().min(2, "Въведете вашето име").max(120, "Името е твърде дълго"),
   phone: z.string().trim().min(7, "Въведете валиден телефонен номер").max(30, "Телефонът е твърде дълъг"),
-  preferred_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Изберете предпочитана дата"),
-  preferred_time: z.string().regex(/^\d{2}:\d{2}$/, "Изберете предпочитан час"),
+  preferred_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Изберете предпочитана дата").optional().or(z.literal("")),
+  preferred_time: z.string().regex(/^\d{2}:\d{2}$/, "Изберете предпочитан час").optional().or(z.literal("")),
   message: z.string().trim().max(1000, "Съобщението е твърде дълго").optional().or(z.literal("")),
   product_name: z.string().trim().max(160, "Името на модела е твърде дълго").optional().or(z.literal("")),
+  product_id: z.string().trim().max(160, "Идентификаторът на модела е твърде дълъг").optional().or(z.literal("")),
+  source: z.enum(["home", "contact", "product", "blog", "gallery", "collection", "accessories", "about", "other"]).default("other"),
+  current_url: z.string().trim().max(500, "Адресът на страницата е твърде дълъг").optional().or(z.literal("")),
   website: z.string().max(0).optional().or(z.literal("")),
 });
 

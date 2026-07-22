@@ -43,6 +43,63 @@
 - Production build: passed.
 
 final result: passed
+
+## Restored contact section — 2026-07-22
+
+Source visual truth:
+- `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-2f562c3c-8588-4c12-9a9d-f3c86f789130.png` — previous homepage contact section, 3456 × 2064 px including browser chrome.
+
+Implementation evidence:
+- `/Users/s/Documents/Emotion CMS/artifacts/home-contact-restored-desktop.png` — homepage, 1425 × 979 px browser content capture.
+- `/Users/s/Documents/Emotion CMS/artifacts/contact-restored-section-desktop-final.png` — `/kontakti`, desktop section capture.
+- `/Users/s/Documents/Emotion CMS/artifacts/contact-restored-mobile.png` — `/kontakti`, mobile capture.
+
+Viewport and state:
+- Desktop CSS viewport: 1440 × 1000 px; captured browser content width: 1425 px; device scale factor 1.
+- Mobile CSS viewport: 390 × 844 px; captured browser content width: 375 px; device scale factor 1.
+- State: contact section in view, form idle for visual comparison; required validation checked separately without sending a request.
+- Density normalization: the reference includes browser chrome and a higher-density desktop capture, so comparison used the matching visible section composition rather than a literal full-image pixel overlay.
+
+**Full-view comparison evidence**
+- Both homepage and `/kontakti` use the same balanced two-column composition: pale form/contact panel on the left and the embedded Google map on the right.
+- The restored section preserves the reference hierarchy, rounded corners, quiet gray palette, compact dark CTA, contact-information divider, and bottom-right storefront map thumbnail.
+- Mobile collapses to one column with the form first and map second; measured document `scrollWidth` equals `clientWidth`, so there is no horizontal overflow.
+
+**Focused region comparison evidence**
+- Form: two equal name/phone fields, full-width message field, and compact left-aligned “Изпрати запитване” button match the reference.
+- Contact details: address, telephone, email, and working hours remain in a two-column desktop grid below the divider.
+- Map: the live Google embed fills the full right card and the existing facade link remains in the lower-right corner.
+
+**Required fidelity surfaces**
+- Fonts and typography: existing storefront font family, light display heading, uppercase eyebrow/details, and compact CTA type are preserved.
+- Spacing and layout rhythm: equal desktop columns, 12 px inter-column gap, matching 16 px card radii, and reference-like form/detail spacing pass.
+- Colors and tokens: the existing storefront surface, ink, muted text, line, focus, and dark-button tokens are reused.
+- Image quality and assets: the live map and existing optimized boutique-facade asset are used; no placeholders or generated substitutes were introduced.
+- Copy and content: “Контакти”, “Свържете се с нас”, the three-field form, CTA, address, telephone, email, working hours, and map CTA match the requested restored version.
+
+**Comparison history**
+- [Resolved P2] `/kontakti` initially used the newer compact contact card instead of the selected reference. Fixed by replacing it with the shared restored section.
+- [Resolved P2] The initial shared form showed visible field labels and a full-width button. Fixed by keeping accessible screen-reader labels while restoring the placeholder-only visual and compact CTA.
+- Post-fix evidence: both desktop captures show the same reference structure; the mobile capture confirms single-column behavior and no horizontal overflow.
+
+**Findings**
+- No remaining actionable P0, P1, or P2 differences for the selected contact-section reference.
+
+**Open Questions**
+- None.
+
+**Implementation Checklist**
+- [x] One shared component powers the homepage and `/kontakti`.
+- [x] Name, phone, and message are the only visible form fields.
+- [x] Existing server action, loading, success, error, anti-spam, and inline validation behavior are preserved.
+- [x] Telephone, email, map embed, and map thumbnail link remain functional.
+- [x] Desktop and mobile layouts render without overflow.
+- [x] Browser console has no errors on either route.
+
+**Follow-up Polish**
+- None required for handoff.
+
+final result: passed
 ## Collections hero simplification — 2026-07-22
 
 **Source visual truth**
@@ -215,5 +272,64 @@ final result: passed
 - TypeScript: passed.
 - Vitest: 18/18 tests passed.
 - Production build: passed.
+
+final result: passed
+
+## Mobile navigation — 2026-07-22
+
+Source visual truth:
+- `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-6eafb2e2-e9d0-4fc6-b781-43c19a6aeb7e.png` — Zara open-menu behavior reference, 820 × 1340 px.
+- `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-2db37017-dc18-4f8d-bcb8-c318b1097192.png` — desired scrolled pill state, 776 × 578 px.
+
+Implementation evidence:
+- `/Users/s/Documents/Emotion CMS/.codex-menu-after-closed.png`
+- `/Users/s/Documents/Emotion CMS/.codex-menu-after-open.png` — 390 × 844 px.
+- `/Users/s/Documents/Emotion CMS/.codex-menu-scrolled-pill.png` — 375 × 812 px browser content capture.
+- `/Users/s/Documents/Emotion CMS/.codex-menu-design-qa-comparison.png`
+- `/Users/s/Documents/Emotion CMS/.codex-menu-design-qa-header.png`
+
+Viewport and state:
+- CSS viewport: 390 × 844 px for closed/open mobile states; 768 × 844 px for fullscreen breakpoint verification.
+- Density normalization: the source screenshots were resized to the implementation height or width before side-by-side comparison. Browser chrome was cropped from the pill-state reference.
+- States checked: transparent header at page top, scrolled pill header, opening transition, fullscreen drawer, closing transition, Escape close, scroll locking/restoration, focus state, and reduced-motion CSS.
+
+**Full-view comparison evidence**
+- The drawer covers the complete mobile viewport and enters from the same side as the trigger.
+- The two-line trigger stays in the same position and morphs into a centered X.
+- The implementation intentionally preserves Emotion's logo, typography, Bulgarian navigation, color tokens, and appointment CTA rather than copying Zara's content hierarchy.
+
+**Focused header comparison evidence**
+- At the top of the hero the header is transparent without a pill.
+- After scrolling it matches the selected floating white pill reference: 16 px side inset, 16 px radius, dark logo, and two thin dark lines.
+- The trigger geometry is unchanged while opening: x = 307 px, y = 32.09 px at the 390 px viewport.
+
+**Required fidelity surfaces**
+- Fonts and typography: existing Geist storefront typography is preserved; navigation retains the established 24–28 px light-weight mobile scale.
+- Spacing and layout rhythm: full-height drawer, fixed top/header alignment, safe-area-aware spacing, and bottom CTA spacing pass.
+- Colors and tokens: existing storefront surface, ink, focus, and primary action tokens are used consistently.
+- Image quality and assets: no new raster assets are needed; the existing optimized logo remains unchanged.
+- Copy and content: all existing Bulgarian navigation labels and the appointment CTA are preserved.
+
+**Comparison history**
+- [P2] Initial scroll lock moved the page to the footer on open. Fixed by locking the body at the current scroll offset and restoring it on close. Post-fix evidence: scrollY remains 0 in the top-state test and is restored after close.
+- [P2] Removing the stable scrollbar gutter shifted the trigger/X horizontally. Fixed by preserving the page gutter and expanding only the fixed drawer layer. Post-fix evidence: closed and open trigger coordinates are identical.
+- [P2] The first pill implementation appeared at the top of the hero. Fixed by limiting the pill styling to `.storefront-header--scrolled`; the top state is transparent again.
+
+**Findings**
+- No remaining actionable P0, P1, or P2 differences for the requested behavior.
+
+**Open Questions**
+- None.
+
+**Implementation Checklist**
+- [x] Two-line hamburger morphs into X.
+- [x] Drawer enters from the right and fills the mobile viewport.
+- [x] Top header remains transparent; pill appears only after scroll.
+- [x] Trigger position remains stable while opening and closing.
+- [x] Escape, focus trap, backdrop close, body scroll lock, and reduced motion are preserved.
+- [x] No horizontal page overflow or browser console errors.
+
+**Follow-up Polish**
+- None required for handoff.
 
 final result: passed

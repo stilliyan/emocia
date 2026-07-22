@@ -29,15 +29,22 @@ export async function saveSiteSettings(_: unknown, form: FormData): Promise<Acti
   const parsed = siteSettingsSchema.safeParse({
     shop_name: val(form, "shop_name"), address: val(form, "address"), working_hours: val(form, "working_hours"),
     contact_phone: val(form, "contact_phone"), contact_email: val(form, "contact_email"),
-    instagram_url: val(form, "instagram_url"), facebook_url: val(form, "facebook_url"), maps_url: val(form, "maps_url"),
+    instagram_url: val(form, "instagram_url"), facebook_url: val(form, "facebook_url"), tiktok_url: val(form, "tiktok_url"), maps_url: val(form, "maps_url"),
     default_seo_title: val(form, "default_seo_title"), default_meta_description: val(form, "default_meta_description"),
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   try {
     const { supabase } = await requireAdmin();
     const { error } = await supabase.from("site_settings").upsert({ id: true, ...parsed.data });
-    if (error) return { error: "Настройките не можаха да бъдат запазени." };
+    if ((error?.code === "42703" || error?.code === "PGRST204") && parsed.data.tiktok_url) return { error: "Преди да запазите TikTok адрес, приложете последната Supabase migration." };
+    if (error?.code === "42703" || error?.code === "PGRST204") {
+      const { tiktok_url: _tiktokUrl, ...legacySettings } = parsed.data;
+      void _tiktokUrl;
+      const legacyResult = await supabase.from("site_settings").upsert({ id: true, ...legacySettings });
+      if (legacyResult.error) return { error: "Настройките не можаха да бъдат запазени." };
+    } else if (error) return { error: "Настройките не можаха да бъдат запазени." };
     revalidatePath("/admin/settings");
+    revalidatePath("/", "layout");
     return { success: "Настройките бяха запазени." };
   } catch (error) {
     return { error: getAdminErrorMessage(error) };
@@ -55,6 +62,7 @@ export async function saveSiteContent(_: unknown, form: FormData): Promise<Actio
     const { error } = await supabase.from("site_content").upsert({ id: true, ...parsed.data });
     if (error) return { error: "Съдържанието не можа да бъде запазено." };
     revalidatePath("/admin/content");
+    revalidatePath("/", "layout");
     return { success: "Съдържанието беше запазено." };
   } catch (error) {
     return { error: getAdminErrorMessage(error) };
@@ -162,6 +170,7 @@ export async function deleteCategory(id: string): Promise<ActionState> {
     revalidatePath("/admin/categories");
     revalidatePath("/admin/products/new");
     revalidatePath("/admin/products");
+    revalidatePath("/", "layout");
     return { success: "Категорията беше изтрита." };
   } catch (error) {
     const adminMessage = getAdminErrorMessage(error);
@@ -171,12 +180,14 @@ export async function deleteCategory(id: string): Promise<ActionState> {
 
 export async function saveProduct(_: unknown, form: FormData): Promise<ActionState> {
   const year = val(form, "year");
+  const price = val(form, "price");
   const parsed = productSchema.safeParse({
     name: val(form, "name"), slug: val(form, "slug"), short_description: val(form, "short_description"),
     description: val(form, "description"), category_id: val(form, "category_id"), status: val(form, "status") || "draft",
     featured: form.get("featured") === "on", product_code: val(form, "product_code"),
     sizes: val(form, "sizes").split(",").map((item) => item.trim()).filter(Boolean), color: val(form, "color"),
     material: val(form, "material"), collection: val(form, "collection"), year: year ? Number(year) : undefined,
+    price: price ? Number(price) : undefined, silhouette: val(form, "silhouette"), accessory_category: val(form, "accessory_category"),
     seo_title: val(form, "seo_title"), meta_description: val(form, "meta_description"),
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
@@ -189,11 +200,22 @@ export async function saveProduct(_: unknown, form: FormData): Promise<ActionSta
       published_at: parsed.data.status === "published" ? new Date().toISOString() : null,
       archived_at: parsed.data.status === "archived" ? new Date().toISOString() : null,
     };
-    const result = id
+    let result = id
       ? await supabase.from("products").update(payload).eq("id", id).select("id").single()
       : await supabase.from("products").insert(payload).select("id").single();
+    if ((result.error?.code === "42703" || result.error?.code === "PGRST204") && (parsed.data.price !== undefined || parsed.data.silhouette || parsed.data.accessory_category)) {
+      return { error: "Преди да запазите цена, силует или тип аксесоар, приложете последната Supabase migration." };
+    }
+    if (result.error?.code === "42703" || result.error?.code === "PGRST204") {
+      const { price: _price, silhouette: _silhouette, accessory_category: _accessoryCategory, ...legacyPayload } = payload;
+      void _price; void _silhouette; void _accessoryCategory;
+      result = id
+        ? await supabase.from("products").update(legacyPayload).eq("id", id).select("id").single()
+        : await supabase.from("products").insert(legacyPayload).select("id").single();
+    }
     if (result.error) return { error: result.error.code === "23505" ? "Този адрес вече се използва." : result.error.message };
     revalidatePath("/admin/products");
+    revalidatePath("/", "layout");
     return { success: "Продуктът е запазен.", id: result.data.id };
   } catch (error) {
     return { error: getAdminErrorMessage(error) };

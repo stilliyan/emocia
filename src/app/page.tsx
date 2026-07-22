@@ -1,15 +1,21 @@
 import type { Metadata, Viewport } from "next";
 import { StorefrontHomepage } from "@/components/storefront/homepage";
+import { getStorefrontContent, getStorefrontSettings } from "@/lib/storefront-data";
 
-export const metadata: Metadata = {
-  title: "Бутик Емоция | Булчински и вечерни рокли във Варна",
-  description: "Открийте булчински и вечерни рокли в Бутик Емоция, Варна. Запазете лична консултация и проба в спокойна бутикова атмосфера.",
-  openGraph: {
-    title: "Бутик Емоция | Роклята, в която сте себе си",
-    description: "Булчински и вечерни рокли във Варна с лично внимание и внимателно подбрани модели.",
-    images: [{ url: "/storefront/hero.png", width: 1535, height: 1024, alt: "Бутик Емоция" }],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [settings, content] = await Promise.all([getStorefrontSettings(), getStorefrontContent()]);
+  const title = settings.default_seo_title || `${settings.shop_name} | Булчински и вечерни рокли във Варна`;
+  const description = settings.default_meta_description || content.hero_description || "Открийте булчински и вечерни рокли в Бутик Емоция, Варна. Запазете лична консултация и проба в спокойна бутикова атмосфера.";
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: [{ url: "/storefront/hero.png", width: 1535, height: 1024, alt: settings.shop_name }],
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: [

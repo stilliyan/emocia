@@ -43,7 +43,7 @@ export function LegalPage({ title, intro, sections }: LegalPageProps) {
           <section>
             <h2>Контакт</h2>
             <p>
-              За въпроси относно тази страница пишете на <a href="mailto:emociabg@abv.bg">emociabg@abv.bg</a>
+              За въпроси относно тази страница пишете на <a href="mailto:emocia_bg@abv.bg">emocia_bg@abv.bg</a>
               {" "}или посетете <Link href="/kontakti">страницата за контакти</Link>.
             </p>
           </section>

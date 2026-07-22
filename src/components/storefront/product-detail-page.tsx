@@ -34,9 +34,9 @@ export function ProductDetailPage({ collection, product }: ProductDetailPageProp
   const isAccessoryCollection = collection.kind === "accessories";
   const relatedProducts = collection.products.filter((item) => item.slug !== product.slug).slice(0, 4);
   const silhouette = product.silhouette ? silhouetteLabels[product.silhouette] : "Индивидуален силует";
-  const modelDescription = product.silhouette
+  const modelDescription = product.description || product.shortDescription || (product.silhouette
     ? silhouetteDescriptions[product.silhouette]
-    : "По време на пробата ще разгледаме линията, движението и начина, по който моделът стои върху вас.";
+    : "По време на пробата ще разгледаме линията, движението и начина, по който моделът стои върху вас.");
   const formattedPrice = formatStorefrontPrice(product.price);
   const category = product.category ? accessoryCategoryLabels[product.category] : "Аксесоари";
 
@@ -53,7 +53,7 @@ export function ProductDetailPage({ collection, product }: ProductDetailPageProp
 
             <dl className="storefront-product-info__facts">
               <div><dt>{isAccessoryCollection ? "Категория" : "Силует"}</dt><dd>{isAccessoryCollection ? category : silhouette}</dd></div>
-              <div><dt>{isAccessoryCollection ? "Цена" : "Колекция"}</dt><dd>{isAccessoryCollection ? formattedPrice : collection.title}</dd></div>
+              <div><dt>{isAccessoryCollection ? "Цена" : "Колекция"}</dt><dd>{isAccessoryCollection ? formattedPrice : product.collection || collection.title}</dd></div>
               <div><dt>{isAccessoryCollection ? "Плащане" : "Проба"}</dt><dd>{isAccessoryCollection ? "Наложен платеж" : "С предварително записан час"}</dd></div>
             </dl>
 
@@ -68,7 +68,9 @@ export function ProductDetailPage({ collection, product }: ProductDetailPageProp
               </OrderDialog>
             ) : (
               <AppointmentDialog
+                source="product"
                 productName={product.name}
+                productId={product.id}
                 className="storefront-button storefront-button--dark storefront-product-info__appointment"
                 ariaLabel={`Запази час за проба на ${product.name}`}
               >
@@ -81,7 +83,7 @@ export function ProductDetailPage({ collection, product }: ProductDetailPageProp
                 <>
                   <details open>
                     <summary>За аксесоара</summary>
-                    <p>Фин детайл, подбран да допълни роклята, без да отнема вниманието от цялостната ви визия.</p>
+                    <p>{product.description || product.shortDescription || "Фин детайл, подбран да допълни роклята, без да отнема вниманието от цялостната ви визия."}</p>
                   </details>
                   <details>
                     <summary>Как да го съчетаем</summary>

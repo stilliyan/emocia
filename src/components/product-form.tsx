@@ -119,8 +119,11 @@ export function ProductForm({ categories, product }: { categories: Category[]; p
 
       <Card className="[--card-spacing:--spacing(4)]">
         <details className="group">
-        <summary className="flex cursor-pointer list-none items-center justify-between rounded-t-lg px-4 py-4 hover:bg-muted/40"><div><CardTitle>Допълнителни характеристики</CardTitle><p className="mt-1 text-sm text-muted-foreground">По желание: код, година, цвят, материал и размери.</p></div><ChevronDown className="size-4 transition-transform group-open:rotate-180" /></summary>
+        <summary className="flex cursor-pointer list-none items-center justify-between rounded-t-lg px-4 py-4 hover:bg-muted/40"><div><CardTitle>Допълнителни характеристики</CardTitle><p className="mt-1 text-sm text-muted-foreground">По желание: цена, силует, тип аксесоар и продуктови детайли.</p></div><ChevronDown className="size-4 transition-transform group-open:rotate-180" /></summary>
         <CardContent className="grid gap-4 border-t pt-4 md:grid-cols-2">
+          <Field label="Цена (лв.)"><Input name="price" type="number" min="0" step="0.01" defaultValue={product?.price ?? ""} /></Field>
+          <Field label="Силует"><NativeSelect name="silhouette" defaultValue={product?.silhouette ?? ""}><option value="">Не е избран</option><option value="a-line">А-линия</option><option value="mermaid">Русалка</option><option value="princess">Принцеса</option><option value="straight">Прав силует</option></NativeSelect></Field>
+          <Field label="Тип аксесоар"><NativeSelect name="accessory_category" defaultValue={product?.accessory_category ?? ""}><option value="">Не е избран</option><option value="veils">Воали</option><option value="hair">Украси за коса</option><option value="jewellery">Обеци и бижута</option><option value="gloves">Ръкавици</option><option value="glasses">Чаши</option><option value="shoes">Обувки</option><option value="decorations">Украси</option></NativeSelect></Field>
           <Field label="Вътрешен код"><Input name="product_code" defaultValue={product?.product_code ?? ""} /></Field>
           <Field label="Година"><Input name="year" type="number" defaultValue={product?.year ?? ""} /></Field>
           <Field label="Цвят"><Input name="color" defaultValue={product?.color ?? ""} /></Field>

@@ -8,4 +8,4 @@ The database enforces slugs, foreign keys, timestamps and RLS. UI route protecti
 
 ## Public storefront
 
-The public `/` route is a static, server-rendered storefront assembled from reusable components in `src/components/storefront`. Brand images exported from the approved Figma design live in `public/storefront` and are rendered through `next/image`. Until the public Supabase catalogue contract is connected, the homepage product rail uses typed presentation data from `src/lib/storefront-data.ts`; it does not query or expose admin-only data.
+The public storefront is server-rendered from the shared components in `src/components/storefront`. `src/lib/storefront-data.ts` is the public CMS boundary: it uses the Supabase anon client and RLS to read only active categories, published products/images, `site_content`, and `site_settings`. Existing typed content in `src/lib/storefront-collections.ts` remains the safe fallback when Supabase is unavailable or a CMS collection is empty. Product routes, rails, contact details, social links, homepage/about copy, and default SEO all use this boundary; admin-only data is never exposed.

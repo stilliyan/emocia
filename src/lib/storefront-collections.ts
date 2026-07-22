@@ -1,14 +1,32 @@
 export type BridalSilhouette = "a-line" | "mermaid" | "princess" | "straight";
 export type AccessoryCategory = "veils" | "hair" | "jewellery" | "gloves" | "glasses" | "shoes" | "decorations";
 
+export type StorefrontProductImage = {
+  src: string;
+  alt?: string;
+};
+
 export type StorefrontCollectionProduct = {
+  id?: string;
   name: string;
   slug: string;
   image: string;
   alt: string;
+  images?: ReadonlyArray<StorefrontProductImage>;
   silhouette?: BridalSilhouette;
   category?: AccessoryCategory;
   price?: number;
+  shortDescription?: string;
+  description?: string;
+  productCode?: string;
+  sizes?: string[];
+  color?: string;
+  material?: string;
+  collection?: string;
+  year?: number;
+  seoTitle?: string;
+  metaDescription?: string;
+  featured?: boolean;
 };
 
 export type StorefrontCollection = {

@@ -1,6 +1,7 @@
 "use server";
 
 import { accessoriesCollection } from "@/lib/storefront-collections";
+import { getStorefrontCollection } from "@/lib/storefront-data";
 import { orderRequestSchema } from "@/lib/schemas";
 import { createClient } from "@/lib/supabase/server";
 
@@ -21,7 +22,8 @@ export async function submitOrderRequest(form: FormData): Promise<OrderRequestSt
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   if (parsed.data.website) return { success: "Получихме вашата заявка." };
 
-  const product = accessoriesCollection.products.find((item) => item.slug === parsed.data.product_slug);
+  const collection = await getStorefrontCollection(accessoriesCollection);
+  const product = collection.products.find((item) => item.slug === parsed.data.product_slug);
   if (!product || product.price === undefined) return { error: "Този артикул вече не е наличен за поръчка." };
 
   try {

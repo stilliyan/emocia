@@ -3,16 +3,7 @@ import Link from "next/link";
 import { StorefrontLogo } from "./logo";
 import { FacebookIcon, InstagramIcon, TikTokIcon } from "./social-icons";
 import { publicNavigation } from "./public-navigation";
-
-const socialLinks = [
-  { label: "TikTok", href: "https://www.tiktok.com/@emocia_butik", icon: TikTokIcon },
-  {
-    label: "Facebook",
-    href: "https://www.facebook.com/p/%D0%91%D1%83%D1%82%D0%B8%D0%BA-%D0%95%D0%BC%D0%BE%D1%86%D0%B8%D1%8F-100021298455926/?locale=bg_BG",
-    icon: FacebookIcon,
-  },
-  { label: "Instagram", href: "https://www.instagram.com/butik.emocia/", icon: InstagramIcon },
-] as const;
+import { getStorefrontSettings } from "@/lib/storefront-data";
 
 const primaryLinks = publicNavigation.slice(0, 4);
 const secondaryLinks = [
@@ -25,7 +16,13 @@ const legalLinks = [
   { label: "Условия за използване", href: "/usloviya-za-izpolzvane" },
 ] as const;
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const settings = await getStorefrontSettings();
+  const socialLinks = [
+    { label: "TikTok", href: settings.tiktok_url, icon: TikTokIcon },
+    { label: "Facebook", href: settings.facebook_url, icon: FacebookIcon },
+    { label: "Instagram", href: settings.instagram_url, icon: InstagramIcon },
+  ];
   return (
     <footer id="footer" className="storefront-footer">
       <Image
@@ -54,7 +51,7 @@ export function SiteFooter() {
         <FooterLinks title="Правна информация" links={legalLinks} className="storefront-footer__links--legal" />
       </div>
       <div className="storefront-footer__bottom">
-        <span>© 2026 Бутик Емоция — Всички права запазени</span>
+        <span>© 2026 {settings.shop_name} — Всички права запазени</span>
         <span className="storefront-footer__credit">Made with <span>♥</span> by Stiliyan S.</span>
       </div>
     </footer>

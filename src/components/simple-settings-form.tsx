@@ -43,6 +43,7 @@ function SettingsForm({ initialValues }: { initialValues: SiteSettings }) {
       <div className="grid gap-4 md:grid-cols-2">
         <Field id="instagram_url" label="Instagram адрес"><Input id="instagram_url" name="instagram_url" type="url" defaultValue={value(initialValues.instagram_url)} {...textProps} /></Field>
         <Field id="facebook_url" label="Facebook адрес"><Input id="facebook_url" name="facebook_url" type="url" defaultValue={value(initialValues.facebook_url)} {...textProps} /></Field>
+        <Field id="tiktok_url" label="TikTok адрес"><Input id="tiktok_url" name="tiktok_url" type="url" defaultValue={value(initialValues.tiktok_url)} {...textProps} /></Field>
         <div className="md:col-span-2"><Field id="maps_url" label="Google Maps адрес"><Input id="maps_url" name="maps_url" type="url" defaultValue={value(initialValues.maps_url)} {...textProps} /></Field></div>
       </div>
     </Section>

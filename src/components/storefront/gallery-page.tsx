@@ -57,7 +57,7 @@ export function GalleryPage() {
         </section>
 
         <div className="storefront-gallery-note">
-          <AnimatedManifestoQuote lines={["Всеки специален ден има своята", "емоция."]} />
+          <AnimatedManifestoQuote lines={["Всеки специален ден", "има своята емоция."]} />
           <p className="storefront-gallery-note__signature">Veselina M.</p>
         </div>
 

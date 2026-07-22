@@ -5,14 +5,14 @@ describe("site settings validation", () => {
   it("accepts the CMS settings payload", () => {
     expect(siteSettingsSchema.safeParse({
       shop_name: "Емоция", address: "", working_hours: "", contact_phone: "", contact_email: "",
-      instagram_url: "", facebook_url: "", maps_url: "", default_seo_title: "", default_meta_description: "",
+      instagram_url: "", facebook_url: "", tiktok_url: "", maps_url: "", default_seo_title: "", default_meta_description: "",
     }).success).toBe(true);
   });
 
   it("keeps the default SEO limits", () => {
     expect(siteSettingsSchema.safeParse({
       shop_name: "Емоция", address: "", working_hours: "", contact_phone: "", contact_email: "",
-      instagram_url: "", facebook_url: "", maps_url: "", default_seo_title: "x".repeat(61), default_meta_description: "",
+      instagram_url: "", facebook_url: "", tiktok_url: "", maps_url: "", default_seo_title: "x".repeat(61), default_meta_description: "",
     }).success).toBe(false);
   });
 });
