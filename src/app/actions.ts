@@ -1,13 +1,18 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { calendarEventSchema, calendarRangeSchema, categorySchema, entityIdSchema, entityIdsSchema, eventStatusSchema, productSchema, siteContentSchema, siteSettingsSchema, statusSchema } from "@/lib/schemas";
 import type { CalendarEvent } from "@/lib/data";
 import { createClient, getAdminErrorMessage, requireAdmin } from "@/lib/supabase/server";
+import { STOREFRONT_CACHE_TAGS } from "@/lib/storefront-data";
 
 type ActionState = { error?: string; success?: string; id?: string };
 const val = (form: FormData, key: string) => String(form.get(key) ?? "");
+
+function invalidateStorefrontTags(...tags: string[]) {
+  tags.forEach((tag) => updateTag(tag));
+}
 
 export async function loginAction(_: unknown, form: FormData): Promise<ActionState> {
   const supabase = await createClient();
@@ -43,6 +48,7 @@ export async function saveSiteSettings(_: unknown, form: FormData): Promise<Acti
       const legacyResult = await supabase.from("site_settings").upsert({ id: true, ...legacySettings });
       if (legacyResult.error) return { error: "Настройките не можаха да бъдат запазени." };
     } else if (error) return { error: "Настройките не можаха да бъдат запазени." };
+    invalidateStorefrontTags(STOREFRONT_CACHE_TAGS.settings);
     revalidatePath("/admin/settings");
     revalidatePath("/", "layout");
     return { success: "Настройките бяха запазени." };
@@ -61,6 +67,7 @@ export async function saveSiteContent(_: unknown, form: FormData): Promise<Actio
     const { supabase } = await requireAdmin();
     const { error } = await supabase.from("site_content").upsert({ id: true, ...parsed.data });
     if (error) return { error: "Съдържанието не можа да бъде запазено." };
+    invalidateStorefrontTags(STOREFRONT_CACHE_TAGS.content);
     revalidatePath("/admin/content");
     revalidatePath("/", "layout");
     return { success: "Съдържанието беше запазено." };
@@ -149,6 +156,7 @@ export async function saveCategory(_: unknown, form: FormData): Promise<ActionSt
     if (result.error) {
       return { error: result.error.code === "23505" ? "Този адрес вече се използва." : result.error.message };
     }
+    invalidateStorefrontTags(STOREFRONT_CACHE_TAGS.categories, STOREFRONT_CACHE_TAGS.products);
     revalidatePath("/admin/categories");
     revalidatePath("/admin/products/new");
     return { success: "Категорията е запазена." };
@@ -167,6 +175,7 @@ export async function deleteCategory(id: string): Promise<ActionState> {
     if (count) return { error: "Категория с продукти не може да бъде изтрита." };
     const { error } = await supabase.from("categories").delete().eq("id", parsedId.data);
     if (error) return { error: "Неуспешно изтриване на категория." };
+    invalidateStorefrontTags(STOREFRONT_CACHE_TAGS.categories, STOREFRONT_CACHE_TAGS.products);
     revalidatePath("/admin/categories");
     revalidatePath("/admin/products/new");
     revalidatePath("/admin/products");
@@ -214,6 +223,7 @@ export async function saveProduct(_: unknown, form: FormData): Promise<ActionSta
         : await supabase.from("products").insert(legacyPayload).select("id").single();
     }
     if (result.error) return { error: result.error.code === "23505" ? "Този адрес вече се използва." : result.error.message };
+    invalidateStorefrontTags(STOREFRONT_CACHE_TAGS.products);
     revalidatePath("/admin/products");
     revalidatePath("/", "layout");
     return { success: "Продуктът е запазен.", id: result.data.id };
@@ -225,11 +235,13 @@ export async function saveProduct(_: unknown, form: FormData): Promise<ActionSta
 export async function changeProductStatus(id: string, status: string) {
   const valid = statusSchema.parse(status);
   const { supabase } = await requireAdmin();
-  await supabase.from("products").update({
+  const { error } = await supabase.from("products").update({
     status: valid,
     published_at: valid === "published" ? new Date().toISOString() : null,
     archived_at: valid === "archived" ? new Date().toISOString() : null,
   }).eq("id", id);
+  if (error) throw new Error(`Статусът на продукта не можа да бъде променен: ${error.message}`);
+  invalidateStorefrontTags(STOREFRONT_CACHE_TAGS.products);
   revalidatePath("/admin/products");
 }
 
@@ -247,6 +259,7 @@ async function deleteProductsByIds(ids: string[]): Promise<ActionState> {
       const { error: storageError } = await supabase.storage.from("product-images").remove(paths);
       if (storageError) console.warn("Product storage cleanup failed", { type: storageError.name, message: storageError.message.slice(0, 160) });
     }
+    invalidateStorefrontTags(STOREFRONT_CACHE_TAGS.products);
     revalidatePath("/admin");
     revalidatePath("/admin/products");
     return { success: ids.length === 1 ? "Продуктът беше изтрит." : "Избраните продукти бяха изтрити." };
@@ -305,6 +318,7 @@ export async function registerProductImage(input: {
       byte_size: input.byteSize,
     });
     if (error) return { error: error.message };
+    invalidateStorefrontTags(STOREFRONT_CACHE_TAGS.products);
     revalidatePath(`/admin/products/${input.productId}`);
     revalidatePath("/admin");
     return { success: "Снимката е качена успешно." };
@@ -322,6 +336,7 @@ export async function setPrimaryProductImage(productId: string, imageId: string)
     if (clearError) return { error: clearError.message };
     const { error } = await supabase.from("product_images").update({ is_cover: true }).eq("id", imageId).eq("product_id", productId);
     if (error) return { error: error.message };
+    invalidateStorefrontTags(STOREFRONT_CACHE_TAGS.products);
     revalidatePath(`/admin/products/${productId}`);
     revalidatePath("/admin/products");
     return { success: "Основната снимка е променена." };
@@ -343,6 +358,7 @@ export async function deleteProductImage(productId: string, imageId: string): Pr
       const { data: next } = await supabase.from("product_images").select("id").eq("product_id", productId).order("sort_order").limit(1).maybeSingle();
       if (next) await supabase.from("product_images").update({ is_cover: true }).eq("id", next.id);
     }
+    invalidateStorefrontTags(STOREFRONT_CACHE_TAGS.products);
     revalidatePath(`/admin/products/${productId}`);
     revalidatePath("/admin/products");
     revalidatePath("/admin");
@@ -362,6 +378,7 @@ export async function reorderProductImages(productId: string, orderedIds: string
       const { error } = await supabase.from("product_images").update({ sort_order: sortOrder }).eq("id", id).eq("product_id", productId);
       if (error) return { error: error.message };
     }
+    invalidateStorefrontTags(STOREFRONT_CACHE_TAGS.products);
     revalidatePath(`/admin/products/${productId}`);
     return { success: "Редът на снимките е запазен." };
   } catch (error) {

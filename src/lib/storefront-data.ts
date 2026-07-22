@@ -1,5 +1,4 @@
-import { cache } from "react";
-import { unstable_noStore as noStore } from "next/cache";
+import { unstable_cache } from "next/cache";
 import { createClient as createSupabaseClient, type SupabaseClient } from "@supabase/supabase-js";
 import {
   accessoriesCollection,
@@ -71,13 +70,6 @@ type PublicProductRow = {
   product_images: PublicImageRow[] | null;
 };
 
-type PublicSnapshot = {
-  settings: StorefrontSettings;
-  content: StorefrontContent;
-  categories: PublicCategoryRow[];
-  products: PublicProductRow[];
-};
-
 export const storefrontContact = {
   address: "гр. Варна, бул. Вл. Варненчик 69",
   phone: "+359 888 66 89 77",
@@ -107,6 +99,15 @@ export const fallbackStorefrontContent: StorefrontContent = {
   about_content: null,
 };
 
+export const STOREFRONT_CACHE_TAGS = {
+  settings: "storefront-settings",
+  content: "storefront-content",
+  categories: "storefront-categories",
+  products: "storefront-products",
+} as const;
+
+const STOREFRONT_CACHE_TTL_SECONDS = 60;
+
 let publicClient: SupabaseClient | null = null;
 
 function hasPublicConfig() {
@@ -133,17 +134,13 @@ function isMissingStorefrontColumns(error: { code?: string; message?: string } |
   return error?.code === "42703" || error?.code === "PGRST204" || Boolean(error?.message?.includes("tiktok_url") || error?.message?.includes("accessory_category") || error?.message?.includes("silhouette") || error?.message?.includes("price"));
 }
 
-const getPublicSnapshot = cache(async (): Promise<PublicSnapshot> => {
-  noStore();
-  const supabase = getPublicClient();
-  if (!supabase) {
-    return { settings: fallbackStorefrontSettings, content: fallbackStorefrontContent, categories: [], products: [] };
-  }
+function storefrontReadError(resource: string, message: string) {
+  return new Error(`${resource} не могат да бъдат заредени: ${message}`);
+}
 
-  const [contentResult, categoriesResult] = await Promise.all([
-    supabase.from("site_content").select("hero_title,hero_description,hero_image_path,about_title,about_content").eq("id", true).maybeSingle(),
-    supabase.from("categories").select("id,name,slug,active,sort_order").eq("active", true).order("sort_order"),
-  ]);
+async function loadStorefrontSettings(): Promise<StorefrontSettings> {
+  const supabase = getPublicClient();
+  if (!supabase) return fallbackStorefrontSettings;
 
   let settingsResult = await supabase
     .from("site_settings")
@@ -158,6 +155,82 @@ const getPublicSnapshot = cache(async (): Promise<PublicSnapshot> => {
       .eq("id", true)
       .maybeSingle() as typeof settingsResult;
   }
+
+  if (settingsResult.error) {
+    throw storefrontReadError("Настройките на сайта", settingsResult.error.message);
+  }
+
+  const rawSettings = settingsResult.data as Partial<StorefrontSettings> | null;
+  return {
+    shop_name: optional(rawSettings?.shop_name, fallbackStorefrontSettings.shop_name),
+    default_seo_title: rawSettings?.default_seo_title?.trim() || fallbackStorefrontSettings.default_seo_title,
+    default_meta_description: rawSettings?.default_meta_description?.trim() || fallbackStorefrontSettings.default_meta_description,
+    contact_phone: optional(rawSettings?.contact_phone, fallbackStorefrontSettings.contact_phone),
+    contact_email: optional(rawSettings?.contact_email, fallbackStorefrontSettings.contact_email),
+    address: optional(rawSettings?.address, fallbackStorefrontSettings.address),
+    working_hours: optional(rawSettings?.working_hours, fallbackStorefrontSettings.working_hours),
+    instagram_url: optional(rawSettings?.instagram_url, fallbackStorefrontSettings.instagram_url),
+    facebook_url: optional(rawSettings?.facebook_url, fallbackStorefrontSettings.facebook_url),
+    tiktok_url: optional(rawSettings?.tiktok_url, fallbackStorefrontSettings.tiktok_url),
+    maps_url: optional(rawSettings?.maps_url, fallbackStorefrontSettings.maps_url),
+  };
+}
+
+const getCachedStorefrontSettings = unstable_cache(
+  loadStorefrontSettings,
+  ["storefront-settings-v1"],
+  { revalidate: STOREFRONT_CACHE_TTL_SECONDS, tags: [STOREFRONT_CACHE_TAGS.settings] },
+);
+
+async function loadStorefrontContent(): Promise<StorefrontContent> {
+  const supabase = getPublicClient();
+  if (!supabase) return fallbackStorefrontContent;
+
+  const contentResult = await supabase
+    .from("site_content")
+    .select("hero_title,hero_description,hero_image_path,about_title,about_content")
+    .eq("id", true)
+    .maybeSingle();
+
+  if (contentResult.error) {
+    throw storefrontReadError("Съдържанието на сайта", contentResult.error.message);
+  }
+
+  return { ...fallbackStorefrontContent, ...(contentResult.data as StorefrontContent | null) };
+}
+
+const getCachedStorefrontContent = unstable_cache(
+  loadStorefrontContent,
+  ["storefront-content-v1"],
+  { revalidate: STOREFRONT_CACHE_TTL_SECONDS, tags: [STOREFRONT_CACHE_TAGS.content] },
+);
+
+async function loadStorefrontCategories(): Promise<PublicCategoryRow[]> {
+  const supabase = getPublicClient();
+  if (!supabase) return [];
+
+  const categoriesResult = await supabase
+    .from("categories")
+    .select("id,name,slug,active,sort_order")
+    .eq("active", true)
+    .order("sort_order");
+
+  if (categoriesResult.error) {
+    throw storefrontReadError("Категориите", categoriesResult.error.message);
+  }
+
+  return (categoriesResult.data ?? []) as PublicCategoryRow[];
+}
+
+const getCachedStorefrontCategories = unstable_cache(
+  loadStorefrontCategories,
+  ["storefront-categories-v1"],
+  { revalidate: STOREFRONT_CACHE_TTL_SECONDS, tags: [STOREFRONT_CACHE_TAGS.categories] },
+);
+
+async function loadStorefrontProducts(): Promise<PublicProductRow[]> {
+  const supabase = getPublicClient();
+  if (!supabase) return [];
 
   const extendedProductColumns = "id,name,slug,short_description,description,product_code,sizes,color,material,collection,year,seo_title,meta_description,featured,sort_order,price,silhouette,accessory_category,categories!inner(id,name,slug,active),product_images(storage_path,alt_text,sort_order,is_cover)";
   const baseProductColumns = "id,name,slug,short_description,description,product_code,sizes,color,material,collection,year,seo_title,meta_description,featured,sort_order,categories!inner(id,name,slug,active),product_images(storage_path,alt_text,sort_order,is_cover)";
@@ -180,35 +253,25 @@ const getPublicSnapshot = cache(async (): Promise<PublicSnapshot> => {
       .order("sort_order", { referencedTable: "product_images" }) as typeof productsResult;
   }
 
-  const rawSettings = settingsResult.data as Partial<StorefrontSettings> | null;
-  const settings: StorefrontSettings = {
-    shop_name: optional(rawSettings?.shop_name, fallbackStorefrontSettings.shop_name),
-    default_seo_title: rawSettings?.default_seo_title?.trim() || fallbackStorefrontSettings.default_seo_title,
-    default_meta_description: rawSettings?.default_meta_description?.trim() || fallbackStorefrontSettings.default_meta_description,
-    contact_phone: optional(rawSettings?.contact_phone, fallbackStorefrontSettings.contact_phone),
-    contact_email: optional(rawSettings?.contact_email, fallbackStorefrontSettings.contact_email),
-    address: optional(rawSettings?.address, fallbackStorefrontSettings.address),
-    working_hours: optional(rawSettings?.working_hours, fallbackStorefrontSettings.working_hours),
-    instagram_url: optional(rawSettings?.instagram_url, fallbackStorefrontSettings.instagram_url),
-    facebook_url: optional(rawSettings?.facebook_url, fallbackStorefrontSettings.facebook_url),
-    tiktok_url: optional(rawSettings?.tiktok_url, fallbackStorefrontSettings.tiktok_url),
-    maps_url: optional(rawSettings?.maps_url, fallbackStorefrontSettings.maps_url),
-  };
+  if (productsResult.error) {
+    throw storefrontReadError("Продуктите", productsResult.error.message);
+  }
 
-  return {
-    settings,
-    content: contentResult.error ? fallbackStorefrontContent : { ...fallbackStorefrontContent, ...(contentResult.data as StorefrontContent | null) },
-    categories: categoriesResult.error ? [] : (categoriesResult.data ?? []) as PublicCategoryRow[],
-    products: productsResult.error ? [] : (productsResult.data ?? []) as unknown as PublicProductRow[],
-  };
-});
+  return (productsResult.data ?? []) as unknown as PublicProductRow[];
+}
+
+const getCachedStorefrontProducts = unstable_cache(
+  loadStorefrontProducts,
+  ["storefront-products-v1"],
+  { revalidate: STOREFRONT_CACHE_TTL_SECONDS, tags: [STOREFRONT_CACHE_TAGS.products] },
+);
 
 export async function getStorefrontSettings() {
-  return (await getPublicSnapshot()).settings;
+  return getCachedStorefrontSettings();
 }
 
 export async function getStorefrontContent() {
-  return (await getPublicSnapshot()).content;
+  return getCachedStorefrontContent();
 }
 
 const collectionAliases: Record<string, string[]> = {
@@ -272,11 +335,14 @@ function mapPublicProduct(row: PublicProductRow, fallback: StorefrontCollectionP
   };
 }
 
-export async function getStorefrontCollection(fallback: StorefrontCollection): Promise<StorefrontCollection> {
-  const snapshot = await getPublicSnapshot();
+function buildStorefrontCollection(
+  fallback: StorefrontCollection,
+  categories: PublicCategoryRow[],
+  products: PublicProductRow[],
+): StorefrontCollection {
   const aliases = collectionAliases[fallback.slug] ?? [fallback.slug];
-  const category = snapshot.categories.find((item) => aliases.includes(item.slug));
-  const rows = snapshot.products
+  const category = categories.find((item) => aliases.includes(item.slug));
+  const rows = products
     .filter((product) => {
       const productCategory = categoryOf(product);
       return Boolean(productCategory?.active && aliases.includes(productCategory.slug));
@@ -292,10 +358,22 @@ export async function getStorefrontCollection(fallback: StorefrontCollection): P
   };
 }
 
-export async function getAllStorefrontCollections() {
-  return Promise.all([
-    getStorefrontCollection(bridalCollection),
-    getStorefrontCollection(formalCollection),
-    getStorefrontCollection(accessoriesCollection),
+export async function getStorefrontCollection(fallback: StorefrontCollection): Promise<StorefrontCollection> {
+  const [categories, products] = await Promise.all([
+    getCachedStorefrontCategories(),
+    getCachedStorefrontProducts(),
   ]);
+  return buildStorefrontCollection(fallback, categories, products);
+}
+
+export async function getAllStorefrontCollections() {
+  const [categories, products] = await Promise.all([
+    getCachedStorefrontCategories(),
+    getCachedStorefrontProducts(),
+  ]);
+  return [
+    buildStorefrontCollection(bridalCollection, categories, products),
+    buildStorefrontCollection(formalCollection, categories, products),
+    buildStorefrontCollection(accessoriesCollection, categories, products),
+  ] as const;
 }

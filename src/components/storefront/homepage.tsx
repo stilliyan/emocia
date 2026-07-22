@@ -63,7 +63,7 @@ export async function StorefrontHomepage() {
             fill
             preload
             quality={90}
-            sizes="(max-width: 768px) 280vw, 100vw"
+            sizes="100vw"
             className="storefront-hero__image"
           />
           <div className="storefront-hero__veil" />
