@@ -11,14 +11,18 @@ export function ProductCard({
   alt,
   eyebrow,
   name,
+  price,
   sizes,
+  showCategory = true,
 }: {
   href: string;
   image: string;
   alt: string;
   eyebrow: string;
   name: string;
+  price?: string | null;
   sizes: string;
+  showCategory?: boolean;
 }) {
   return (
     <Link
@@ -34,8 +38,13 @@ export function ProductCard({
           <div className="storefront-collection-card__veil" aria-hidden="true" />
         </div>
         <div className="storefront-collection-card__copy">
-          <span className="storefront-collection-card__eyebrow">{eyebrow}</span>
-          <h3>{name}</h3>
+          {showCategory ? (
+            <span className="storefront-collection-card__eyebrow">{eyebrow}</span>
+          ) : null}
+          <div className="storefront-collection-card__heading">
+            <h3>{name}</h3>
+            {price ? <span className="storefront-collection-card__price">{price}</span> : null}
+          </div>
           <span className="storefront-blog-link-label storefront-collection-card__link-label">
             Разгледай
           </span>

@@ -1,4 +1,5 @@
 import { AppointmentDialog } from "./appointment-dialog";
+import { OrderDialog } from "./order-dialog";
 import { HorizontalDragRail } from "./horizontal-drag-rail";
 import { ProductBackButton } from "./product-back-button";
 import { ProductGallery } from "./product-gallery";
@@ -6,7 +7,7 @@ import { ScrollRevealSection } from "./scroll-reveal-section";
 import { ProductCard } from "./product-card";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
-import type { BridalSilhouette, StorefrontCollection, StorefrontCollectionProduct } from "@/lib/storefront-collections";
+import { accessoryCategoryLabels, formatStorefrontPrice, type BridalSilhouette, type StorefrontCollection, type StorefrontCollectionProduct } from "@/lib/storefront-collections";
 import "./storefront.css";
 
 const silhouetteLabels: Record<BridalSilhouette, string> = {
@@ -36,6 +37,8 @@ export function ProductDetailPage({ collection, product }: ProductDetailPageProp
   const modelDescription = product.silhouette
     ? silhouetteDescriptions[product.silhouette]
     : "По време на пробата ще разгледаме линията, движението и начина, по който моделът стои върху вас.";
+  const formattedPrice = formatStorefrontPrice(product.price);
+  const category = product.category ? accessoryCategoryLabels[product.category] : "Аксесоари";
 
   return (
     <main className="storefront storefront-product-page">
@@ -49,18 +52,29 @@ export function ProductDetailPage({ collection, product }: ProductDetailPageProp
             <h1 id="product-title">{product.name}</h1>
 
             <dl className="storefront-product-info__facts">
-              <div><dt>{isAccessoryCollection ? "Категория" : "Силует"}</dt><dd>{isAccessoryCollection ? "Аксесоар" : silhouette}</dd></div>
-              <div><dt>Колекция</dt><dd>{collection.title}</dd></div>
-              <div><dt>{isAccessoryCollection ? "Консултация" : "Проба"}</dt><dd>{isAccessoryCollection ? "На място в бутика" : "С предварително записан час"}</dd></div>
+              <div><dt>{isAccessoryCollection ? "Категория" : "Силует"}</dt><dd>{isAccessoryCollection ? category : silhouette}</dd></div>
+              <div><dt>{isAccessoryCollection ? "Цена" : "Колекция"}</dt><dd>{isAccessoryCollection ? formattedPrice : collection.title}</dd></div>
+              <div><dt>{isAccessoryCollection ? "Плащане" : "Проба"}</dt><dd>{isAccessoryCollection ? "Наложен платеж" : "С предварително записан час"}</dd></div>
             </dl>
 
-            <AppointmentDialog
-              productName={product.name}
-              className="storefront-button storefront-button--dark storefront-product-info__appointment"
-              ariaLabel={`Запази час за проба на ${product.name}`}
-            >
-              Запази час за проба
-            </AppointmentDialog>
+            {isAccessoryCollection && formattedPrice ? (
+              <OrderDialog
+                productSlug={product.slug}
+                productName={product.name}
+                price={formattedPrice}
+                className="storefront-button storefront-button--dark storefront-product-info__appointment"
+              >
+                Поръчай
+              </OrderDialog>
+            ) : (
+              <AppointmentDialog
+                productName={product.name}
+                className="storefront-button storefront-button--dark storefront-product-info__appointment"
+                ariaLabel={`Запази час за проба на ${product.name}`}
+              >
+                Запази час за проба
+              </AppointmentDialog>
+            )}
 
             <div className="storefront-product-info__details">
               {isAccessoryCollection ? (
@@ -75,7 +89,7 @@ export function ProductDetailPage({ collection, product }: ProductDetailPageProp
                   </details>
                   <details>
                     <summary>Наличност и поръчка</summary>
-                    <p>Свържете се с нас за актуална наличност. При необходимост ще уточним срок за доставка и всички важни детайли преди поръчката.</p>
+                    <p>След заявката ще потвърдим наличността, доставката и крайната сума по телефона. Плащането е с наложен платеж при получаване.</p>
                   </details>
                 </>
               ) : (
@@ -116,6 +130,7 @@ export function ProductDetailPage({ collection, product }: ProductDetailPageProp
                 alt={relatedProduct.alt}
                 eyebrow={collection.title}
                 name={relatedProduct.name}
+                price={formatStorefrontPrice(relatedProduct.price)}
                 sizes="(max-width: 820px) 76vw, 24vw"
               />
             ))}

@@ -84,6 +84,15 @@ export const appointmentRequestSchema = z.object({
 
 export const appointmentStatusSchema = z.enum(["pending", "confirmed", "cancelled"]);
 
+export const orderRequestSchema = z.object({
+  name: z.string().trim().min(2, "Въведете вашето име").max(120, "Името е твърде дълго"),
+  phone: z.string().trim().min(7, "Въведете валиден телефонен номер").max(30, "Телефонът е твърде дълъг"),
+  delivery_details: z.string().trim().min(5, "Въведете град и адрес или офис на куриер").max(500, "Адресът е твърде дълъг"),
+  message: z.string().trim().max(1000, "Съобщението е твърде дълго").optional().or(z.literal("")),
+  product_slug: z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Невалиден артикул"),
+  website: z.string().max(0).optional().or(z.literal("")),
+});
+
 export function reorderImages<T extends { id: string }>(items: T[], activeId: string, overId: string) {
   const from = items.findIndex((item) => item.id === activeId);
   const to = items.findIndex((item) => item.id === overId);

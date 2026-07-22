@@ -2,11 +2,18 @@
 
 import { Check, Grid2X2, SlidersHorizontal, Square, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { BridalSilhouette, StorefrontCollectionProduct } from "@/lib/storefront-collections";
+import {
+  accessoryCategoryLabels,
+  formatStorefrontPrice,
+  type AccessoryCategory,
+  type BridalSilhouette,
+  type StorefrontCollectionProduct,
+} from "@/lib/storefront-collections";
 import { ProductCard } from "./product-card";
 
 type GridView = "standard" | "large";
 type SilhouetteFilter = BridalSilhouette | "all";
+type AccessoryFilter = AccessoryCategory | "all";
 const PRODUCTS_PER_PAGE = 4;
 
 const SILHOUETTES: { value: SilhouetteFilter; label: string }[] = [
@@ -15,6 +22,14 @@ const SILHOUETTES: { value: SilhouetteFilter; label: string }[] = [
   { value: "mermaid", label: "Рибка" },
   { value: "princess", label: "Принцеса" },
   { value: "straight", label: "Права" },
+];
+
+const ACCESSORY_CATEGORIES: { value: AccessoryFilter; label: string }[] = [
+  { value: "all", label: "Всички" },
+  ...Object.entries(accessoryCategoryLabels).map(([value, label]) => ({
+    value: value as AccessoryCategory,
+    label,
+  })),
 ];
 
 function SilhouetteIcon({ type }: { type: SilhouetteFilter }) {
@@ -60,18 +75,26 @@ export function CollectionCatalogue({
 }) {
   const [gridView, setGridView] = useState<GridView>("standard");
   const [silhouette, setSilhouette] = useState<SilhouetteFilter>("all");
+  const [accessoryCategory, setAccessoryCategory] = useState<AccessoryFilter>("all");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PRODUCTS_PER_PAGE);
   const filterTriggerRef = useRef<HTMLButtonElement>(null);
   const filterDialogRef = useRef<HTMLDialogElement>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const hasSilhouetteFilter = products.some((product) => product.silhouette);
+  const hasAccessoryFilter = products.some((product) => product.category);
+  const hasFilter = hasSilhouetteFilter || hasAccessoryFilter;
+  const hasActiveFilter = hasSilhouetteFilter ? silhouette !== "all" : accessoryCategory !== "all";
 
   const filteredProducts = useMemo(() => {
-    return silhouette === "all" || !hasSilhouetteFilter
-      ? products
-      : products.filter((product) => product.silhouette === silhouette);
-  }, [hasSilhouetteFilter, products, silhouette]);
+    if (hasSilhouetteFilter && silhouette !== "all") {
+      return products.filter((product) => product.silhouette === silhouette);
+    }
+    if (hasAccessoryFilter && accessoryCategory !== "all") {
+      return products.filter((product) => product.category === accessoryCategory);
+    }
+    return products;
+  }, [accessoryCategory, hasAccessoryFilter, hasSilhouetteFilter, products, silhouette]);
 
   const visibleProducts = filteredProducts.slice(0, visibleCount);
   const hasMoreProducts = visibleCount < filteredProducts.length;
@@ -121,7 +144,7 @@ export function CollectionCatalogue({
   return (
     <section className="storefront-collection-catalogue" aria-label="Модели в колекцията">
       <div className="storefront-collection-toolbar">
-        {hasSilhouetteFilter ? (
+        {hasFilter ? (
           <div className="storefront-collection-filter">
             <button
               ref={filterTriggerRef}
@@ -135,12 +158,13 @@ export function CollectionCatalogue({
               Филтри
             </button>
 
-            {silhouette !== "all" ? (
+            {hasActiveFilter ? (
               <button
                 className="storefront-collection-filter__reset"
                 type="button"
                 onClick={() => {
                   setSilhouette("all");
+                  setAccessoryCategory("all");
                   setVisibleCount(PRODUCTS_PER_PAGE);
                 }}
               >
@@ -177,7 +201,9 @@ export function CollectionCatalogue({
             >
               <div className="storefront-collection-filter__surface">
                 <header className="storefront-collection-filter__header">
-                  <h2 id="collection-filter-title">Избери силует</h2>
+                  <h2 id="collection-filter-title">
+                    {hasAccessoryFilter ? "Избери категория" : "Избери силует"}
+                  </h2>
                   <button
                     className="storefront-collection-filter__close"
                     type="button"
@@ -188,26 +214,49 @@ export function CollectionCatalogue({
                   </button>
                 </header>
 
-                <fieldset className="storefront-silhouette-filter">
-                  <legend className="sr-only">Силует</legend>
-                  <div className="storefront-silhouette-filter__options" role="radiogroup" aria-label="Филтър по силует">
-                    {SILHOUETTES.map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        role="radio"
-                        aria-checked={silhouette === option.value}
-                        onClick={() => {
-                          setSilhouette(option.value);
-                          setVisibleCount(PRODUCTS_PER_PAGE);
-                          filterDialogRef.current?.close();
-                        }}
-                      >
-                        <SilhouetteIcon type={option.value} />
-                        <span>{option.label}</span>
-                        <Check className="storefront-silhouette-filter__check" aria-hidden="true" />
-                      </button>
-                    ))}
+                <fieldset
+                  className={`storefront-silhouette-filter${hasAccessoryFilter ? " storefront-accessory-filter" : ""}`}
+                >
+                  <legend className="sr-only">
+                    {hasAccessoryFilter ? "Категория" : "Силует"}
+                  </legend>
+                  <div
+                    className="storefront-silhouette-filter__options"
+                    role="radiogroup"
+                    aria-label={hasAccessoryFilter ? "Филтър по категория" : "Филтър по силует"}
+                  >
+                    {(hasAccessoryFilter ? ACCESSORY_CATEGORIES : SILHOUETTES).map((option, index) => {
+                      const checked = hasAccessoryFilter
+                        ? accessoryCategory === option.value
+                        : silhouette === option.value;
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          role="radio"
+                          aria-checked={checked}
+                          onClick={() => {
+                            if (hasAccessoryFilter) {
+                              setAccessoryCategory(option.value as AccessoryFilter);
+                            } else {
+                              setSilhouette(option.value as SilhouetteFilter);
+                            }
+                            setVisibleCount(PRODUCTS_PER_PAGE);
+                            filterDialogRef.current?.close();
+                          }}
+                        >
+                          {hasAccessoryFilter ? (
+                            <span className="storefront-accessory-filter__index" aria-hidden="true">
+                              {String(index + 1).padStart(2, "0")}
+                            </span>
+                          ) : (
+                            <SilhouetteIcon type={option.value as SilhouetteFilter} />
+                          )}
+                          <span>{option.label}</span>
+                          <Check className="storefront-silhouette-filter__check" aria-hidden="true" />
+                        </button>
+                      );
+                    })}
                   </div>
                 </fieldset>
               </div>
@@ -246,13 +295,17 @@ export function CollectionCatalogue({
             alt={product.alt}
             eyebrow={collectionTitle}
             name={product.name}
+            price={formatStorefrontPrice(product.price)}
+            showCategory={false}
             sizes={gridView === "large" ? "(max-width: 680px) 100vw, 50vw" : "(max-width: 680px) 50vw, (max-width: 1100px) 33vw, 25vw"}
           />
         ))}
       </div>
 
       {visibleProducts.length === 0 ? (
-        <p className="storefront-collection-empty" role="status">Няма модели с този силует.</p>
+        <p className="storefront-collection-empty" role="status">
+          {hasAccessoryFilter ? "Скоро ще добавим артикули в тази категория." : "Няма модели с този силует."}
+        </p>
       ) : null}
 
       {hasMoreProducts ? <div ref={loadMoreRef} className="storefront-collection-load-more" aria-hidden="true" /> : null}

@@ -1,4 +1,5 @@
 export type BridalSilhouette = "a-line" | "mermaid" | "princess" | "straight";
+export type AccessoryCategory = "veils" | "hair" | "jewellery" | "gloves" | "glasses" | "shoes" | "decorations";
 
 export type StorefrontCollectionProduct = {
   name: string;
@@ -6,6 +7,8 @@ export type StorefrontCollectionProduct = {
   image: string;
   alt: string;
   silhouette?: BridalSilhouette;
+  category?: AccessoryCategory;
+  price?: number;
 };
 
 export type StorefrontCollection = {
@@ -81,11 +84,26 @@ export const accessoriesCollection: StorefrontCollection = {
   heroImage: "/storefront/gallery/client-08.webp",
   heroAlt: "Булчински аксесоари от селекцията на Бутик Емоция",
   products: [
-    { name: "Воал Ефир", slug: "voal-efir", image: "/storefront/gallery/client-01.webp", alt: "Булчински воал Ефир" },
-    { name: "Тиара Луна", slug: "tiara-luna", image: "/storefront/gallery/client-02.webp", alt: "Булчинска тиара Луна" },
-    { name: "Фиба Перла", slug: "fiba-perla", image: "/storefront/gallery/client-08.webp", alt: "Булчинска фиба Перла" },
-    { name: "Колие Сияние", slug: "kolie-siyanie", image: "/storefront/gallery/client-03.webp", alt: "Елегантно колие Сияние" },
-    { name: "Обеци Аурора", slug: "obeci-aurora", image: "/storefront/gallery/client-04.webp", alt: "Елегантни обеци Аурора" },
-    { name: "Ръкавици Селин", slug: "rukavici-celine", image: "/storefront/gallery/client-07.webp", alt: "Булчински ръкавици Селин" },
+    { name: "Воал Ефир", slug: "voal-efir", image: "/storefront/gallery/client-01.webp", alt: "Булчински воал Ефир", category: "veils", price: 149 },
+    { name: "Тиара Луна", slug: "tiara-luna", image: "/storefront/gallery/client-02.webp", alt: "Булчинска тиара Луна", category: "hair", price: 89 },
+    { name: "Фиба Перла", slug: "fiba-perla", image: "/storefront/gallery/client-08.webp", alt: "Булчинска фиба Перла", category: "hair", price: 49 },
+    { name: "Колие Сияние", slug: "kolie-siyanie", image: "/storefront/gallery/client-03.webp", alt: "Елегантно колие Сияние", category: "jewellery", price: 79 },
+    { name: "Обеци Аурора", slug: "obeci-aurora", image: "/storefront/gallery/client-04.webp", alt: "Елегантни обеци Аурора", category: "jewellery", price: 59 },
+    { name: "Ръкавици Селин", slug: "rukavici-celine", image: "/storefront/gallery/client-07.webp", alt: "Булчински ръкавици Селин", category: "gloves", price: 69 },
   ],
 };
+
+export const accessoryCategoryLabels: Record<AccessoryCategory, string> = {
+  veils: "Воали",
+  hair: "Украси за коса",
+  jewellery: "Обеци и бижута",
+  gloves: "Ръкавици",
+  glasses: "Чаши",
+  shoes: "Обувки",
+  decorations: "Украси",
+};
+
+export function formatStorefrontPrice(price?: number) {
+  if (price === undefined) return null;
+  return `${new Intl.NumberFormat("bg-BG", { maximumFractionDigits: 0 }).format(price)} лв.`;
+}

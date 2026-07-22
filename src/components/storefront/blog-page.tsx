@@ -1,4 +1,3 @@
-import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { blogArticles } from "@/lib/storefront-blog";
@@ -54,9 +53,7 @@ export function StorefrontBlogPage() {
               <BlogMeta article={featuredArticle} />
               <h3>{featuredArticle.title}</h3>
               <p>{featuredArticle.excerpt}</p>
-              <span className="storefront-blog-link-label">
-                Прочети статията <ArrowUpRight aria-hidden="true" />
-              </span>
+              <span className="storefront-blog-link-label">Прочети статията</span>
             </article>
           </Link>
 
@@ -75,9 +72,7 @@ export function StorefrontBlogPage() {
                   <BlogMeta article={article} />
                   <h3>{article.title}</h3>
                   <p>{article.excerpt}</p>
-                  <span className="storefront-blog-link-label">
-                    Прочети <ArrowUpRight aria-hidden="true" />
-                  </span>
+                  <span className="storefront-blog-link-label">Прочети</span>
                 </article>
               </Link>
             ))}
