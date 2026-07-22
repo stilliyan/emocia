@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import { StorefrontPlaceholderPage } from "@/components/storefront/storefront-placeholder-page";
+import { StorefrontCollectionPage } from "@/components/storefront/collection-page";
+import { accessoriesCollection } from "@/lib/storefront-collections";
 
-export const metadata: Metadata = { title: "Аксесоари | Бутик Емоция" };
+export const metadata: Metadata = {
+  title: "Аксесоари | Бутик Емоция",
+  description: "Аксесоари и финални детайли за вашата визия от Бутик Емоция, Варна.",
+};
 
 export default function AccessoriesPage() {
-  return <StorefrontPlaceholderPage eyebrow="Детайли" title="Аксесоари" description="Финалните детайли за вашата визия. Страницата се подготвя." />;
+  return <StorefrontCollectionPage collection={accessoriesCollection} />;
 }

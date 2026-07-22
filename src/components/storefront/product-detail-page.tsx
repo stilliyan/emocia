@@ -29,6 +29,8 @@ type ProductDetailPageProps = {
 };
 
 export function ProductDetailPage({ collection, product }: ProductDetailPageProps) {
+  const isBridalCollection = collection.slug === "bulchinski-rokli";
+  const isAccessoryCollection = collection.kind === "accessories";
   const relatedProducts = collection.products.filter((item) => item.slug !== product.slug).slice(0, 4);
   const silhouette = product.silhouette ? silhouetteLabels[product.silhouette] : "Индивидуален силует";
   const modelDescription = product.silhouette
@@ -50,9 +52,9 @@ export function ProductDetailPage({ collection, product }: ProductDetailPageProp
             <h1 id="product-title">{product.name}</h1>
 
             <dl className="storefront-product-info__facts">
-              <div><dt>Силует</dt><dd>{silhouette}</dd></div>
+              <div><dt>{isAccessoryCollection ? "Категория" : "Силует"}</dt><dd>{isAccessoryCollection ? "Аксесоар" : silhouette}</dd></div>
               <div><dt>Колекция</dt><dd>{collection.title}</dd></div>
-              <div><dt>Проба</dt><dd>С предварително записан час</dd></div>
+              <div><dt>{isAccessoryCollection ? "Консултация" : "Проба"}</dt><dd>{isAccessoryCollection ? "На място в бутика" : "С предварително записан час"}</dd></div>
             </dl>
 
             <AppointmentDialog
@@ -64,18 +66,39 @@ export function ProductDetailPage({ collection, product }: ProductDetailPageProp
             </AppointmentDialog>
 
             <div className="storefront-product-info__details">
-              <details open>
-                <summary>За модела</summary>
-                <p>{modelDescription}</p>
-              </details>
-              <details>
-                <summary>Как протича пробата</summary>
-                <p>След заявката ще се свържем с вас, за да потвърдим часа и модела. По време на срещата наш консултант ще ви помогне да сравните силуети, комфорт и възможности за корекции.</p>
-              </details>
-              <details>
-                <summary>Размер и подготовка</summary>
-                <p>Не е необходимо сами да определяте булчинския си размер. Носете гладко бельо в телесен цвят и обувки с височина, близка до планираната. Когато изберете роклята, ще вземем точните мерки и ще обсъдим необходимите корекции.</p>
-              </details>
+              {isAccessoryCollection ? (
+                <>
+                  <details open>
+                    <summary>За аксесоара</summary>
+                    <p>Фин детайл, подбран да допълни роклята, без да отнема вниманието от цялостната ви визия.</p>
+                  </details>
+                  <details>
+                    <summary>Как да го съчетаем</summary>
+                    <p>В бутика ще го разгледаме заедно с избраната рокля и ще преценим пропорцията, нюанса и начина, по който стои в движение.</p>
+                  </details>
+                  <details>
+                    <summary>Наличност и поръчка</summary>
+                    <p>Свържете се с нас за актуална наличност. При необходимост ще уточним срок за доставка и всички важни детайли преди поръчката.</p>
+                  </details>
+                </>
+              ) : (
+                <>
+                  <details open>
+                    <summary>За модела</summary>
+                    <p>{modelDescription}</p>
+                  </details>
+                  <details>
+                    <summary>Как протича пробата</summary>
+                    <p>След заявката ще се свържем с вас, за да потвърдим часа и модела. По време на срещата наш консултант ще ви помогне да сравните силуети, комфорт и възможности за корекции.</p>
+                  </details>
+                  <details>
+                    <summary>Размер и подготовка</summary>
+                    <p>{isBridalCollection
+                      ? "Не е необходимо сами да определяте булчинския си размер. Носете гладко бельо в телесен цвят и обувки с височина, близка до планираната. Когато изберете роклята, ще вземем точните мерки и ще обсъдим необходимите корекции."
+                      : "Не е необходимо сами да определяте размера си. Ако вече сте избрали обувки за повода, носете ги или донесете чифт с подобна височина. Ще вземем точните мерки и ще обсъдим необходимите корекции."}</p>
+                  </details>
+                </>
+              )}
             </div>
           </aside>
 

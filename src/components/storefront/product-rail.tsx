@@ -7,7 +7,7 @@ export function ProductRail() {
     <section id="нови-модели" className="storefront-products" aria-labelledby="new-products-title">
       <h2 id="new-products-title">Нови рокли в бутика</h2>
       <div className="storefront-products__rail">
-        {bridalCollection.products.slice(0, 7).map((product, index) => (
+        {bridalCollection.products.slice(0, 7).map((product) => (
           <Link
             href={`/${bridalCollection.slug}/${product.slug}`}
             className="storefront-collection-card-link"
@@ -20,7 +20,6 @@ export function ProductRail() {
                   alt={product.alt}
                   fill
                   sizes="(max-width: 640px) 76vw, (max-width: 1024px) 38vw, 23vw"
-                  priority={index < 2}
                 />
                 <div className="storefront-collection-card__veil" aria-hidden="true" />
                 <span className="storefront-collection-card__action" aria-hidden="true">

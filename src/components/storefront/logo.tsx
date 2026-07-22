@@ -14,7 +14,7 @@ export function StorefrontLogo({
       aria-label="Бутик Емоция — начална страница"
       className={`storefront-logo ${inverted ? "storefront-logo--inverted" : ""}`}
     >
-      <Image className="storefront-logo__image storefront-logo__image--default" src="/storefront/logo.svg" alt="Бутик Емоция" width={308} height={105} priority />
+      <Image className="storefront-logo__image storefront-logo__image--default" src="/storefront/logo.svg" alt="Бутик Емоция" width={308} height={105} loading="eager" />
       {alternateSrc ? (
         <Image
           aria-hidden="true"
@@ -23,7 +23,7 @@ export function StorefrontLogo({
           alt=""
           width={193}
           height={66}
-          priority
+          loading="eager"
         />
       ) : null}
     </Link>

@@ -5,10 +5,9 @@ import "./storefront.css";
 type StorefrontPlaceholderPageProps = {
   eyebrow: string;
   title: string;
-  description: string;
 };
 
-export function StorefrontPlaceholderPage({ eyebrow, title, description }: StorefrontPlaceholderPageProps) {
+export function StorefrontPlaceholderPage({ eyebrow, title }: StorefrontPlaceholderPageProps) {
   return (
     <main className="storefront storefront-placeholder-page">
       <section className="storefront-placeholder-page__hero">
@@ -16,7 +15,6 @@ export function StorefrontPlaceholderPage({ eyebrow, title, description }: Store
         <div className="storefront-placeholder-page__intro">
           <span>{eyebrow}</span>
           <h1>{title}</h1>
-          <p>{description}</p>
         </div>
       </section>
       <div className="storefront-content-stack">

@@ -9,6 +9,7 @@ export type StorefrontCollectionProduct = {
 };
 
 export type StorefrontCollection = {
+  kind: "dresses" | "accessories";
   slug: string;
   eyebrow: string;
   title: string;
@@ -19,6 +20,7 @@ export type StorefrontCollection = {
 };
 
 export const bridalCollection: StorefrontCollection = {
+  kind: "dresses",
   slug: "bulchinski-rokli",
   eyebrow: "Колекция 2026",
   title: "Булчински рокли",
@@ -46,5 +48,44 @@ export const bridalCollection: StorefrontCollection = {
     { name: "Рокля Валентина", slug: "valentina", image: "/storefront/product-lowe.jpg", alt: "Булчинска рокля Валентина", silhouette: "princess" },
     { name: "Рокля Виола", slug: "viola", image: "/storefront/product-preston.jpg", alt: "Булчинска рокля Виола", silhouette: "mermaid" },
     { name: "Рокля Зара", slug: "zara", image: "/storefront/product-willis.jpg", alt: "Булчинска рокля Зара", silhouette: "straight" },
+  ],
+};
+
+export const formalCollection: StorefrontCollection = {
+  kind: "dresses",
+  slug: "oficialni-rokli",
+  eyebrow: "Нова селекция",
+  title: "Официални рокли",
+  description: "Елегантни модели за балове, сватби и специални вечери, подбрани с внимание към силуета и движението.",
+  heroImage: "/storefront/gallery/client-04.webp",
+  heroAlt: "Елегантна официална рокля от селекцията на Бутик Емоция",
+  products: [
+    { name: "Рокля Амалия", slug: "amalia", image: "/storefront/gallery/client-03.webp", alt: "Официална рокля Амалия", silhouette: "straight" },
+    { name: "Рокля Селеста", slug: "celesta", image: "/storefront/gallery/client-04.webp", alt: "Официална рокля Селеста", silhouette: "mermaid" },
+    { name: "Рокля Елиана", slug: "eliana", image: "/storefront/gallery/client-05.webp", alt: "Официална рокля Елиана", silhouette: "straight" },
+    { name: "Рокля Изабел", slug: "isabel", image: "/storefront/gallery/client-06.webp", alt: "Официална рокля Изабел", silhouette: "mermaid" },
+    { name: "Рокля Лорена", slug: "lorena", image: "/storefront/gallery/client-07.webp", alt: "Официална рокля Лорена", silhouette: "a-line" },
+    { name: "Рокля Ноеми", slug: "noemi", image: "/storefront/gallery/client-10.webp", alt: "Официална рокля Ноеми", silhouette: "straight" },
+    { name: "Рокля Рафаела", slug: "rafaela", image: "/storefront/gallery/client-11.webp", alt: "Официална рокля Рафаела", silhouette: "mermaid" },
+    { name: "Рокля Сабрина", slug: "sabrina", image: "/storefront/gallery/client-12.webp", alt: "Официална рокля Сабрина", silhouette: "straight" },
+    { name: "Рокля Виолета", slug: "violeta", image: "/storefront/gallery/client-13.webp", alt: "Официална рокля Виолета", silhouette: "a-line" },
+  ],
+};
+
+export const accessoriesCollection: StorefrontCollection = {
+  kind: "accessories",
+  slug: "aksesoari",
+  eyebrow: "Финални детайли",
+  title: "Аксесоари",
+  description: "Подбрани акценти, които завършват визията ви с лекота и лично усещане.",
+  heroImage: "/storefront/gallery/client-08.webp",
+  heroAlt: "Булчински аксесоари от селекцията на Бутик Емоция",
+  products: [
+    { name: "Воал Ефир", slug: "voal-efir", image: "/storefront/gallery/client-01.webp", alt: "Булчински воал Ефир" },
+    { name: "Тиара Луна", slug: "tiara-luna", image: "/storefront/gallery/client-02.webp", alt: "Булчинска тиара Луна" },
+    { name: "Фиба Перла", slug: "fiba-perla", image: "/storefront/gallery/client-08.webp", alt: "Булчинска фиба Перла" },
+    { name: "Колие Сияние", slug: "kolie-siyanie", image: "/storefront/gallery/client-03.webp", alt: "Елегантно колие Сияние" },
+    { name: "Обеци Аурора", slug: "obeci-aurora", image: "/storefront/gallery/client-04.webp", alt: "Елегантни обеци Аурора" },
+    { name: "Ръкавици Селин", slug: "rukavici-celine", image: "/storefront/gallery/client-07.webp", alt: "Булчински ръкавици Селин" },
   ],
 };

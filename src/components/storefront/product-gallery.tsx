@@ -5,6 +5,7 @@ import { Maximize2, X } from "lucide-react";
 import { type MouseEvent, useRef, useState } from "react";
 import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { StorefrontCollectionProduct } from "@/lib/storefront-collections";
+import { usePrefersReducedMotion } from "./use-prefers-reduced-motion";
 
 type ProductGalleryProps = {
   product: StorefrontCollectionProduct;
@@ -18,6 +19,7 @@ const galleryViews = [
 ] as const;
 
 export function ProductGallery({ product }: ProductGalleryProps) {
+  const prefersReducedMotion = usePrefersReducedMotion();
   const [open, setOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [lightboxSlide, setLightboxSlide] = useState(0);
@@ -83,7 +85,10 @@ export function ProductGallery({ product }: ProductGalleryProps) {
           : Math.round(gallery.scrollLeft / gallery.clientWidth),
       ),
     );
-    gallery.scrollTo({ left: slide * gallery.clientWidth, behavior: "smooth" });
+    gallery.scrollTo({
+      left: slide * gallery.clientWidth,
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+    });
   };
 
   return (
@@ -121,7 +126,7 @@ export function ProductGallery({ product }: ProductGalleryProps) {
                 src={product.image}
                 alt={view.decorative ? "" : product.alt}
                 fill
-                priority={view.priority}
+                preload={view.priority}
                 draggable={false}
                 sizes="(max-width: 768px) 100vw, 38vw"
               />
@@ -186,7 +191,7 @@ export function ProductGallery({ product }: ProductGalleryProps) {
                 src={product.image}
                 alt={`${product.alt}, изображение ${index + 1}`}
                 fill
-                priority={index === lightboxSlide}
+                loading={index === lightboxSlide ? "eager" : "lazy"}
                 sizes="100vw"
                 draggable={false}
               />

@@ -1,8 +1,16 @@
 import type { Metadata } from "next";
-import { StorefrontPlaceholderPage } from "@/components/storefront/storefront-placeholder-page";
+import { ContactPage } from "@/components/storefront/contact-page";
 
-export const metadata: Metadata = { title: "Контакти | Бутик Емоция" };
+export const metadata: Metadata = {
+  title: "Контакти | Бутик Емоция",
+  description: "Свържете се с Бутик Емоция във Варна, запазете час за проба и намерете адрес, телефон и работно време.",
+  openGraph: {
+    title: "Контакти | Бутик Емоция",
+    description: "Запазете час за лична проба в Бутик Емоция във Варна.",
+    images: ["/storefront/contact-hero.webp"],
+  },
+};
 
 export default function ContactsPage() {
-  return <StorefrontPlaceholderPage eyebrow="Бутик Емоция" title="Контакти" description="Свържете се с нас, за да планираме вашето посещение. Страницата се подготвя." />;
+  return <ContactPage />;
 }

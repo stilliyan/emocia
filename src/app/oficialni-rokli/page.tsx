@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import { StorefrontPlaceholderPage } from "@/components/storefront/storefront-placeholder-page";
+import { StorefrontCollectionPage } from "@/components/storefront/collection-page";
+import { formalCollection } from "@/lib/storefront-collections";
 
-export const metadata: Metadata = { title: "Официални рокли | Бутик Емоция" };
+export const metadata: Metadata = {
+  title: "Официални рокли | Бутик Емоция",
+  description: "Подбрани официални рокли за специални поводи в Бутик Емоция, Варна.",
+};
 
 export default function FormalDressesPage() {
-  return <StorefrontPlaceholderPage eyebrow="Колекции" title="Официални рокли" description="Подбрани модели за специалните ви поводи. Страницата се подготвя." />;
+  return <StorefrontCollectionPage collection={formalCollection} />;
 }

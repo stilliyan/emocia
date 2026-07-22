@@ -64,7 +64,7 @@ export function CollectionCatalogue({
   const filterTriggerRef = useRef<HTMLButtonElement>(null);
   const filterDialogRef = useRef<HTMLDialogElement>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
-  const hasSilhouetteFilter = collectionSlug === "bulchinski-rokli";
+  const hasSilhouetteFilter = products.some((product) => product.silhouette);
 
   const filteredProducts = useMemo(() => {
     return silhouette === "all" || !hasSilhouetteFilter

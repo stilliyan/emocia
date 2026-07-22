@@ -5,11 +5,20 @@ import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StorefrontLogo } from "./logo";
-import { isPublicNavigationActive, publicNavigation } from "./public-navigation";
+import { isPublicNavigationActive } from "./public-navigation";
 
 type SiteHeaderProps = {
   variant?: "overlay" | "light";
 };
+
+const desktopNavigation = [
+  { label: "Булчински рокли", href: "/bulchinski-rokli" },
+  { label: "Официални рокли", href: "/oficialni-rokli" },
+  { label: "Аксесоари", href: "/aksesoari" },
+  { label: "Галерия", href: "/galeriya" },
+  { label: "Съвети", href: "/blog" },
+  { label: "Контакти", href: "/kontakti" },
+] as const;
 
 export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
   const pathname = usePathname();
@@ -17,6 +26,7 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileHidden, setMobileHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const mobileDrawerRef = useRef<HTMLDivElement>(null);
   const mobileMenuToggleRef = useRef<HTMLButtonElement>(null);
   const mobileMenuCloseRef = useRef<HTMLButtonElement>(null);
   const closeMobileMenu = useCallback(() => {
@@ -28,13 +38,40 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
 
     const previousOverflow = document.body.style.overflow;
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      closeMobileMenu();
-      mobileMenuToggleRef.current?.focus();
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeMobileMenu();
+        mobileMenuToggleRef.current?.focus();
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+
+      const focusableElements = Array.from(
+        mobileDrawerRef.current?.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ) ?? [],
+      );
+      const firstFocusable = focusableElements[0];
+      const lastFocusable = focusableElements.at(-1);
+
+      if (!firstFocusable || !lastFocusable) {
+        event.preventDefault();
+        return;
+      }
+
+      if (event.shiftKey && document.activeElement === firstFocusable) {
+        event.preventDefault();
+        lastFocusable.focus();
+      } else if (!event.shiftKey && document.activeElement === lastFocusable) {
+        event.preventDefault();
+        firstFocusable.focus();
+      }
     };
 
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", handleKeyDown);
+    requestAnimationFrame(() => mobileMenuCloseRef.current?.focus());
 
     return () => {
       document.body.style.overflow = previousOverflow;
@@ -141,12 +178,12 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
       <header className={`storefront-header${isLight ? " storefront-header--light" : ""}${scrolled ? " storefront-header--scrolled" : ""}${mobileHidden ? " storefront-header--mobile-hidden" : ""}`}>
         <StorefrontLogo inverted alternateSrc="/storefront/logo-dark.svg" />
         <nav aria-label="Основна навигация" className="storefront-header__desktop-nav">
-          {publicNavigation.map(({ label, href }) => (
+          {desktopNavigation.map(({ label, href }) => (
             <Link
               key={href}
               href={href}
               aria-current={isPublicNavigationActive(pathname, href) ? "page" : undefined}
-              className={href === "/kontakti" ? "storefront-header__contact" : undefined}
+              className="storefront-header__nav-link"
             >
               {label}
             </Link>
@@ -159,6 +196,7 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
             className="storefront-header__mobile-toggle"
             aria-label="Отвори меню"
             aria-expanded={mobileMenuOpen}
+            aria-controls="storefront-mobile-menu"
             onClick={(event) => {
               setMobileMenuOpen(true);
               if (event.detail === 0) {
@@ -182,54 +220,65 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
       </header>
 
       <div
+        id="storefront-mobile-menu"
+        ref={mobileDrawerRef}
         className={`storefront storefront-mobile-drawer${mobileMenuOpen ? " storefront-mobile-drawer--open" : ""}`}
         role="dialog"
         aria-modal="true"
         aria-label="Мобилно меню"
         aria-hidden={!mobileMenuOpen}
         inert={!mobileMenuOpen}
+        onPointerDown={(event) => {
+          if (event.target !== event.currentTarget) return;
+          closeMobileMenu();
+          requestAnimationFrame(() => mobileMenuToggleRef.current?.focus());
+        }}
       >
-        <div className="storefront-mobile-drawer__header">
-          <span className="storefront-mobile-drawer__title">Меню</span>
-          <button
-            ref={mobileMenuCloseRef}
-            type="button"
-            className="storefront-mobile-drawer__close"
-            aria-label="Затвори меню"
-            onClick={(event) => {
-              closeMobileMenu();
-              if (event.detail === 0) {
-                mobileMenuToggleRef.current?.focus();
-              } else {
-                mobileMenuToggleRef.current?.blur();
-              }
-            }}
-          >
-            <X aria-hidden="true" />
-          </button>
-        </div>
+        <div className="storefront-mobile-drawer__panel">
+          <div className="storefront-mobile-drawer__header">
+            <div className="storefront-mobile-drawer__brand">
+              <StorefrontLogo alternateSrc="/storefront/logo-dark.svg" />
+            </div>
+            <button
+              ref={mobileMenuCloseRef}
+              type="button"
+              className="storefront-mobile-drawer__close"
+              aria-label="Затвори меню"
+              onClick={(event) => {
+                closeMobileMenu();
+                if (event.detail === 0) {
+                  mobileMenuToggleRef.current?.focus();
+                } else {
+                  mobileMenuToggleRef.current?.blur();
+                }
+              }}
+            >
+              <X aria-hidden="true" />
+            </button>
+          </div>
 
-        <nav aria-label="Мобилна навигация" className="storefront-mobile-drawer__links">
-          {publicNavigation.map(({ label, href }) => (
+          <nav aria-label="Мобилна навигация" className="storefront-mobile-drawer__links">
+            {desktopNavigation.map(({ label, href }) => (
+              <Link
+                key={href}
+                href={href}
+                aria-current={isPublicNavigationActive(pathname, href) ? "page" : undefined}
+                onClick={closeMobileMenu}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="storefront-mobile-drawer__footer">
             <Link
-              key={href}
-              href={href}
-              aria-current={isPublicNavigationActive(pathname, href) ? "page" : undefined}
+              href="/kontakti"
+              className="storefront-button storefront-button--dark storefront-mobile-drawer__appointment"
               onClick={closeMobileMenu}
             >
-              {label}
+              Запази час за проба
             </Link>
-          ))}
-        </nav>
-
-        <div className="storefront-mobile-drawer__footer">
-          <Link
-            href="/kontakti"
-            className="storefront-button storefront-button--dark storefront-mobile-drawer__appointment"
-            onClick={closeMobileMenu}
-          >
-            Запази час за проба
-          </Link>
+          </div>
         </div>
       </div>
     </>

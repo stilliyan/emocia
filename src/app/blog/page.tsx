@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
-import { StorefrontPlaceholderPage } from "@/components/storefront/storefront-placeholder-page";
+import { StorefrontBlogPage } from "@/components/storefront/blog-page";
 
-export const metadata: Metadata = { title: "Съвети за булката | Бутик Емоция" };
+export const metadata: Metadata = {
+  title: "Съвети за булката | Бутик Емоция",
+  description: "Практични съвети за избора на рокля, пробата и сватбения ден от Бутик Емоция.",
+};
 
 export default function BlogPage() {
-  return <StorefrontPlaceholderPage eyebrow="Полезно за вас" title="Съвети за булката" description="Практични насоки за избора, пробата и специалния ден. Страницата се подготвя." />;
+  return <StorefrontBlogPage />;
 }

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import * as React from "react";
+import { usePrefersReducedMotion } from "./use-prefers-reduced-motion";
 
 export interface ScrollReelTestimonial {
   quote: string;
@@ -19,9 +20,25 @@ interface ScrollReelTestimonialsProps {
 const EXIT_MS = 240;
 const SLIDE_MS = 800;
 const AUTOPLAY_MS = 6000;
+const CELL = 190;
+const GAP = 12;
+const STEP = 3 * (CELL + GAP);
+const EASE_IN_OUT = "cubic-bezier(.65,0,.35,1)";
 
 function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
+}
+
+function MosaicCell() {
+  return <div aria-hidden="true" className="storefront-testimonial-reel__mosaic-cell" />;
+}
+
+function MosaicImage({ src, alt }: { src: string; alt?: string }) {
+  return (
+    <div className="storefront-testimonial-reel__mosaic-image">
+      <Image src={src} alt={alt ?? ""} fill sizes="190px" />
+    </div>
+  );
 }
 
 function Chars({ text, startIndex, staggerMs }: { text: string; startIndex: number; staggerMs: number }) {
@@ -67,9 +84,11 @@ export function ScrollReelTestimonials({
   charStaggerMs = 6,
   className,
 }: ScrollReelTestimonialsProps) {
+  const prefersReducedMotion = usePrefersReducedMotion();
   const [index, setIndex] = React.useState(0);
   const [displayIndex, setDisplayIndex] = React.useState(0);
   const [exiting, setExiting] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
   const [paused, setPaused] = React.useState(false);
   const animating = React.useRef(false);
   const autoplayDirection = React.useRef<1 | -1>(1);
@@ -78,7 +97,9 @@ export function ScrollReelTestimonials({
 
   React.useEffect(() => {
     const timeoutIds = timeouts.current;
+    const frame = requestAnimationFrame(() => requestAnimationFrame(() => setMounted(true)));
     return () => {
+      cancelAnimationFrame(frame);
       timeoutIds.forEach(clearTimeout);
     };
   }, []);
@@ -86,6 +107,16 @@ export function ScrollReelTestimonials({
   const transitionTo = React.useCallback(
     (next: number) => {
       if (animating.current || next < 0 || next >= count || next === index) return;
+
+      if (prefersReducedMotion) {
+        timeouts.current.forEach(clearTimeout);
+        timeouts.current = [];
+        animating.current = false;
+        setIndex(next);
+        setDisplayIndex(next);
+        setExiting(false);
+        return;
+      }
 
       animating.current = true;
       setIndex(next);
@@ -102,7 +133,7 @@ export function ScrollReelTestimonials({
         }, SLIDE_MS),
       );
     },
-    [count, index],
+    [count, index, prefersReducedMotion],
   );
 
   const paginate = React.useCallback(
@@ -114,7 +145,7 @@ export function ScrollReelTestimonials({
   );
 
   React.useEffect(() => {
-    if (paused || count < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (paused || count < 2 || prefersReducedMotion) return;
 
     const timer = window.setTimeout(() => {
       let next = index + autoplayDirection.current;
@@ -128,7 +159,7 @@ export function ScrollReelTestimonials({
     }, AUTOPLAY_MS);
 
     return () => window.clearTimeout(timer);
-  }, [count, index, paused, transitionTo]);
+  }, [count, index, paused, prefersReducedMotion, transitionTo]);
 
   const onKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "ArrowRight") {
@@ -141,9 +172,30 @@ export function ScrollReelTestimonials({
     }
   };
 
+  const middleItems = React.useMemo(() => {
+    const items: Array<{ type: "cell" } | { type: "image"; index: number }> = [];
+
+    for (let item = 0; item < 3; item += 1) items.push({ type: "cell" });
+    testimonials.forEach((_, testimonialIndex) => {
+      items.push({ type: "image", index: testimonialIndex });
+      if (testimonialIndex < count - 1) items.push({ type: "cell" }, { type: "cell" });
+    });
+    for (let item = 0; item < 3; item += 1) items.push({ type: "cell" });
+
+    return items;
+  }, [count, testimonials]);
+
   if (!count) return null;
 
-  const current = testimonials[displayIndex] ?? testimonials[0];
+  const sideCellCount = middleItems.length;
+  const middleY = ((count - 1) / 2 - index) * STEP;
+  const sideY = -middleY;
+  const activeDisplayIndex = prefersReducedMotion ? index : displayIndex;
+  const current = testimonials[activeDisplayIndex] ?? testimonials[0];
+  const columnStyle = (y: number): React.CSSProperties => ({
+    transform: `translateY(${y}px)`,
+    transition: mounted && !prefersReducedMotion ? `transform ${SLIDE_MS}ms ${EASE_IN_OUT}` : "none",
+  });
 
   return (
     <div
@@ -152,8 +204,6 @@ export function ScrollReelTestimonials({
       aria-label="Отзиви от клиенти"
       tabIndex={0}
       onKeyDown={onKeyDown}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false);
@@ -161,18 +211,31 @@ export function ScrollReelTestimonials({
       className={cn("storefront-testimonial-reel", className)}
     >
       <div className="storefront-testimonial-reel__visual">
-        <div key={displayIndex} className="storefront-testimonial-reel__image">
-          <Image
-            src={current.image}
-            alt={current.alt ?? ""}
-            fill
-            sizes="(max-width: 767px) calc(100vw - 16px), 50vw"
-            className="storefront-testimonial-reel__photo"
-          />
+        <div className="storefront-testimonial-reel__mosaic" aria-hidden="true">
+          {[sideY, middleY, sideY].map((offset, columnIndex) => (
+            <div
+              key={columnIndex}
+              className="storefront-testimonial-reel__mosaic-column"
+              style={columnStyle(offset)}
+            >
+              {columnIndex === 1
+                ? middleItems.map((item, itemIndex) =>
+                    item.type === "image" ? (
+                      <MosaicImage
+                        key={`${item.type}-${itemIndex}`}
+                        src={testimonials[item.index].image}
+                        alt={testimonials[item.index].alt}
+                      />
+                    ) : (
+                      <MosaicCell key={`${item.type}-${itemIndex}`} />
+                    ),
+                  )
+                : Array.from({ length: sideCellCount }).map((_, itemIndex) => (
+                    <MosaicCell key={itemIndex} />
+                  ))}
+            </div>
+          ))}
         </div>
-        <p className="storefront-testimonial-reel__counter" aria-hidden="true">
-          {String(displayIndex + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
-        </p>
       </div>
 
       <div className="storefront-testimonial-reel__copy">
@@ -187,14 +250,18 @@ export function ScrollReelTestimonials({
               <p className="storefront-testimonial-reel__author">{current.author}</p>
             </div>
             <div
-              key={displayIndex}
-              className={cn("storefront-testimonial-reel__animated-copy", exiting && "scroll-reel-exit")}
+              key={activeDisplayIndex}
+              className={cn("storefront-testimonial-reel__animated-copy", exiting && !prefersReducedMotion && "scroll-reel-exit")}
             >
               <p className="storefront-testimonial-reel__quote">
-                <Chars text={current.quote} startIndex={0} staggerMs={charStaggerMs} />
+                {prefersReducedMotion
+                  ? current.quote
+                  : <Chars text={current.quote} startIndex={0} staggerMs={charStaggerMs} />}
               </p>
               <p className="storefront-testimonial-reel__author">
-                <Chars text={current.author} startIndex={current.quote.length + 6} staggerMs={charStaggerMs} />
+                {prefersReducedMotion
+                  ? current.author
+                  : <Chars text={current.author} startIndex={current.quote.length + 6} staggerMs={charStaggerMs} />}
               </p>
             </div>
           </div>

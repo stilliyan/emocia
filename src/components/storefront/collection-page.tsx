@@ -17,7 +17,7 @@ export function StorefrontCollectionPage({ collection }: { collection: Storefron
             src={collection.heroImage}
             alt={collection.heroAlt}
             fill
-            priority
+            preload
             quality={90}
             sizes="100vw"
             className="storefront-collection-hero__image"
@@ -26,7 +26,6 @@ export function StorefrontCollectionPage({ collection }: { collection: Storefron
           <div className="storefront-collection-hero__copy">
             <p>{collection.eyebrow}</p>
             <AnimatedHeroTitle id="collection-title" text={collection.title} />
-            <span>{collection.description}</span>
           </div>
         </section>
 
@@ -35,9 +34,7 @@ export function StorefrontCollectionPage({ collection }: { collection: Storefron
         </div>
       </div>
 
-      <div className="storefront-collection-page__footer-reveal">
-        <SiteFooter />
-      </div>
+      <SiteFooter />
     </main>
   );
 }

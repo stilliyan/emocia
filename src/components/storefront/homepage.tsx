@@ -12,9 +12,13 @@ import { FacebookIcon, InstagramIcon, TikTokIcon } from "./social-icons";
 import "./storefront.css";
 
 const socialLinks = [
-  { label: "TikTok", icon: TikTokIcon },
-  { label: "Facebook", icon: FacebookIcon },
-  { label: "Instagram", icon: InstagramIcon },
+  { label: "TikTok", href: "https://www.tiktok.com/@emocia_butik", icon: TikTokIcon },
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/p/%D0%91%D1%83%D1%82%D0%B8%D0%BA-%D0%95%D0%BC%D0%BE%D1%86%D0%B8%D1%8F-100021298455926/?locale=bg_BG",
+    icon: FacebookIcon,
+  },
+  { label: "Instagram", href: "https://www.instagram.com/butik.emocia/", icon: InstagramIcon },
 ] as const;
 
 const testimonials = [
@@ -51,7 +55,7 @@ export function StorefrontHomepage() {
             src="/storefront/hero-ea.png"
             alt="Булка с елегантна рокля от Бутик Емоция"
             fill
-            priority
+            preload
             quality={90}
             sizes="(max-width: 768px) 280vw, 100vw"
             className="storefront-hero__image"
@@ -68,13 +72,19 @@ export function StorefrontHomepage() {
               <p>Булчински и вечерни рокли във Варна.<br />Персонална консултация и внимателно подбрани модели за всеки стил.</p>
             </div>
             <div className="storefront-hero__actions">
-              <AppointmentDialog className="storefront-button storefront-button--light">Запазете час за проба</AppointmentDialog>
-              <Link className="storefront-button storefront-button--outline-light" href="#нови-модели">Разгледайте колекциите</Link>
+              <AppointmentDialog className="storefront-button storefront-button--light storefront-button--hero-primary">
+                Запазете час за проба
+              </AppointmentDialog>
+              <Link className="storefront-button storefront-button--text-light" href="/kolekcii">
+                <span>Разгледайте колекциите</span>
+              </Link>
             </div>
           </div>
           <div className="storefront-hero__socials" aria-label="Социални мрежи">
-            {socialLinks.map(({ label, icon: Icon }) => (
-              <a key={label} href="#footer" aria-label={label}><Icon aria-hidden="true" /></a>
+            {socialLinks.map(({ label, href, icon: Icon }) => (
+              <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label}>
+                <Icon aria-hidden="true" />
+              </a>
             ))}
           </div>
         </section>
@@ -83,8 +93,16 @@ export function StorefrontHomepage() {
       <div className="storefront-content-stack">
         <section id="колекции" className="storefront-categories" aria-label="Колекции">
           <h2 className="storefront-categories__title">Открийте колекциите</h2>
-          <CollectionCard href="/bulchinski-rokli" image="/storefront/category-bridal.jpg" title="Булчински рокли" />
-          <CollectionCard href="#нови-модели" image="/storefront/category-evening.jpg" title="Вечерни рокли" />
+          <CollectionCard
+            href="/bulchinski-rokli"
+            image="/storefront/category-bridal.jpg"
+            title="Булчински рокли"
+          />
+          <CollectionCard
+            href="/oficialni-rokli"
+            image="/storefront/category-evening.jpg"
+            title="Официални рокли"
+          />
         </section>
 
       <section className="storefront-manifesto">
@@ -211,12 +229,23 @@ export function StorefrontHomepage() {
   );
 }
 
-function CollectionCard({ href, image, title }: { href: string; image: string; title: string }) {
+function CollectionCard({
+  href,
+  image,
+  title,
+}: {
+  href: string;
+  image: string;
+  title: string;
+}) {
   return (
     <Link href={href} className="storefront-category">
       <Image src={image} alt={title} fill sizes="(max-width: 768px) 100vw, 50vw" />
       <div className="storefront-category__blur" aria-hidden="true" />
-      <div><h2>{title}</h2><p>Разгледай колекцията <span aria-hidden="true">→</span></p></div>
+      <div className="storefront-category__copy">
+        <h2>{title}</h2>
+        <span className="storefront-category__link-label">Разгледайте моделите</span>
+      </div>
     </Link>
   );
 }
