@@ -1,10 +1,9 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { Check, Grid2X2, SlidersHorizontal, Square, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { BridalSilhouette, StorefrontCollectionProduct } from "@/lib/storefront-collections";
+import { ProductCard } from "./product-card";
 
 type GridView = "standard" | "large";
 type SilhouetteFilter = BridalSilhouette | "all";
@@ -52,9 +51,11 @@ function SilhouetteIcon({ type }: { type: SilhouetteFilter }) {
 
 export function CollectionCatalogue({
   collectionSlug,
+  collectionTitle,
   products,
 }: {
   collectionSlug: string;
+  collectionTitle: string;
   products: StorefrontCollectionProduct[];
 }) {
   const [gridView, setGridView] = useState<GridView>("standard");
@@ -238,27 +239,15 @@ export function CollectionCatalogue({
 
       <div className={`storefront-collection-grid storefront-collection-grid--${gridView}`}>
         {visibleProducts.map((product) => (
-          <Link
-            href={`/${collectionSlug}/${product.slug}`}
-            className="storefront-collection-card-link"
+          <ProductCard
             key={product.slug}
-          >
-            <article className="storefront-collection-card">
-              <div className="storefront-collection-card__media">
-                <Image
-                  src={product.image}
-                  alt={product.alt}
-                  fill
-                  sizes={gridView === "large" ? "(max-width: 680px) 100vw, 50vw" : "(max-width: 680px) 50vw, (max-width: 1100px) 33vw, 25vw"}
-                />
-                <div className="storefront-collection-card__veil" aria-hidden="true" />
-                <span className="storefront-collection-card__action" aria-hidden="true">
-                  Разгледай
-                </span>
-              </div>
-              <h3>{product.name}</h3>
-            </article>
-          </Link>
+            href={`/${collectionSlug}/${product.slug}`}
+            image={product.image}
+            alt={product.alt}
+            eyebrow={collectionTitle}
+            name={product.name}
+            sizes={gridView === "large" ? "(max-width: 680px) 100vw, 50vw" : "(max-width: 680px) 50vw, (max-width: 1100px) 33vw, 25vw"}
+          />
         ))}
       </div>
 

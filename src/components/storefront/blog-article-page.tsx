@@ -1,8 +1,9 @@
-import { ArrowLeft, ArrowUpRight, Play } from "lucide-react";
+import { ChevronLeft, Play } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { accessoriesCollection, bridalCollection } from "@/lib/storefront-collections";
 import type { StorefrontBlogArticle } from "@/lib/storefront-blog";
+import { ProductCard } from "./product-card";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
 import "./storefront.css";
@@ -49,7 +50,7 @@ export function StorefrontBlogArticlePage({ article }: { article: StorefrontBlog
       <article>
         <header className="storefront-article-header">
           <Link href="/blog" className="storefront-article-back">
-            <ArrowLeft aria-hidden="true" />
+            <ChevronLeft aria-hidden="true" />
             Всички съвети
           </Link>
           <p className="storefront-article-header__eyebrow">{article.category}</p>
@@ -132,16 +133,15 @@ export function StorefrontBlogArticlePage({ article }: { article: StorefrontBlog
         </header>
         <div className="storefront-article-recommendations__grid">
           {recommendations.map((item) => (
-            <Link href={item.href} className="storefront-article-recommendation" key={item.href}>
-              <div className="storefront-article-recommendation__media">
-                <Image src={item.image} alt={item.alt} fill sizes="(max-width: 680px) 50vw, 25vw" />
-              </div>
-              <span>{item.eyebrow}</span>
-              <h3>{item.name}</h3>
-              <span className="storefront-blog-link-label">
-                Разгледай <ArrowUpRight aria-hidden="true" />
-              </span>
-            </Link>
+            <ProductCard
+              key={item.href}
+              href={item.href}
+              image={item.image}
+              alt={item.alt}
+              eyebrow={item.eyebrow}
+              name={item.name}
+              sizes="(max-width: 680px) 50vw, 25vw"
+            />
           ))}
         </div>
       </section>

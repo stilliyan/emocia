@@ -3,6 +3,8 @@ import Link from "next/link";
 import { AppointmentDialog } from "./appointment-dialog";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
+import { HorizontalDragRail } from "./horizontal-drag-rail";
+import { ProductCard } from "./product-card";
 import { bridalCollection, formalCollection } from "@/lib/storefront-collections";
 import "./storefront.css";
 
@@ -53,43 +55,42 @@ export function CollectionsIndexPage() {
       </section>
 
       <div className="storefront-content-stack storefront-collections-index__content">
-        <section className="storefront-collections-index__latest" aria-labelledby="collections-latest-title">
+        <section
+          className="storefront-products storefront-collections-index__latest"
+          aria-labelledby="collections-latest-title"
+        >
           <h2 id="collections-latest-title">Нови предложения</h2>
-          <div className="storefront-collections-index__latest-grid">
+          <HorizontalDragRail
+            className="storefront-products__rail"
+            ariaLabel="Нови предложения — хоризонтален списък"
+          >
             {latestModels.map((model) => (
-              <Link
-                className="storefront-collections-index__model"
-                href={`/${model.collection.slug}/${model.slug}`}
+              <ProductCard
                 key={`${model.collection.slug}-${model.slug}`}
-              >
-                <div className="storefront-collections-index__model-media">
-                  <Image
-                    src={model.image}
-                    alt={model.alt}
-                    fill
-                    sizes="(max-width: 768px) 78vw, 25vw"
-                  />
-                </div>
-                <p>{model.collection.title}</p>
-                <h3>{model.name}</h3>
-              </Link>
+                href={`/${model.collection.slug}/${model.slug}`}
+                image={model.image}
+                alt={model.alt}
+                eyebrow={model.collection.title}
+                name={model.name}
+                sizes="(max-width: 640px) 76vw, (max-width: 1024px) 38vw, 23vw"
+              />
             ))}
-          </div>
+          </HorizontalDragRail>
         </section>
 
         <section className="storefront-collections-index__grid" aria-label="Категории рокли">
           {collectionPaths.map((collection) => (
-            <Link className="storefront-collections-index__card" href={collection.href} key={collection.href}>
+            <Link className="storefront-category" href={collection.href} key={collection.href}>
               <Image
                 src={collection.image}
                 alt={collection.alt}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
-              <div className="storefront-collections-index__card-shade" aria-hidden="true" />
-              <div className="storefront-collections-index__card-copy">
+              <div className="storefront-category__blur" aria-hidden="true" />
+              <div className="storefront-category__copy">
                 <h2>{collection.title}</h2>
-                <span>Разгледайте моделите</span>
+                <span className="storefront-category__link-label">Разгледай галерията</span>
               </div>
             </Link>
           ))}

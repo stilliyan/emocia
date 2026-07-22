@@ -15,7 +15,10 @@ const socialLinks = [
 ] as const;
 
 const primaryLinks = publicNavigation.slice(0, 4);
-const secondaryLinks = publicNavigation.slice(4);
+const secondaryLinks = [
+  { label: "За нас", href: "/za-nas" },
+  ...publicNavigation.slice(4),
+] as const;
 const legalLinks = [
   { label: "Поверителност", href: "/politika-za-poveritelnost" },
   { label: "Бисквитки", href: "/politika-za-biskvitkite" },

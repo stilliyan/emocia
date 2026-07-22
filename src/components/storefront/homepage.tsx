@@ -143,7 +143,10 @@ export function StorefrontHomepage() {
           <h2 id="about-title">Вашето преживяване в Бутик Емоция</h2>
           <p>Търсенето на вашата специална рокля трябва да бъде незабравимо преживяване. В Бутик Емоция ви посрещаме с лично внимание, спокойна атмосфера и внимателно подбрана селекция от модели.</p>
           <AnimatedStats />
-          <AppointmentDialog className="storefront-button storefront-button--dark">Запази час за проба</AppointmentDialog>
+          <div className="storefront-about__actions">
+            <AppointmentDialog className="storefront-button storefront-button--dark">Запази час за проба</AppointmentDialog>
+            <Link className="storefront-about__story-link" href="/za-nas">Прочетете нашата история</Link>
+          </div>
         </div>
       </section>
 

@@ -30,7 +30,11 @@ export function StorefrontCollectionPage({ collection }: { collection: Storefron
         </section>
 
         <div className="storefront-content-stack storefront-collection-content">
-          <CollectionCatalogue collectionSlug={collection.slug} products={collection.products} />
+          <CollectionCatalogue
+            collectionSlug={collection.slug}
+            collectionTitle={collection.title}
+            products={collection.products}
+          />
         </div>
       </div>
 

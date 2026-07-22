@@ -43,7 +43,6 @@
 - Production build: passed.
 
 final result: passed
-
 ## Collections hero simplification — 2026-07-22
 
 **Source visual truth**
@@ -177,6 +176,38 @@ final result: passed
 - [Verified] Internal mobile padding remains `24px` horizontally and `104px` at the bottom.
 - [Verified] No horizontal overflow at 390px (`scrollWidth` equals `clientWidth`).
 - [Verified] Desktop footer rules are unchanged.
+
+**Validation**
+
+- ESLint: passed.
+- TypeScript: passed.
+- Vitest: 18/18 tests passed.
+- Production build: passed.
+
+final result: passed
+
+## Unified product cards — 2026-07-22
+
+**Source visual truth**
+
+- `/var/folders/tn/2g2801x954b6lyymmz_xymr40000gn/T/codex-clipboard-16a2a144-b4e5-4849-a6a2-7f2bcd45a1da.png`
+- User intent: remove the arrow from every product “Разгледай” action and use one shared card component everywhere.
+
+**Implementation evidence**
+
+- Routes verified: `/kolekcii` and `/blog/kak-da-izberete-bulchinska-roklya`.
+- Tested viewports: 1440 × 1000 and 390 × 844.
+- Shared surface: homepage products, collection catalogues, collections index, product recommendations, and article recommendations.
+
+**Findings**
+
+- [Resolved P2] Product cards had duplicated markup and inconsistent arrow treatments.
+  - Fix: all product recommendation/catalogue surfaces now render the shared `ProductCard`.
+- [Resolved P2] The arrow made the compact CTA visually busy.
+  - Fix: every product “Разгледай” action is now arrow-free and uses the same restrained animated underline.
+- [Verified] Desktop hover keeps the subtle lower-image blur and gentle scale.
+- [Verified] Mobile keeps the compact two-column/rail treatment without hover-only effects.
+- [Verified] Article “Прочети” links remain a separate editorial pattern.
 
 **Validation**
 

@@ -1,9 +1,9 @@
-import Image from "next/image";
-import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
 import { AppointmentDialog } from "./appointment-dialog";
+import { HorizontalDragRail } from "./horizontal-drag-rail";
+import { ProductBackButton } from "./product-back-button";
 import { ProductGallery } from "./product-gallery";
 import { ScrollRevealSection } from "./scroll-reveal-section";
+import { ProductCard } from "./product-card";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
 import type { BridalSilhouette, StorefrontCollection, StorefrontCollectionProduct } from "@/lib/storefront-collections";
@@ -44,10 +44,7 @@ export function ProductDetailPage({ collection, product }: ProductDetailPageProp
       <div className="storefront-product-page__content">
         <section className="storefront-product-detail" aria-labelledby="product-title">
           <aside className="storefront-product-info">
-            <Link href={`/${collection.slug}`} className="storefront-product-info__back">
-              <ChevronLeft aria-hidden="true" />
-              {collection.title}
-            </Link>
+            <ProductBackButton fallbackHref={`/${collection.slug}`} label={collection.title} />
             <p className="storefront-product-info__eyebrow">{collection.eyebrow}</p>
             <h1 id="product-title">{product.name}</h1>
 
@@ -107,24 +104,22 @@ export function ProductDetailPage({ collection, product }: ProductDetailPageProp
 
         <ScrollRevealSection className="storefront-product-related" labelledBy="related-title">
           <h2 id="related-title">Още модели за вас</h2>
-          <div className="storefront-product-related__grid">
+          <HorizontalDragRail
+            className="storefront-product-related__grid"
+            ariaLabel="Още модели за вас"
+          >
             {relatedProducts.map((relatedProduct) => (
-              <Link
-                href={`/${collection.slug}/${relatedProduct.slug}`}
-                className="storefront-collection-card-link"
+              <ProductCard
                 key={relatedProduct.slug}
-              >
-                <article className="storefront-collection-card">
-                  <div className="storefront-collection-card__media">
-                    <Image src={relatedProduct.image} alt={relatedProduct.alt} fill sizes="(max-width: 820px) 76vw, 24vw" />
-                    <div className="storefront-collection-card__veil" aria-hidden="true" />
-                    <span className="storefront-collection-card__action" aria-hidden="true">Разгледай</span>
-                  </div>
-                  <h3>{relatedProduct.name}</h3>
-                </article>
-              </Link>
+                href={`/${collection.slug}/${relatedProduct.slug}`}
+                image={relatedProduct.image}
+                alt={relatedProduct.alt}
+                eyebrow={collection.title}
+                name={relatedProduct.name}
+                sizes="(max-width: 820px) 76vw, 24vw"
+              />
             ))}
-          </div>
+          </HorizontalDragRail>
         </ScrollRevealSection>
       </div>
 
