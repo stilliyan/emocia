@@ -1523,7 +1523,7 @@
 @media (max-width: 1024px) {
   .storefront-header { position: fixed; z-index: 50; inset: 24px 56px auto; border-radius: 16px; transition: inset .35s cubic-bezier(.22,1,.36,1), padding .35s cubic-bezier(.22,1,.36,1), background-color .25s ease, backdrop-filter .25s ease; }
   .storefront-header.storefront-header--scrolled { inset: 12px 16px auto; padding: 8px 12px; border-radius: 16px; background: rgba(255,255,255,.86); box-shadow: none; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
-  .storefront-header .storefront-logo { width: 170px; }
+  .storefront-header .storefront-logo { width: 180px; }
   .storefront-header.storefront-header--scrolled .storefront-logo { width: 168px; }
   .storefront-header--scrolled .storefront-logo__image--default { opacity: 0; }
   .storefront-header--scrolled .storefront-logo__image--alternate { opacity: 1; }
