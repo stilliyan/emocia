@@ -8,7 +8,7 @@ import {
   type BridalSilhouette,
   type StorefrontCollection,
   type StorefrontCollectionProduct,
-} from "@/lib/storefront-collections";
+} from "./storefront-collections";
 
 export type StorefrontSettings = {
   shop_name: string;
@@ -205,9 +205,9 @@ const getCachedStorefrontContent = unstable_cache(
   { revalidate: STOREFRONT_CACHE_TTL_SECONDS, tags: [STOREFRONT_CACHE_TAGS.content] },
 );
 
-async function loadStorefrontCategories(): Promise<PublicCategoryRow[]> {
+async function loadStorefrontCategories(): Promise<PublicCategoryRow[] | null> {
   const supabase = getPublicClient();
-  if (!supabase) return [];
+  if (!supabase) return null;
 
   const categoriesResult = await supabase
     .from("categories")
@@ -224,13 +224,13 @@ async function loadStorefrontCategories(): Promise<PublicCategoryRow[]> {
 
 const getCachedStorefrontCategories = unstable_cache(
   loadStorefrontCategories,
-  ["storefront-categories-v1"],
+  ["storefront-categories-v2"],
   { revalidate: STOREFRONT_CACHE_TTL_SECONDS, tags: [STOREFRONT_CACHE_TAGS.categories] },
 );
 
-async function loadStorefrontProducts(): Promise<PublicProductRow[]> {
+async function loadStorefrontProducts(): Promise<PublicProductRow[] | null> {
   const supabase = getPublicClient();
-  if (!supabase) return [];
+  if (!supabase) return null;
 
   const extendedProductColumns = "id,name,slug,short_description,description,product_code,sizes,color,material,collection,year,seo_title,meta_description,featured,sort_order,price,silhouette,accessory_category,categories!inner(id,name,slug,active),product_images(storage_path,alt_text,sort_order,is_cover)";
   const baseProductColumns = "id,name,slug,short_description,description,product_code,sizes,color,material,collection,year,seo_title,meta_description,featured,sort_order,categories!inner(id,name,slug,active),product_images(storage_path,alt_text,sort_order,is_cover)";
@@ -262,7 +262,7 @@ async function loadStorefrontProducts(): Promise<PublicProductRow[]> {
 
 const getCachedStorefrontProducts = unstable_cache(
   loadStorefrontProducts,
-  ["storefront-products-v1"],
+  ["storefront-products-v2"],
   { revalidate: STOREFRONT_CACHE_TTL_SECONDS, tags: [STOREFRONT_CACHE_TAGS.products] },
 );
 
@@ -304,7 +304,7 @@ function categoryOf(product: PublicProductRow) {
   return Array.isArray(product.categories) ? product.categories[0] : product.categories;
 }
 
-function mapPublicProduct(row: PublicProductRow, fallback: StorefrontCollectionProduct | undefined, collection: StorefrontCollection): StorefrontCollectionProduct {
+function mapPublicProduct(row: PublicProductRow, fallback: StorefrontCollectionProduct | undefined): StorefrontCollectionProduct {
   const images = [...(row.product_images ?? [])].sort((a, b) => a.sort_order - b.sort_order);
   const cover = images.find((image) => image.is_cover) ?? images[0];
   const mappedImages = images.map((image) => ({ src: storageUrl(image.storage_path), alt: image.alt_text || row.name }));
@@ -315,9 +315,9 @@ function mapPublicProduct(row: PublicProductRow, fallback: StorefrontCollectionP
     id: row.id,
     name: row.name,
     slug: row.slug,
-    image: cover ? storageUrl(cover.storage_path) : fallback?.image ?? collection.heroImage,
-    alt: cover?.alt_text || fallback?.alt || row.name,
-    images: mappedImages.length ? mappedImages : fallback?.images,
+    image: cover ? storageUrl(cover.storage_path) : "",
+    alt: cover?.alt_text || row.name,
+    images: mappedImages,
     silhouette: isSilhouette(row.silhouette) ? row.silhouette : fallback?.silhouette,
     category: isAccessoryCategory(row.accessory_category) ? row.accessory_category : fallback?.category,
     price: Number.isFinite(parsedPrice) ? parsedPrice : fallback?.price,
@@ -335,11 +335,13 @@ function mapPublicProduct(row: PublicProductRow, fallback: StorefrontCollectionP
   };
 }
 
-function buildStorefrontCollection(
+export function buildStorefrontCollection(
   fallback: StorefrontCollection,
-  categories: PublicCategoryRow[],
-  products: PublicProductRow[],
+  categories: PublicCategoryRow[] | null,
+  products: PublicProductRow[] | null,
 ): StorefrontCollection {
+  if (categories === null || products === null) return fallback;
+
   const aliases = collectionAliases[fallback.slug] ?? [fallback.slug];
   const category = categories.find((item) => aliases.includes(item.slug));
   const rows = products
@@ -349,12 +351,10 @@ function buildStorefrontCollection(
     })
     .sort((a, b) => a.sort_order - b.sort_order);
 
-  if (!rows.length) return { ...fallback, title: category?.name || fallback.title };
-
   return {
     ...fallback,
     title: category?.name || fallback.title,
-    products: rows.map((row) => mapPublicProduct(row, fallback.products.find((item) => item.slug === row.slug), fallback)),
+    products: rows.map((row) => mapPublicProduct(row, fallback.products.find((item) => item.slug === row.slug))),
   };
 }
 

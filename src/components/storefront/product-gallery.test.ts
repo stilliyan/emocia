@@ -25,11 +25,7 @@ describe("getProductGalleryLayout", () => {
     ]);
   });
 
-  it("preserves an explicit empty image list", () => {
-    expect(getProductGalleryImages({ ...product, images: [] })).toEqual([]);
-  });
-
-  it.each([2, 3, 5])("returns exactly %i supplied images without filling slots", (imageCount) => {
+  it.each([0, 1, 2, 3, 5])("returns exactly %i supplied images without filling slots", (imageCount) => {
     const images = Array.from({ length: imageCount }, (_, index) => ({
       src: `/image-${index + 1}.jpg`,
       alt: `Изображение ${index + 1}`,

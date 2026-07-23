@@ -304,7 +304,11 @@ export function CollectionCatalogue({
 
       {visibleProducts.length === 0 ? (
         <p className="storefront-collection-empty" role="status">
-          {hasAccessoryFilter ? "Скоро ще добавим артикули в тази категория." : "Няма модели с този силует."}
+          {products.length === 0
+            ? "Все още няма публикувани модели в тази колекция."
+            : hasAccessoryFilter
+              ? "Скоро ще добавим артикули в тази категория."
+              : "Няма модели с този силует."}
         </p>
       ) : null}
 

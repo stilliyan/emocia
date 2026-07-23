@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { ImageIcon } from "lucide-react";
 import type { MouseEvent } from "react";
 import { rememberProductOrigin } from "./product-navigation";
 
@@ -34,7 +35,17 @@ export function ProductCard({
     >
       <article className="storefront-collection-card">
         <div className="storefront-collection-card__media">
-          <Image src={image} alt={alt} fill sizes={sizes} />
+          {image ? (
+            <Image src={image} alt={alt} fill sizes={sizes} />
+          ) : (
+            <div
+              className="grid h-full w-full place-items-center bg-[#eceef1] text-[#777280]"
+              role="img"
+              aria-label={`${name} все още няма снимка`}
+            >
+              <ImageIcon className="size-8" strokeWidth={1.25} aria-hidden="true" />
+            </div>
+          )}
           <div className="storefront-collection-card__veil" aria-hidden="true" />
         </div>
         <div className="storefront-collection-card__copy">
