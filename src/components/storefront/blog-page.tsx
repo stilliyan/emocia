@@ -51,8 +51,10 @@ export function StorefrontBlogPage() {
             </div>
             <article className="storefront-blog-featured__copy">
               <BlogMeta article={featuredArticle} />
-              <h3>{featuredArticle.title}</h3>
-              <p>{featuredArticle.excerpt}</p>
+              <div className="storefront-blog-featured__body">
+                <h3>{featuredArticle.title}</h3>
+                <p>{featuredArticle.excerpt}</p>
+              </div>
               <span className="storefront-blog-link-label">Прочети статията</span>
             </article>
           </Link>

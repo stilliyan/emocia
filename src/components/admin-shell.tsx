@@ -1,12 +1,12 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Package, Tags, FileText, Settings, Menu, LogOut } from "lucide-react";
+import { CalendarCheck, LayoutDashboard, Package, Tags, FileText, Settings, Menu, LogOut } from "lucide-react";
 import { Sheet,SheetContent,SheetTitle,SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { logoutAction } from "@/app/actions";
 import { cn } from "@/lib/utils";
-const links=[{href:"/admin",label:"Табло",icon:LayoutDashboard},{href:"/admin/products",label:"Продукти",icon:Package},{href:"/admin/categories",label:"Категории",icon:Tags},{href:"/admin/content",label:"Съдържание",icon:FileText},{href:"/admin/settings",label:"Настройки",icon:Settings}];
+const links=[{href:"/admin",label:"Табло",icon:LayoutDashboard},{href:"/admin/appointments",label:"Записвания",icon:CalendarCheck},{href:"/admin/products",label:"Продукти",icon:Package},{href:"/admin/categories",label:"Категории",icon:Tags},{href:"/admin/content",label:"Съдържание",icon:FileText},{href:"/admin/settings",label:"Настройки",icon:Settings}];
 function Nav(){const path=usePathname();return <nav className="space-y-1">{links.map(({href,label,icon:Icon})=>{const active=href==="/admin"?path===href:path.startsWith(href);return <Link key={href} href={href} className={cn("flex min-h-10 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors hover:bg-muted",active&&"bg-primary text-primary-foreground hover:bg-primary/90")}><Icon className="size-4"/>{label}</Link>})}</nav>}
 export function AdminShell({children}:{children:React.ReactNode}){return <div className="min-h-screen bg-muted/25"><aside className="fixed inset-y-0 left-0 hidden w-56 border-r bg-background p-4 md:block"><Link href="/admin" className="mb-6 block px-2 text-lg font-semibold text-primary">Емоция <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">CMS</span></Link><Nav/><form action={logoutAction} className="absolute bottom-4 left-4 right-4"><Button type="submit" variant="ghost" className="w-full justify-start"><LogOut/>Изход</Button></form></aside><header className="sticky top-0 z-20 flex h-14 items-center border-b bg-background px-4 md:hidden"><Sheet><SheetTrigger asChild><Button type="button" variant="outline" size="icon" aria-label="Отвори меню"><Menu/></Button></SheetTrigger><SheetContent side="left" className="w-72 p-5"><SheetTitle className="mb-8 text-left text-primary">Емоция CMS</SheetTitle><Nav/></SheetContent></Sheet><span className="ml-3 font-semibold">Емоция CMS</span><div className="ml-auto"><ThemeSwitch/></div></header><main className="md:pl-56"><div className="mx-auto max-w-[1440px] p-4 md:p-5 lg:p-6">{children}</div></main></div>}

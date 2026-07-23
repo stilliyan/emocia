@@ -86,10 +86,11 @@ export const appointmentRequestSchema = z.object({
   product_id: z.string().trim().max(160, "Идентификаторът на модела е твърде дълъг").optional().or(z.literal("")),
   source: z.enum(["home", "contact", "product", "blog", "gallery", "collection", "accessories", "about", "other"]).default("other"),
   current_url: z.string().trim().max(500, "Адресът на страницата е твърде дълъг").optional().or(z.literal("")),
+  privacy_consent: z.literal(true, { message: "Необходимо е съгласие с политиката за поверителност." }),
   website: z.string().max(0).optional().or(z.literal("")),
 });
 
-export const appointmentStatusSchema = z.enum(["pending", "confirmed", "cancelled"]);
+export const appointmentStatusSchema = z.enum(["pending", "confirmed", "cancelled", "completed"]);
 
 export const orderRequestSchema = z.object({
   name: z.string().trim().min(2, "Въведете вашето име").max(120, "Името е твърде дълго"),

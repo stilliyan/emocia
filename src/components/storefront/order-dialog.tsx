@@ -33,12 +33,12 @@ export function OrderDialog({ children, className, productSlug, productName, pri
   return (
     <Dialog open={open} onOpenChange={(next) => { setOpen(next); if (!next) setResult({}); }}>
       <DialogTrigger asChild><button type="button" className={className}>{children}</button></DialogTrigger>
-      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className="storefront-public-dialog max-h-[92vh] overflow-y-auto sm:max-w-lg">
         {result.success ? (
           <div className="grid gap-5 py-3 text-center">
             <span className="mx-auto grid size-12 place-items-center rounded-full bg-foreground text-background"><PackageCheck className="size-5" /></span>
             <div><DialogTitle>Заявката е изпратена</DialogTitle><DialogDescription className="mt-2">{result.success}</DialogDescription></div>
-            <DialogClose asChild><Button type="button">Затвори</Button></DialogClose>
+            <DialogClose asChild><Button type="button" className="storefront-button storefront-button--outline-dark">Затвори</Button></DialogClose>
           </div>
         ) : (
           <>
@@ -57,7 +57,7 @@ export function OrderDialog({ children, className, productSlug, productName, pri
               <div className="space-y-2"><Label htmlFor="order-message">Уточнение</Label><Textarea id="order-message" name="message" rows={3} placeholder="Количество или друго уточнение…" /></div>
               <p className="text-xs leading-5 text-muted-foreground">Заявката не е автоматично потвърдена поръчка. Ще се свържем с вас за наличността, доставката и крайната сума.</p>
               {result.error && <p role="alert" className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{result.error}</p>}
-              <Button type="submit" className="h-11" disabled={pending}>{pending ? "Изпращане…" : "Изпрати заявка"}</Button>
+              <Button type="submit" className="storefront-button storefront-button--dark" disabled={pending}>{pending ? "Изпращане…" : "Изпрати заявка"}</Button>
             </form>
           </>
         )}

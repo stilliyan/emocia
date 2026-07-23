@@ -5,9 +5,8 @@ import { AnimatedStats } from "./animated-stats";
 import { ProductRail } from "./product-rail";
 import { ScrollReelTestimonials } from "./scroll-reel-testimonials";
 import { SiteHeader } from "./site-header";
-import { SiteFooter } from "./site-footer";
 import { AppointmentDialog } from "./appointment-dialog";
-import { StorefrontContactSection } from "./contact-section";
+import { StorefrontContactFooterExperience } from "./contact-footer-experience";
 import { FacebookIcon, InstagramIcon, TikTokIcon } from "./social-icons";
 import { getAllStorefrontCollections, getStorefrontContent, getStorefrontMediaUrl, getStorefrontSettings } from "@/lib/storefront-data";
 import "./storefront.css";
@@ -138,7 +137,7 @@ export async function StorefrontHomepage() {
         </div>
       </section>
 
-      <ProductRail collection={bridal} />
+      <ProductRail bridal={bridal} formal={formal} />
 
       <section id="за-нас" className="storefront-about" aria-labelledby="about-title">
         <div className="storefront-about__media">
@@ -151,7 +150,7 @@ export async function StorefrontHomepage() {
           <AnimatedStats />
           <div className="storefront-about__actions">
             <AppointmentDialog source="about" className="storefront-button storefront-button--dark">Запази час за проба</AppointmentDialog>
-            <Link className="storefront-about__story-link" href="/za-nas">Прочетете нашата история</Link>
+            <Link className="storefront-button storefront-button--text-dark storefront-about__story-link" href="/za-nas">Прочетете нашата история</Link>
           </div>
         </div>
       </section>
@@ -161,23 +160,7 @@ export async function StorefrontHomepage() {
         </section>
       </div>
 
-      <div className="storefront-appointment-sticky">
-        <section className="storefront-appointment" aria-labelledby="appointment-title">
-          <Image src="/storefront/boutique.png" alt="Булка на морския бряг" fill sizes="100vw" />
-          <div className="storefront-appointment__overlay" />
-          <div className="storefront-appointment__copy">
-            <h2 id="appointment-title">Готови ли сте за вашата проба?</h2>
-            <p>Запазете своя частен час за лична проба на най-подходящия модел за вас. Нашите консултанти ще се свържат с вас за потвърждение.</p>
-            <AppointmentDialog source="home" className="storefront-button storefront-button--light">Запази час</AppointmentDialog>
-          </div>
-        </section>
-      </div>
-
-      <div className="storefront-content-stack">
-        <StorefrontContactSection id="контакти" headingId="contact-title" />
-
-        <SiteFooter />
-      </div>
+      <StorefrontContactFooterExperience />
     </main>
   );
 }

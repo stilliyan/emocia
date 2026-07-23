@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { PublicPageTransition } from "@/components/storefront/public-page-transition";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
@@ -32,6 +33,7 @@ export default function RootLayout({
         <ThemeProvider>
           {children}
           <Toaster richColors />
+          <PublicPageTransition />
         </ThemeProvider>
       </body>
     </html>

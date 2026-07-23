@@ -23,7 +23,7 @@ export async function SiteFooter() {
     { label: "Facebook", href: settings.facebook_url, icon: FacebookIcon },
     { label: "Instagram", href: settings.instagram_url, icon: InstagramIcon },
   ];
-  return (
+  const footer = (
     <footer id="footer" className="storefront-footer">
       <Image
         src="/storefront/footer-bride.svg"
@@ -56,6 +56,8 @@ export async function SiteFooter() {
       </div>
     </footer>
   );
+
+  return footer;
 }
 
 function FooterLinks({

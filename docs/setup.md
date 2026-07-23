@@ -38,3 +38,13 @@ The dashboard calendar uses `public.calendar_events` and requires `supabase/migr
 The public “Запази час” buttons open a short form for a preferred date and time. Existing Supabase projects must run `supabase/migrations/202607200001_appointment_requests.sql` once in Supabase Dashboard → SQL Editor. Fresh manual installations already include the same setup in `supabase/manual-setup.sql`.
 
 Public visitors do not receive direct table access. The form uses the limited `submit_appointment_request` RPC, validates the input on the server and in PostgreSQL, and rate-limits repeated requests by phone. RLS remains enabled and only approved CMS administrators can read or manage requests. Confirming a request in `/admin` atomically creates a one-hour `calendar_events` entry in the `Europe/Sofia` time zone; overlapping upcoming events are rejected. No service-role key is used or required.
+# Appointment booking activation
+
+The local code can be reviewed in test mode without creating real bookings. To activate real booking in an environment:
+
+1. Apply `supabase/migrations/202607230002_appointment_booking.sql`.
+2. Review the initial row in `appointment_settings` from `/admin/appointments`.
+3. Set `APPOINTMENT_SUBMISSION_MODE=live`.
+4. Verify one public booking and one concurrent-slot conflict before opening booking to customers.
+
+Do not enable live mode before the migration. The application reports that booking setup is required and does not fall back to unsafe client-only availability.

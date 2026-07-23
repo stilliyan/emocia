@@ -1,0 +1,251 @@
+.storefront-page-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+  visibility: hidden;
+  background: #eeeeee;
+  opacity: 0;
+}
+
+.storefront-page-transition::before {
+  position: absolute;
+  inset: 0;
+  background: #fffdf8;
+  content: "";
+  opacity: 1;
+  scale: 1;
+  transform: translateX(-100%);
+}
+
+.storefront-page-transition--entering {
+  visibility: visible;
+  opacity: 1;
+}
+
+.storefront-page-transition--entering::before {
+  animation: kyha-transition-slide 500ms cubic-bezier(0, .7, .4, 1) forwards;
+}
+
+.storefront-page-transition--leaving {
+  visibility: visible;
+  opacity: 1;
+  animation: kyha-transition-hidden 300ms ease-in-out forwards;
+}
+
+.storefront-page-transition--leaving::before {
+  opacity: 1;
+  scale: 1;
+  transform: translateX(0);
+  animation: kyha-transition-out 300ms ease-in-out forwards;
+}
+
+@keyframes kyha-transition-slide {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes kyha-transition-out {
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+
+  to {
+    opacity: 0;
+    scale: 1.2;
+  }
+}
+
+@keyframes kyha-transition-hidden {
+  from {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  to {
+    visibility: hidden;
+    opacity: 0;
+  }
+}
+
+main.storefront :is(
+  .storefront-hero__image,
+  .storefront-collections-index__hero-image,
+  .storefront-collection-hero__image,
+  .storefront-gallery-hero__image,
+  .storefront-about-page__hero-image,
+  .storefront-contact-hero__image,
+  .storefront-blog-hero__image
+) {
+  animation: storefront-route-hero-image-in 800ms ease-out 800ms both;
+}
+
+main.storefront :is(
+  .storefront-gallery-hero__copy h1,
+  .storefront-about-page__hero-copy h1,
+  .storefront-contact-hero__copy h1,
+  .storefront-collections-index__hero-copy h1
+) {
+  animation: storefront-route-hero-title-in 300ms cubic-bezier(.4, 0, 1, 1) 1000ms both;
+}
+
+main.storefront :is(
+  .storefront-hero__content,
+  .storefront-collection-hero__copy,
+  .storefront-blog-hero__copy
+) .storefront-hero-title__word {
+  filter: none;
+  animation: storefront-route-hero-title-in 300ms cubic-bezier(.4, 0, 1, 1) 1000ms both;
+}
+
+main.storefront :is(
+  .storefront-hero__content p,
+  .storefront-gallery-hero__copy > p,
+  .storefront-about-page__hero-copy > p,
+  .storefront-contact-hero__copy > p,
+  .storefront-collections-index__hero-copy > p,
+  .storefront-collection-hero__copy > p,
+  .storefront-blog-hero__copy > p
+) {
+  animation: storefront-route-hero-subtitle-in 300ms cubic-bezier(.4, 0, 1, 1) 1300ms both;
+}
+
+main.storefront-homepage .storefront-hero__actions {
+  animation: storefront-route-hero-actions-in 300ms cubic-bezier(.4, 0, 1, 1) 1600ms both;
+}
+
+main.storefront-homepage .storefront-hero__actions .storefront-button {
+  animation: none;
+}
+
+main.storefront-article-page .storefront-article-back {
+  animation: storefront-route-hero-subtitle-in 300ms cubic-bezier(.4, 0, 1, 1) 900ms both;
+}
+
+main.storefront-article-page .storefront-article-header__eyebrow {
+  animation: storefront-route-hero-subtitle-in 300ms cubic-bezier(.4, 0, 1, 1) 960ms both;
+}
+
+main.storefront-article-page .storefront-article-header h1 {
+  animation: storefront-route-hero-title-in 360ms cubic-bezier(.4, 0, 1, 1) 1020ms both;
+}
+
+main.storefront-article-page .storefront-article-header__excerpt {
+  animation: storefront-route-hero-subtitle-in 300ms cubic-bezier(.4, 0, 1, 1) 1240ms both;
+}
+
+main.storefront-article-page .storefront-article-header__meta {
+  animation: storefront-route-hero-actions-in 300ms cubic-bezier(.4, 0, 1, 1) 1420ms both;
+}
+
+main.storefront-article-page .storefront-article-hero-media img {
+  animation: storefront-route-hero-image-in 800ms ease-out 900ms both;
+}
+
+@keyframes storefront-route-hero-image-in {
+  from { transform: scale(1.1); }
+  to { transform: scale(1); }
+}
+
+@keyframes storefront-scroll-reveal-in {
+  from {
+    opacity: .01;
+    transform: translateY(80px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 769px) and (prefers-reduced-motion: no-preference) {
+  .storefront-scroll-trigger.storefront-scroll-trigger--offscreen {
+    opacity: .01;
+    transform: translateY(10px);
+  }
+
+  .storefront-scroll-trigger:not(.storefront-scroll-trigger--offscreen) {
+    animation: storefront-scroll-reveal-in 600ms cubic-bezier(0, 0, .3, 1) both;
+    animation-delay: calc(var(--storefront-reveal-order, 0) * 125ms);
+  }
+}
+
+@keyframes storefront-route-hero-title-in {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes storefront-route-hero-subtitle-in {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes storefront-route-hero-actions-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .storefront-page-transition {
+    display: none;
+    visibility: hidden;
+    animation: none;
+  }
+
+  .storefront-page-transition::before,
+  main.storefront :is(
+    .storefront-hero__image,
+    .storefront-collections-index__hero-image,
+    .storefront-collection-hero__image,
+    .storefront-gallery-hero__image,
+    .storefront-about-page__hero-image,
+    .storefront-contact-hero__image,
+    .storefront-blog-hero__image,
+    .storefront-article-hero-media img,
+    .storefront-gallery-hero__copy h1,
+    .storefront-about-page__hero-copy h1,
+    .storefront-contact-hero__copy h1,
+    .storefront-collections-index__hero-copy h1,
+    .storefront-hero__content p,
+    .storefront-gallery-hero__copy > p,
+    .storefront-about-page__hero-copy > p,
+    .storefront-contact-hero__copy > p,
+    .storefront-collections-index__hero-copy > p,
+    .storefront-collection-hero__copy > p,
+    .storefront-blog-hero__copy > p,
+    .storefront-article-back,
+    .storefront-article-header__eyebrow,
+    .storefront-article-header h1,
+    .storefront-article-header__excerpt,
+    .storefront-article-header__meta
+  ),
+  main.storefront :is(
+    .storefront-hero__content,
+    .storefront-collection-hero__copy,
+    .storefront-blog-hero__copy
+  ) .storefront-hero-title__word,
+  main.storefront-homepage .storefront-hero__actions {
+    opacity: 1;
+    scale: 1;
+    transform: none;
+    animation: none;
+  }
+}

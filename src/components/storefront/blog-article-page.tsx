@@ -1,25 +1,11 @@
 import { ChevronLeft, Play } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { accessoriesCollection, bridalCollection } from "@/lib/storefront-collections";
 import type { StorefrontBlogArticle } from "@/lib/storefront-blog";
-import { ProductCard } from "./product-card";
-import { SiteFooter } from "./site-footer";
+import { AppointmentDialog } from "./appointment-dialog";
+import { StorefrontContactFooterExperience } from "./contact-footer-experience";
 import { SiteHeader } from "./site-header";
 import "./storefront.css";
-
-const recommendations = [
-  ...bridalCollection.products.slice(0, 3).map((product) => ({
-    ...product,
-    href: `/${bridalCollection.slug}/${product.slug}`,
-    eyebrow: "Булчински рокли",
-  })),
-  ...accessoriesCollection.products.slice(0, 1).map((product) => ({
-    ...product,
-    href: `/${accessoriesCollection.slug}/${product.slug}`,
-    eyebrow: "Аксесоари",
-  })),
-];
 
 export function StorefrontBlogArticlePage({ article }: { article: StorefrontBlogArticle }) {
   const articleJsonLd = {
@@ -119,34 +105,14 @@ export function StorefrontBlogArticlePage({ article }: { article: StorefrontBlog
           <aside className="storefront-article-appointment" aria-label="Запазване на час">
             <h2>Искате да открием вашата рокля заедно?</h2>
             <p>Ще подготвим лична селекция и спокойна проба, съобразена с вашето усещане.</p>
-            <Link href="/kontakti" className="storefront-button storefront-button--dark">
+            <AppointmentDialog source="blog" className="storefront-button storefront-button--dark">
               Запази час за проба
-            </Link>
+            </AppointmentDialog>
           </aside>
         </div>
       </article>
 
-      <section className="storefront-article-recommendations" aria-labelledby="article-recommendations-title">
-        <header>
-          <p>Продължете откриването</p>
-          <h2 id="article-recommendations-title">Подбрано за вас</h2>
-        </header>
-        <div className="storefront-article-recommendations__grid">
-          {recommendations.map((item) => (
-            <ProductCard
-              key={item.href}
-              href={item.href}
-              image={item.image}
-              alt={item.alt}
-              eyebrow={item.eyebrow}
-              name={item.name}
-              sizes="(max-width: 680px) 50vw, 25vw"
-            />
-          ))}
-        </div>
-      </section>
-
-      <SiteFooter />
+      <StorefrontContactFooterExperience />
     </main>
   );
 }

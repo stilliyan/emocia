@@ -93,22 +93,24 @@ export function AnimatedManifestoQuote({ lines }: { lines: string[] }) {
     >
       {indexedLines.map(({ line, words }, lineIndex) => (
         <React.Fragment key={line}>
-          {words.map(({ word, startIndex }, wordIndex) => (
-            <React.Fragment key={`${word}-${wordIndex}`}>
-              <span className="storefront-manifesto-quote__word" aria-hidden="true">
-                {Array.from(word).map((character, index) => (
-                  <span
-                    className="storefront-manifesto-quote__char"
-                    style={{ "--reveal-index": startIndex + index } as RevealStyle}
-                    key={`${character}-${index}`}
-                  >
-                    {character}
-                  </span>
-                ))}
-              </span>
-              {wordIndex < words.length - 1 ? " " : null}
-            </React.Fragment>
-          ))}
+          <span className="storefront-manifesto-quote__line">
+            {words.map(({ word, startIndex }, wordIndex) => (
+              <React.Fragment key={`${word}-${wordIndex}`}>
+                <span className="storefront-manifesto-quote__word" aria-hidden="true">
+                  {Array.from(word).map((character, index) => (
+                    <span
+                      className="storefront-manifesto-quote__char"
+                      style={{ "--reveal-index": startIndex + index } as RevealStyle}
+                      key={`${character}-${index}`}
+                    >
+                      {character}
+                    </span>
+                  ))}
+                </span>
+                {wordIndex < words.length - 1 ? " " : null}
+              </React.Fragment>
+            ))}
+          </span>
           {lineIndex < lines.length - 1 ? <br aria-hidden="true" /> : null}
         </React.Fragment>
       ))}

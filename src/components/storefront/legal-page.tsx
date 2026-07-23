@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LegalBackButton } from "./legal-back-button";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
 import "./storefront.css";
@@ -21,7 +22,7 @@ export function LegalPage({ title, intro, sections }: LegalPageProps) {
       <SiteHeader variant="light" />
       <article className="storefront-legal">
         <header className="storefront-legal__header">
-          <p className="storefront-eyebrow">Бутик Емоция</p>
+          <LegalBackButton />
           <h1>{title}</h1>
           <p>{intro}</p>
           <span>Последна актуализация: 21 юли 2026 г.</span>

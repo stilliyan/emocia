@@ -13,6 +13,7 @@ type HorizontalDragRailProps = {
   className?: string;
   ariaLabel: string;
   keyboardStep?: number;
+  mouseDragEnabled?: boolean;
 };
 
 const DRAG_THRESHOLD = 5;
@@ -22,6 +23,7 @@ export function HorizontalDragRail({
   className = "",
   ariaLabel,
   keyboardStep = 360,
+  mouseDragEnabled = true,
 }: HorizontalDragRailProps) {
   const railRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef({
@@ -33,7 +35,14 @@ export function HorizontalDragRail({
   const [isDragging, setIsDragging] = useState(false);
 
   function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
-    if (event.pointerType !== "mouse" || event.button !== 0 || !railRef.current) return;
+    if (
+      !mouseDragEnabled ||
+      event.pointerType !== "mouse" ||
+      event.button !== 0 ||
+      !railRef.current
+    ) {
+      return;
+    }
 
     dragRef.current = {
       pointerId: event.pointerId,
@@ -98,7 +107,9 @@ export function HorizontalDragRail({
     event.preventDefault();
     railRef.current?.scrollBy({
       left: event.key === "ArrowRight" ? keyboardStep : -keyboardStep,
-      behavior: "smooth",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
     });
   }
 
