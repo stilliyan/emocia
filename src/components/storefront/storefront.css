@@ -1578,7 +1578,7 @@
   .storefront-header--menu-open .storefront-header__mobile-toggle { color: var(--storefront-text-primary); }
   .storefront-header--menu-open .storefront-header__mobile-toggle:focus-visible { outline-color: var(--storefront-focus); }
   .storefront-header.storefront-header--mobile-hidden { opacity: 0; pointer-events: none; transform: translateY(calc(-100% - 32px)); }
-  .storefront-header .storefront-logo { width: 170px; }
+  .storefront-header .storefront-logo { width: 180px; }
   .storefront-homepage .storefront-header:not(.storefront-header--scrolled) .storefront-logo { width: 200px; }
   .storefront-header.storefront-header--scrolled .storefront-logo { width: 150px; }
   .storefront-header__desktop-nav { display: none; }
