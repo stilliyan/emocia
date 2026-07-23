@@ -479,7 +479,7 @@ function BookingFlow({ source, productName, productId, onClose }: AppointmentCon
       {step === 3 && <section className="storefront-booking__success" aria-live="polite">
         <div className="storefront-booking__success-heading">
           <span className="storefront-booking__success-icon"><CalendarCheck aria-hidden="true" /></span>
-          <DialogTitle>Вашият час е записан</DialogTitle>
+          <DialogTitle>Заявката за час е изпратена</DialogTitle>
           <DialogDescription id="booking-dialog-description">{result?.testMode ? "Тестов режим — не е създадена реална резервация." : result?.success}</DialogDescription>
         </div>
         <dl className="storefront-booking__summary">

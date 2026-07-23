@@ -9,7 +9,7 @@ import "./storefront.css";
 export function StorefrontCollectionPage({ collection }: { collection: StorefrontCollection }) {
   return (
     <main className="storefront storefront-collection-page">
-      <SiteHeader />
+      <SiteHeader hideOnMobileAtFooter={false} />
 
       <div className="storefront-collection-page__foreground">
         <section className="storefront-collection-hero" aria-labelledby="collection-title">

@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, useTransition } from "react";
-import { CalendarDays, Check, ChevronLeft, ChevronRight, Clock, ImageIcon, Pencil, Phone, Plus, Trash2, X } from "lucide-react";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import { CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, ImageIcon, Pencil, Phone, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { changeCalendarEventStatus, deleteCalendarEvent, getCalendarEvents, saveCalendarEvent } from "@/app/actions";
-import { cancelAppointmentRequest, confirmAppointmentRequest } from "@/app/actions/appointments";
+import { changeAppointmentStatus, markAppointmentInquiryHandled } from "@/app/actions/appointments";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,8 @@ import { Label } from "@/components/ui/label";
 import { NativeSelect } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
 import { calendarRange, dateKey, monthGrid, weekRange } from "@/lib/calendar";
-import type { AppointmentRequest, CalendarEvent, Product, ProductImage } from "@/lib/data";
+import { appointmentTypeLabels } from "@/lib/appointment-booking";
+import type { Appointment, AppointmentRequest, CalendarEvent, Product, ProductImage } from "@/lib/data";
 import { createClient } from "@/lib/supabase/client";
 
 const statusLabels = { upcoming: "Предстоящо", completed: "Завършено", cancelled: "Отказано" };
@@ -47,9 +48,9 @@ function attentionIssues(product: Product) {
   return issues;
 }
 
-type DashboardProps = { products: Product[]; initialEvents: CalendarEvent[]; initialRequests: AppointmentRequest[]; initialCalendarError?: string; initialAppointmentError?: string };
+type DashboardProps = { products: Product[]; initialEvents: CalendarEvent[]; initialAppointments: Appointment[]; initialInquiries: AppointmentRequest[]; initialCalendarError?: string; initialAppointmentError?: string; initialInquiryError?: string };
 
-export function Dashboard({ products, initialEvents, initialRequests, initialCalendarError = "", initialAppointmentError = "" }: DashboardProps) {
+export function Dashboard({ products, initialEvents, initialAppointments = [], initialInquiries = [], initialCalendarError = "", initialAppointmentError = "", initialInquiryError = "" }: DashboardProps) {
   const today = new Date();
   const [month, setMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
   const [selectedDate, setSelectedDate] = useState(dateKey(today));
@@ -58,12 +59,17 @@ export function Dashboard({ products, initialEvents, initialRequests, initialCal
   const [dialogOpen, setDialogOpen] = useState(false);
   const [formError, setFormError] = useState("");
   const [calendarError, setCalendarError] = useState(initialCalendarError);
-  const [requests, setRequests] = useState(initialRequests);
+  const [appointments, setAppointments] = useState(initialAppointments);
+  const [inquiries, setInquiries] = useState(initialInquiries);
+  const [appointmentsExpanded, setAppointmentsExpanded] = useState(Boolean(initialAppointmentError || initialAppointments.some((appointment) => appointment.status === "pending")));
+  const [inquiriesExpanded, setInquiriesExpanded] = useState(Boolean(initialInquiryError || initialInquiries.length));
   const [appointmentError, setAppointmentError] = useState(initialAppointmentError);
+  const [inquiryError, setInquiryError] = useState(initialInquiryError);
   const [showAllAgenda, setShowAllAgenda] = useState(false);
   const [calendarPending, startCalendarTransition] = useTransition();
   const [mutationPending, startMutationTransition] = useTransition();
   const [appointmentPending, startAppointmentTransition] = useTransition();
+  const [inquiryPending, startInquiryTransition] = useTransition();
   const days = useMemo(() => monthGrid(month), [month]);
   const groupedEvents = useMemo(() => events.reduce((groups, event) => {
     const key = dateKey(event.start_at);
@@ -71,9 +77,38 @@ export function Dashboard({ products, initialEvents, initialRequests, initialCal
     return groups;
   }, new Map<string, CalendarEvent[]>()), [events]);
   const agenda = (groupedEvents.get(selectedDate) ?? []).slice().sort((a, b) => a.start_at.localeCompare(b.start_at));
+  const pendingAppointments = useMemo(() => appointments.filter((appointment) => appointment.status === "pending"), [appointments]);
+  const appointmentsByCalendarEvent = useMemo(() => new Map(appointments.flatMap((appointment) => appointment.calendar_event_id ? [[appointment.calendar_event_id, appointment] as const] : [])), [appointments]);
+  const appointmentsOpen = appointmentsExpanded && Boolean(appointmentError || pendingAppointments.length);
+  const inquiriesOpen = inquiriesExpanded && Boolean(inquiryError || inquiries.length);
   const attention = products.map((product) => ({ product, issues: attentionIssues(product) })).filter((item) => item.issues.length);
   const currentWeek = weekRange(today);
   const eventsThisWeek = initialEvents.filter((event) => { const start = new Date(event.start_at); return start >= currentWeek.start && start < currentWeek.end && event.status !== "cancelled"; }).length;
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel("dashboard-upcoming-appointments")
+      .on("postgres_changes", { event: "*", schema: "public", table: "appointments" }, (payload) => {
+        const appointment = payload.new as Appointment;
+        if (!appointment?.id) return;
+        const active = (appointment.status === "pending" || appointment.status === "confirmed") && new Date(appointment.end_at) >= new Date();
+        if (appointment.status === "pending") setAppointmentsExpanded(true);
+        setAppointments((current) => {
+          const withoutAppointment = current.filter((item) => item.id !== appointment.id);
+          if (!active) return withoutAppointment;
+          return [appointment, ...withoutAppointment].sort((a, b) => b.created_at.localeCompare(a.created_at));
+        });
+        void refreshEvents();
+      })
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  // refreshEvents only depends on the currently visible month; re-subscribe when it changes.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [month]);
 
   function openNew(date = selectedDate) { setDraft(blankDraft(date)); setFormError(""); setDialogOpen(true); }
   function openEdit(event: CalendarEvent) { setDraft(toDraft(event)); setFormError(""); setDialogOpen(true); }
@@ -113,25 +148,27 @@ export function Dashboard({ products, initialEvents, initialRequests, initialCal
     startMutationTransition(async () => { const result = await deleteCalendarEvent(id); if (result.error) toast.error(result.error); else { toast.success(result.success); setDialogOpen(false); await refreshEvents(); } });
   }
 
-  function confirmRequest(id: string) {
+  function updateAppointmentStatus(id: string, status: Appointment["status"]) {
     if (appointmentPending) return;
     setAppointmentError("");
     startAppointmentTransition(async () => {
-      const result = await confirmAppointmentRequest(id);
+      const result = await changeAppointmentStatus(id, status);
       if (result.error) { setAppointmentError(result.error); toast.error(result.error); return; }
-      setRequests((current) => current.filter((request) => request.id !== id));
+      setAppointments((current) => status === "pending" || status === "confirmed"
+        ? current.map((appointment) => appointment.id === id ? { ...appointment, status } : appointment)
+        : current.filter((appointment) => appointment.id !== id));
       toast.success(result.success);
       await refreshEvents();
     });
   }
 
-  function cancelRequest(id: string) {
-    if (appointmentPending) return;
-    setAppointmentError("");
-    startAppointmentTransition(async () => {
-      const result = await cancelAppointmentRequest(id);
-      if (result.error) { setAppointmentError(result.error); toast.error(result.error); return; }
-      setRequests((current) => current.filter((request) => request.id !== id));
+  function markInquiryHandled(id: string) {
+    if (inquiryPending) return;
+    setInquiryError("");
+    startInquiryTransition(async () => {
+      const result = await markAppointmentInquiryHandled(id);
+      if (result.error) { setInquiryError(result.error); toast.error(result.error); return; }
+      setInquiries((current) => current.filter((inquiry) => inquiry.id !== id));
       toast.success(result.success);
     });
   }
@@ -149,6 +186,24 @@ export function Dashboard({ products, initialEvents, initialRequests, initialCal
       <button type="button" onClick={() => loadMonth(new Date(today.getFullYear(), today.getMonth(), 1))} className="rounded-xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/10"><Stat label="Събития тази седмица" value={eventsThisWeek} /></button>
     </div>
 
+    <Card>
+      <CardHeader><div className="flex items-center justify-between gap-3"><div><CardTitle>Нови записвания</CardTitle><p className="mt-1 text-sm text-muted-foreground">Тук стоят само часовете, които чакат вашето потвърждение.</p></div><div className="flex items-center gap-2"><Badge variant={pendingAppointments.length ? "default" : "secondary"}>{pendingAppointments.length}</Badge><Button type="button" size="icon-sm" variant="ghost" disabled={!appointmentError && pendingAppointments.length === 0} aria-label={appointmentsOpen ? "Свий новите записвания" : "Разгъни новите записвания"} aria-expanded={appointmentsOpen} onClick={() => setAppointmentsExpanded((expanded) => !expanded)}><ChevronDown className={`transition-transform ${appointmentsOpen ? "rotate-180" : ""}`} /></Button></div></div></CardHeader>
+      {appointmentsOpen && <CardContent>
+        {appointmentError && <p role="alert" className="mb-3 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{appointmentError}</p>}
+        {!appointmentError && pendingAppointments.length === 0 && <p className="rounded-lg bg-muted/40 p-4 text-sm text-muted-foreground">Няма нови записвания.</p>}
+        {pendingAppointments.length > 0 && <div className="divide-y">{pendingAppointments.map((appointment) => <AppointmentRow key={appointment.id} appointment={appointment} pending={appointmentPending} onStatus={updateAppointmentStatus} />)}</div>}
+      </CardContent>}
+    </Card>
+
+    <Card>
+      <CardHeader><div className="flex items-center justify-between gap-3"><div><CardTitle>Нови запитвания</CardTitle><p className="mt-1 text-sm text-muted-foreground">Съобщенията от контактната форма са отделени от записаните часове.</p></div><div className="flex items-center gap-2"><Badge variant={inquiries.length ? "default" : "secondary"}>{inquiries.length}</Badge><Button type="button" size="icon-sm" variant="ghost" disabled={!inquiryError && inquiries.length === 0} aria-label={inquiriesOpen ? "Свий новите запитвания" : "Разгъни новите запитвания"} aria-expanded={inquiriesOpen} onClick={() => setInquiriesExpanded((expanded) => !expanded)}><ChevronDown className={`transition-transform ${inquiriesOpen ? "rotate-180" : ""}`} /></Button></div></div></CardHeader>
+      {inquiriesOpen && <CardContent>
+        {inquiryError && <p role="alert" className="mb-3 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{inquiryError}</p>}
+        {!inquiryError && inquiries.length === 0 && <p className="rounded-lg bg-muted/40 p-4 text-sm text-muted-foreground">Няма нови запитвания.</p>}
+        {inquiries.length > 0 && <div className="divide-y">{inquiries.map((inquiry) => <InquiryRow key={inquiry.id} inquiry={inquiry} pending={inquiryPending} onHandled={markInquiryHandled} />)}</div>}
+      </CardContent>}
+    </Card>
+
     <div className="grid gap-5 xl:grid-cols-[2fr_1fr]">
       <Card className="min-w-0"><CardHeader><div className="flex flex-wrap items-center justify-between gap-3"><CardTitle className="capitalize">{new Intl.DateTimeFormat("bg-BG", { month: "long", year: "numeric" }).format(month)}</CardTitle><div className="flex items-center gap-1"><Button type="button" size="icon-sm" variant="outline" aria-label="Предишен месец" onClick={() => loadMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}><ChevronLeft /></Button><Button type="button" size="sm" variant="outline" onClick={() => { const now = new Date(); setSelectedDate(dateKey(now)); loadMonth(new Date(now.getFullYear(), now.getMonth(), 1)); }}>Днес</Button><Button type="button" size="icon-sm" variant="outline" aria-label="Следващ месец" onClick={() => loadMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}><ChevronRight /></Button></div></div></CardHeader><CardContent>
         {calendarPending && <p role="status" className="mb-3 rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">Зареждане на събитията…</p>}
@@ -159,18 +214,9 @@ export function Dashboard({ products, initialEvents, initialRequests, initialCal
       </CardContent></Card>
 
       <Card><CardHeader><div className="flex items-start justify-between gap-3"><div><CardTitle>Днес</CardTitle><p className="mt-1 text-xs text-muted-foreground">{new Intl.DateTimeFormat("bg-BG", { dateStyle: "long" }).format(new Date(`${selectedDate}T12:00:00`))}</p></div><Button type="button" size="sm" variant="outline" onClick={() => openNew(selectedDate)}><Plus />Ново</Button></div></CardHeader><CardContent>
-        {agenda.length ? <div className="divide-y">{agenda.slice(0, showAllAgenda ? agenda.length : 7).map((event) => <div key={event.id} className="py-3"><div className="flex items-start justify-between gap-2"><button type="button" className="min-w-0 text-left" onClick={() => openEdit(event)}><span className="flex items-center gap-2 text-xs text-muted-foreground"><Clock className="size-3" />{event.all_day ? "Цял ден" : toLocalTime(event.start_at)}</span><span className="mt-1 block truncate text-sm font-medium">{event.title}</span>{event.description && <span className="mt-0.5 block truncate text-xs text-muted-foreground">{event.description}</span>}</button><Badge variant={event.status === "completed" ? "secondary" : event.status === "cancelled" ? "destructive" : "outline"}>{statusLabels[event.status]}</Badge></div>{event.status === "upcoming" && <Button type="button" size="sm" variant="ghost" className="mt-1" disabled={mutationPending} onClick={() => changeStatus(event.id, "completed")}><Check />Завършено</Button>}</div>)}{agenda.length > 7 && !showAllAgenda && <Button type="button" variant="ghost" className="mt-2 w-full" onClick={() => setShowAllAgenda(true)}>Виж всички</Button>}</div> : <div className="rounded-lg bg-muted/40 p-4 text-center text-sm text-muted-foreground">Няма планирани събития за този ден.</div>}
+        {agenda.length ? <div className="divide-y">{agenda.slice(0, showAllAgenda ? agenda.length : 7).map((event) => <AgendaEventRow key={event.id} event={event} appointment={appointmentsByCalendarEvent.get(event.id)} pending={appointmentPending || mutationPending} onEdit={openEdit} onCalendarStatus={changeStatus} onAppointmentStatus={updateAppointmentStatus} />)}{agenda.length > 7 && !showAllAgenda && <Button type="button" variant="ghost" className="mt-2 w-full" onClick={() => setShowAllAgenda(true)}>Виж всички</Button>}</div> : <div className="rounded-lg bg-muted/40 p-4 text-center text-sm text-muted-foreground">Няма планирани събития за този ден.</div>}
       </CardContent></Card>
     </div>
-
-    <Card>
-      <CardHeader><div className="flex items-center justify-between gap-3"><div><CardTitle>Заявки за проба</CardTitle><p className="mt-1 text-sm text-muted-foreground">Потвърдените заявки се добавят автоматично в календара.</p></div><Badge variant={requests.length ? "default" : "secondary"}>{requests.length}</Badge></div></CardHeader>
-      <CardContent>
-        {appointmentError && <p role="alert" className="mb-3 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{appointmentError}</p>}
-        {!appointmentError && requests.length === 0 && <p className="rounded-lg bg-muted/40 p-4 text-sm text-muted-foreground">Няма чакащи заявки за проба.</p>}
-        {requests.length > 0 && <div className="divide-y">{requests.map((request) => <AppointmentRequestRow key={request.id} request={request} pending={appointmentPending} onConfirm={confirmRequest} onCancel={cancelRequest} />)}</div>}
-      </CardContent>
-    </Card>
 
     <div className="grid gap-5 xl:grid-cols-2">
       <Card id="attention"><CardHeader><div className="flex items-center justify-between gap-3"><CardTitle>Изискват внимание</CardTitle><Button asChild variant="ghost" size="sm"><Link href="/admin/products">Виж всички</Link></Button></div></CardHeader><CardContent>{attention.length ? <div className="divide-y">{attention.slice(0, 5).map(({ product, issues }) => <ProductAttentionRow key={product.id} product={product} issues={issues} />)}</div> : <p className="rounded-lg bg-muted/40 p-4 text-sm text-muted-foreground">Каталогът е в добро състояние — няма продукти, които изискват внимание.</p>}</CardContent></Card>
@@ -194,9 +240,20 @@ function ProductThumb({ product }: { product: Product }) {
 function ProductAttentionRow({ product, issues }: { product: Product; issues: string[] }) { return <div className="flex items-center gap-3 py-3"><ProductThumb product={product} /><div className="min-w-0 flex-1"><p className="truncate text-sm font-medium">{product.name}</p><p className="truncate text-xs text-muted-foreground">{issues.join(" · ")}</p></div><Badge variant="secondary">{productStatusLabels[product.status]}</Badge><Button asChild size="icon-sm" variant="ghost"><Link href={`/admin/products/${product.id}`} aria-label={`Редактирай ${product.name}`}><Pencil /></Link></Button></div>; }
 function RecentProductRow({ product }: { product: Product }) { return <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-3 py-3"><ProductThumb product={product} /><div className="min-w-0"><p className="truncate text-sm font-medium">{product.name}</p><p className="text-xs text-muted-foreground">{new Intl.DateTimeFormat("bg-BG").format(new Date(product.updated_at))}</p></div><Badge variant={product.status === "published" ? "default" : "secondary"}>{productStatusLabels[product.status]}</Badge><Button asChild size="icon-sm" variant="ghost"><Link href={`/admin/products/${product.id}`} aria-label={`Редактирай ${product.name}`}><Pencil /></Link></Button></div>; }
 
-function AppointmentRequestRow({ request, pending, onConfirm, onCancel }: { request: AppointmentRequest; pending: boolean; onConfirm: (id: string) => void; onCancel: (id: string) => void }) {
-  const date = new Intl.DateTimeFormat("bg-BG", { dateStyle: "medium" }).format(new Date(`${request.preferred_date}T12:00:00`));
-  return <div className="grid gap-3 py-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center"><div className="min-w-0"><div className="flex flex-wrap items-center gap-x-3 gap-y-1"><p className="font-medium">{request.name}</p><span className="text-sm text-muted-foreground">{date} · {request.preferred_time.slice(0, 5)}</span>{request.product_name && <Badge variant="outline">{request.product_name}</Badge>}</div><a href={`tel:${request.phone.replace(/\s/g, "")}`} className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"><Phone className="size-3.5" />{request.phone}</a>{request.message && <p className="mt-1 text-sm text-muted-foreground">{request.message}</p>}</div><div className="flex flex-wrap gap-2"><Button type="button" size="sm" disabled={pending} onClick={() => onConfirm(request.id)}><Check />Потвърди</Button><Button type="button" size="sm" variant="outline" disabled={pending} onClick={() => onCancel(request.id)}><X />Откажи</Button></div></div>;
+function AgendaEventRow({ event, appointment, pending, onEdit, onCalendarStatus, onAppointmentStatus }: { event: CalendarEvent; appointment?: Appointment; pending: boolean; onEdit: (event: CalendarEvent) => void; onCalendarStatus: (id: string, status: CalendarEvent["status"]) => void; onAppointmentStatus: (id: string, status: Appointment["status"]) => void }) {
+  const appointmentDate = appointment ? new Intl.DateTimeFormat("bg-BG", { timeZone: "Europe/Sofia", dateStyle: "medium", timeStyle: "short" }).format(new Date(appointment.start_at)) : "";
+  const content = <><span className="flex items-center gap-2 text-xs text-muted-foreground"><Clock className="size-3" />{event.all_day ? "Цял ден" : toLocalTime(event.start_at)}</span><span className="mt-1 block truncate text-sm font-medium">{event.title}</span>{appointment ? <><a href={`tel:${appointment.phone.replace(/\s/g, "")}`} className="mt-1 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"><Phone className="size-3" />{appointment.phone}</a>{appointment.comment && <span className="mt-0.5 block truncate text-xs text-muted-foreground">{appointment.comment}</span>}</> : event.description && <span className="mt-0.5 block truncate text-xs text-muted-foreground">{event.description}</span>}</>;
+  return <div className="py-3"><div className="flex items-start justify-between gap-2">{appointment ? <div className="min-w-0">{content}</div> : <button type="button" className="min-w-0 text-left" onClick={() => onEdit(event)}>{content}</button>}<Badge variant={event.status === "completed" ? "secondary" : event.status === "cancelled" ? "destructive" : "outline"}>{statusLabels[event.status]}</Badge></div>{event.status === "upcoming" && appointment ? <div className="mt-2 flex flex-wrap gap-1"><Button type="button" size="sm" variant="ghost" disabled={pending} onClick={() => onAppointmentStatus(appointment.id, "completed")}><Check />Завърши</Button><AlertDialog><AlertDialogTrigger asChild><Button type="button" size="sm" variant="ghost" disabled={pending}><X />Откажи</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Отказване на записването</AlertDialogTitle><AlertDialogDescription>Сигурни ли сте, че искате да откажете часа на {appointment.customer_name} за {appointmentDate}?</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel type="button">Назад</AlertDialogCancel><AlertDialogAction type="button" variant="destructive" onClick={() => onAppointmentStatus(appointment.id, "cancelled")}>Откажи записването</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog></div> : event.status === "upcoming" && <Button type="button" size="sm" variant="ghost" className="mt-1" disabled={pending} onClick={() => onCalendarStatus(event.id, "completed")}><Check />Завършено</Button>}</div>;
+}
+
+function AppointmentRow({ appointment, pending, onStatus }: { appointment: Appointment; pending: boolean; onStatus: (id: string, status: Appointment["status"]) => void }) {
+  const date = new Intl.DateTimeFormat("bg-BG", { timeZone: "Europe/Sofia", dateStyle: "medium", timeStyle: "short" }).format(new Date(appointment.start_at));
+  return <div className="grid gap-3 py-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center"><div className="min-w-0"><div className="flex flex-wrap items-center gap-x-3 gap-y-1"><p className="font-medium">{appointment.customer_name}</p><span className="text-sm text-muted-foreground">{date}</span><Badge variant={appointment.status === "confirmed" ? "default" : "outline"}>{appointment.status === "confirmed" ? "Потвърдено" : "Чака потвърждение"}</Badge>{appointment.product_name && <Badge variant="outline">{appointment.product_name}</Badge>}</div><div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground"><a href={`tel:${appointment.phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-1.5 hover:text-foreground"><Phone className="size-3.5" />{appointment.phone}</a><span>{appointmentTypeLabels[appointment.appointment_type]}</span><span>{appointment.companions} придружители</span></div>{appointment.comment && <p className="mt-1 text-sm text-muted-foreground">{appointment.comment}</p>}</div><div className="flex flex-wrap gap-2">{appointment.status === "pending" && <Button type="button" size="sm" disabled={pending} onClick={() => onStatus(appointment.id, "confirmed")}><Check />Потвърди</Button>}<AlertDialog><AlertDialogTrigger asChild><Button type="button" size="sm" variant="outline" disabled={pending}><X />Откажи</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Отказване на записването</AlertDialogTitle><AlertDialogDescription>Сигурни ли сте, че искате да откажете часа на {appointment.customer_name} за {date}?</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel type="button">Назад</AlertDialogCancel><AlertDialogAction type="button" variant="destructive" onClick={() => onStatus(appointment.id, "cancelled")}>Откажи записването</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog></div></div>;
+}
+
+function InquiryRow({ inquiry, pending, onHandled }: { inquiry: AppointmentRequest; pending: boolean; onHandled: (id: string) => void }) {
+  const received = new Intl.DateTimeFormat("bg-BG", { dateStyle: "medium", timeStyle: "short" }).format(new Date(inquiry.created_at));
+  return <div className="grid gap-3 py-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center"><div className="min-w-0"><div className="flex flex-wrap items-center gap-x-3 gap-y-1"><p className="font-medium">{inquiry.name}</p><span className="text-sm text-muted-foreground">{received}</span>{inquiry.product_name && <Badge variant="outline">{inquiry.product_name}</Badge>}</div><a href={`tel:${inquiry.phone.replace(/\s/g, "")}`} className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"><Phone className="size-3.5" />{inquiry.phone}</a><p className="mt-2 whitespace-pre-wrap text-sm">{inquiry.message || "Без допълнително съобщение."}</p></div><Button type="button" size="sm" variant="outline" disabled={pending} onClick={() => onHandled(inquiry.id)}><Check />Обработено</Button></div>;
 }
 
 function EventDialog({ open, onOpenChange, draft, setDraft, pending, error, onSubmit, onStatus, onDelete }: { open: boolean; onOpenChange: (open: boolean) => void; draft: Draft; setDraft: (draft: Draft) => void; pending: boolean; error: string; onSubmit: () => void; onStatus: (id: string, status: CalendarEvent["status"]) => void; onDelete: (id: string) => void }) {

@@ -6,6 +6,7 @@ import {
   getAdminAccessStatus,
   hasSupabaseConfig,
 } from "@/lib/supabase/server";
+import { getUpcomingAppointmentCount } from "@/lib/data";
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
   if (!hasSupabaseConfig()) {
@@ -70,5 +71,12 @@ export default async function Layout({ children }: { children: React.ReactNode }
     );
   }
 
-  return <AdminShell>{children}</AdminShell>;
+  let upcomingAppointments = 0;
+  try {
+    upcomingAppointments = await getUpcomingAppointmentCount();
+  } catch {
+    // The appointments migration can be applied independently from the base CMS.
+  }
+
+  return <AdminShell initialUpcomingAppointments={upcomingAppointments}>{children}</AdminShell>;
 }

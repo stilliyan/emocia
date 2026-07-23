@@ -43,8 +43,10 @@ Public visitors do not receive direct table access. The form uses the limited `s
 The local code can be reviewed in test mode without creating real bookings. To activate real booking in an environment:
 
 1. Apply `supabase/migrations/202607230002_appointment_booking.sql`.
-2. Review the initial row in `appointment_settings` from `/admin/appointments`.
-3. Set `APPOINTMENT_SUBMISSION_MODE=live`.
-4. Verify one public booking and one concurrent-slot conflict before opening booking to customers.
+2. Apply `supabase/migrations/202607230003_appointments_calendar_sync.sql` so bookings appear in the dashboard calendar.
+3. Apply `supabase/migrations/202607230004_pending_appointment_approval.sql` so new public bookings wait for admin confirmation before entering the calendar.
+4. Review the initial row in `appointment_settings` from `/admin/appointments`.
+5. Set `APPOINTMENT_SUBMISSION_MODE=live`.
+6. Verify one public booking, its confirmation into the calendar and one concurrent-slot conflict before opening booking to customers.
 
 Do not enable live mode before the migration. The application reports that booking setup is required and does not fall back to unsafe client-only availability.

@@ -542,6 +542,11 @@
 .storefront-products { padding: var(--storefront-space-12) 0; }
 .storefront-products > h2,
 .storefront-products__sticky > h2 { text-align: center; font-size: var(--text-section-title-size); font-weight: var(--text-section-title-weight); line-height: var(--text-section-title-line-height); letter-spacing: var(--text-section-title-tracking); text-wrap: balance; }
+.storefront-homepage .storefront-products--mixed > h2,
+.storefront-homepage .storefront-products--mixed .storefront-products__sticky > h2 {
+  font-size: 42px;
+  line-height: 1.12;
+}
 .storefront-products__empty-state {
   margin: var(--storefront-space-4) 7vw 0;
   padding-top: 24px;
@@ -872,7 +877,7 @@
 
 @media (min-width: 1025px) {
   .storefront-categories { column-gap: var(--storefront-space-1); row-gap: var(--storefront-space-6); padding-top: var(--storefront-space-6); }
-  .storefront-categories__title { display: block; grid-column: 1 / -1; color: var(--storefront-ink); font-size: var(--text-section-title-size); font-weight: var(--text-section-title-weight); line-height: var(--text-section-title-line-height); letter-spacing: var(--text-section-title-tracking); text-align: center; text-wrap: balance; }
+  .storefront-categories__title { display: block; grid-column: 1 / -1; color: var(--storefront-ink); font-size: 42px; font-weight: var(--text-section-title-weight); line-height: 1.12; letter-spacing: var(--text-section-title-tracking); text-align: center; text-wrap: balance; }
   .storefront-contact__map > a > span { justify-content: flex-start; font-size: var(--text-label-size); text-align: left; white-space: normal; }
   .storefront-footer { grid-template-columns: minmax(280px, 400px) repeat(3, max-content); column-gap: clamp(48px, 4vw, 80px); justify-content: start; }
   .storefront-footer__links { transform: none; }
@@ -1638,8 +1643,8 @@
     border-radius: 8px;
     color: var(--storefront-text-primary);
     font-size: var(--text-navigation-size);
-    font-weight: var(--text-navigation-weight);
-    letter-spacing: var(--text-navigation-tracking);
+    font-weight: 300;
+    letter-spacing: -.02em;
     line-height: var(--text-navigation-line-height);
     transition: color .22s ease, opacity .3s ease, transform .38s cubic-bezier(.22, 1, .36, 1);
   }
@@ -1709,10 +1714,10 @@
     margin: 0;
     padding: var(--storefront-space-3) 0;
     color: var(--storefront-ink);
-    font-size: var(--text-card-title-size);
-    font-weight: var(--text-card-title-weight);
-    line-height: var(--text-card-title-line-height);
-    letter-spacing: var(--text-card-title-tracking);
+    font-size: clamp(24px, 7vw, 28px);
+    font-weight: 300;
+    line-height: 1.12;
+    letter-spacing: var(--text-section-title-tracking);
     text-align: center;
   }
   .storefront-category + .storefront-category { margin-top: var(--storefront-space-1); }
@@ -1723,11 +1728,11 @@
   }
   .storefront-category__blur { opacity: 1; }
   .storefront-category__copy { right: var(--storefront-space-3); bottom: var(--storefront-space-3); left: var(--storefront-space-3); }
-  .storefront-homepage .storefront-category__link-label {
+  .storefront-category__link-label {
     position: relative;
     top: auto;
     left: auto;
-    margin-top: var(--storefront-space-2);
+    margin-top: var(--storefront-space-1);
     opacity: 1;
     transform: none;
   }
@@ -1772,6 +1777,10 @@
   .storefront-products { padding: var(--storefront-space-10) 0; }
   .storefront-products > h2,
   .storefront-products__sticky > h2 { font-size: var(--text-section-title-size); }
+  .storefront-homepage .storefront-products--mixed > h2,
+  .storefront-homepage .storefront-products--mixed .storefront-products__sticky > h2 {
+    font-size: clamp(24px, 7vw, 28px);
+  }
   .storefront-products__rail { grid-auto-columns: min(310px, 76vw); padding-left: 8px; scroll-padding-left: 8px; }
   .storefront-homepage .storefront-products { padding: 64px 0; }
   .storefront-homepage .storefront-products__rail { margin-top: 32px; }
@@ -4673,4 +4682,16 @@ body[data-scroll-locked]:has(.storefront-booking-dialog) {
   .storefront-blog-meta {
     font-size: var(--text-label-size);
   }
+}
+
+.storefront :is(h1, h2, h3) {
+  font-weight: 300;
+}
+
+.storefront .storefront-category h2 {
+  font-weight: 400;
+}
+
+.storefront .storefront-collection-card h3 {
+  font-weight: 400;
 }

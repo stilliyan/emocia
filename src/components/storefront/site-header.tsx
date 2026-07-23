@@ -9,6 +9,7 @@ import { isPublicNavigationActive } from "./public-navigation";
 
 type SiteHeaderProps = {
   variant?: "overlay" | "light";
+  hideOnMobileAtFooter?: boolean;
 };
 
 const desktopNavigation = [
@@ -20,7 +21,10 @@ const desktopNavigation = [
   { label: "Контакти", href: "/kontakti" },
 ] as const;
 
-export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
+export function SiteHeader({
+  variant = "overlay",
+  hideOnMobileAtFooter = true,
+}: SiteHeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
   const isLight = variant === "light";
@@ -164,12 +168,15 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
   }, [isLight]);
 
   useEffect(() => {
+    if (!hideOnMobileAtFooter) return;
+
     const footer = document.getElementById("footer");
     const mobileViewport = window.matchMedia("(max-width: 768px)");
 
     if (!footer) return;
 
     let footerVisible = false;
+    let hasUserScrolled = false;
     let lastScrollY = window.scrollY;
 
     const hideAtFooter = () => {
@@ -182,7 +189,7 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
     const observer = new IntersectionObserver(([entry]) => {
       footerVisible = entry.isIntersecting;
 
-      if (footerVisible) {
+      if (footerVisible && hasUserScrolled && window.scrollY > 32) {
         hideAtFooter();
       } else {
         setMobileHidden(false);
@@ -193,11 +200,15 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
       const currentScrollY = window.scrollY;
       const delta = currentScrollY - lastScrollY;
 
+      if (Math.abs(delta) > 1) {
+        hasUserScrolled = true;
+      }
+
       if (!mobileViewport.matches) {
         setMobileHidden(false);
       } else if (delta < -4) {
         setMobileHidden(false);
-      } else if (delta > 4 && footerVisible) {
+      } else if (delta > 4 && footerVisible && currentScrollY > 32) {
         hideAtFooter();
       }
 
@@ -214,18 +225,26 @@ export function SiteHeader({ variant = "overlay" }: SiteHeaderProps) {
 
     observer.observe(footer);
     window.addEventListener("scroll", handleScroll, { passive: true });
-    mobileViewport.addEventListener("change", handleViewportChange);
+    if (typeof mobileViewport.addEventListener === "function") {
+      mobileViewport.addEventListener("change", handleViewportChange);
+    } else {
+      mobileViewport.addListener(handleViewportChange);
+    }
 
     return () => {
       observer.disconnect();
       window.removeEventListener("scroll", handleScroll);
-      mobileViewport.removeEventListener("change", handleViewportChange);
+      if (typeof mobileViewport.removeEventListener === "function") {
+        mobileViewport.removeEventListener("change", handleViewportChange);
+      } else {
+        mobileViewport.removeListener(handleViewportChange);
+      }
     };
-  }, [closeMobileMenu]);
+  }, [closeMobileMenu, hideOnMobileAtFooter]);
 
   return (
     <>
-      <header className={`storefront-header${isLight ? " storefront-header--light" : ""}${scrolled ? " storefront-header--scrolled" : ""}${mobileHidden ? " storefront-header--mobile-hidden" : ""}${mobileMenuVisible ? " storefront-header--menu-open" : ""}`}>
+      <header className={`storefront-header${isLight ? " storefront-header--light" : ""}${scrolled ? " storefront-header--scrolled" : ""}${hideOnMobileAtFooter && mobileHidden ? " storefront-header--mobile-hidden" : ""}${mobileMenuVisible ? " storefront-header--menu-open" : ""}`}>
         <StorefrontLogo inverted alternateSrc="/storefront/logo-dark.svg" />
         <nav aria-label="Основна навигация" className="storefront-header__desktop-nav">
           {desktopNavigation.map(({ label, href }) => (

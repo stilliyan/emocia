@@ -6,8 +6,8 @@ export type Product = { id:string; name:string; slug:string; short_description:s
 export type SiteSettings = { shop_name:string; default_seo_title:string|null; default_meta_description:string|null; contact_phone:string|null; contact_email:string|null; address:string|null; working_hours:string|null; instagram_url:string|null; facebook_url:string|null; tiktok_url:string|null; maps_url:string|null };
 export type SiteContent = { hero_title:string|null; hero_description:string|null; hero_image_path:string|null; about_title:string|null; about_content:string|null };
 export type CalendarEvent = { id:string; title:string; description:string|null; start_at:string; end_at:string|null; all_day:boolean; color:string|null; status:"upcoming"|"completed"|"cancelled"; created_by:string; created_at:string; updated_at:string };
-export type AppointmentRequest = { id:string; name:string; phone:string; preferred_date:string; preferred_time:string; message:string|null; product_name:string|null; status:"pending"|"confirmed"|"cancelled"; calendar_event_id:string|null; created_at:string; updated_at:string };
-export type Appointment = { id:string; start_at:string; end_at:string; timezone:string; customer_name:string; phone:string; email:string|null; appointment_type:"bridal"|"formal"|"accessories"|"other"; companions:number; comment:string|null; product_name:string|null; status:"pending"|"confirmed"|"cancelled"|"completed"; created_at:string; updated_at:string };
+export type AppointmentRequest = { id:string; name:string; phone:string; preferred_date:string; preferred_time:string; message:string|null; product_name:string|null; product_id:string|null; source:string; current_url:string|null; status:"pending"|"confirmed"|"cancelled"; calendar_event_id:string|null; created_at:string; updated_at:string };
+export type Appointment = { id:string; start_at:string; end_at:string; timezone:string; customer_name:string; phone:string; email:string|null; appointment_type:"bridal"|"formal"|"accessories"|"other"; companions:number; comment:string|null; product_name:string|null; calendar_event_id?:string|null; status:"pending"|"confirmed"|"cancelled"|"completed"; created_at:string; updated_at:string };
 export type AppointmentBlock = { id:string; start_at:string; end_at:string; reason:string|null; created_at:string };
 export type AppointmentSettings = { timezone:string; duration_minutes:number; buffer_minutes:number; maximum_companions:number; booking_window_days:number; minimum_notice_hours:number; weekly_schedule:Record<string,Array<[string,string]>> };
 
@@ -18,10 +18,40 @@ export async function getSiteSettings():Promise<SiteSettings>{const fallback:Sit
 export async function getSiteContent():Promise<SiteContent>{const fallback:SiteContent={hero_title:null,hero_description:null,hero_image_path:null,about_title:null,about_content:null};if(!hasSupabaseConfig())return fallback;const{supabase}=await requireAdmin();const{data,error}=await supabase.from("site_content").select("hero_title,hero_description,hero_image_path,about_title,about_content").eq("id",true).maybeSingle();if(error)throw new Error(`Съдържанието не може да бъде заредено: ${error.message}`);return data??fallback;}
 export async function getCalendarEvents(start:string,end:string):Promise<CalendarEvent[]>{if(!hasSupabaseConfig())return[];const{supabase}=await requireAdmin();const{data,error}=await supabase.from("calendar_events").select("*").gte("start_at",start).lt("start_at",end).order("start_at");if(error){if(error.code==="42P01"||error.code==="PGRST205")throw new Error("Календарът изисква Supabase migration.");throw new Error(`Събитията не могат да бъдат заредени: ${error.message}`);}return(data??[])as CalendarEvent[];}
 export async function getAppointmentRequests():Promise<AppointmentRequest[]>{if(!hasSupabaseConfig())return[];const{supabase}=await requireAdmin();const{data,error}=await supabase.from("appointment_requests").select("*").eq("status","pending").order("preferred_date").order("preferred_time").limit(50);if(error){if(error.code==="42P01"||error.code==="PGRST205")throw new Error("Заявките за проба изискват Supabase migration.");throw new Error(`Заявките не могат да бъдат заредени: ${error.message}`);}return(data??[])as AppointmentRequest[];}
+export async function getContactInquiries():Promise<AppointmentRequest[]>{
+  if(!hasSupabaseConfig())return[];
+  const{supabase}=await requireAdmin();
+  const{data,error}=await supabase.from("appointment_requests").select("*").eq("status","pending").eq("source","contact").order("created_at",{ascending:false}).limit(50);
+  if(error){
+    if(error.code==="42P01"||error.code==="PGRST205")throw new Error("Запитванията изискват Supabase migration.");
+    throw new Error(`Запитванията не могат да бъдат заредени: ${error.message}`);
+  }
+  return(data??[])as AppointmentRequest[];
+}
+export async function getUpcomingAppointments():Promise<Appointment[]>{
+  if(!hasSupabaseConfig())return[];
+  const{supabase}=await requireAdmin();
+  const{data,error}=await supabase.from("appointments").select("id,start_at,end_at,timezone,customer_name,phone,email,appointment_type,companions,comment,product_name,calendar_event_id,status,created_at,updated_at").in("status",["pending","confirmed"]).gte("end_at",new Date().toISOString()).order("created_at",{ascending:false}).limit(50);
+  if(error){
+    if(error.code==="42P01"||error.code==="PGRST205")throw new Error("Записванията изискват последната Supabase migration.");
+    throw new Error(`Записванията не могат да бъдат заредени: ${error.message}`);
+  }
+  return(data??[])as Appointment[];
+}
+export async function getUpcomingAppointmentCount():Promise<number>{
+  if(!hasSupabaseConfig())return 0;
+  const{supabase}=await requireAdmin();
+  const{count,error}=await supabase.from("appointments").select("id",{count:"exact",head:true}).eq("status","pending").gte("end_at",new Date().toISOString());
+  if(error){
+    if(error.code==="42P01"||error.code==="PGRST205")return 0;
+    throw new Error(`Броят на записванията не може да бъде зареден: ${error.message}`);
+  }
+  return count??0;
+}
 export async function getAppointmentManagementData():Promise<{appointments:Appointment[];blocks:AppointmentBlock[];settings:AppointmentSettings}>{
   const {supabase}=await requireAdmin();
   const [appointmentsResult,blocksResult,settingsResult]=await Promise.all([
-    supabase.from("appointments").select("id,start_at,end_at,timezone,customer_name,phone,email,appointment_type,companions,comment,product_name,status,created_at,updated_at").gte("end_at",new Date().toISOString()).order("start_at").limit(200),
+    supabase.from("appointments").select("id,start_at,end_at,timezone,customer_name,phone,email,appointment_type,companions,comment,product_name,calendar_event_id,status,created_at,updated_at").gte("end_at",new Date().toISOString()).order("start_at").limit(200),
     supabase.from("appointment_blocks").select("id,start_at,end_at,reason,created_at").gte("end_at",new Date().toISOString()).order("start_at").limit(100),
     supabase.from("appointment_settings").select("timezone,duration_minutes,buffer_minutes,maximum_companions,booking_window_days,minimum_notice_hours,weekly_schedule").eq("id",true).maybeSingle(),
   ]);

@@ -80,4 +80,12 @@ describe("booking validation and database protection", () => {
     expect(migration).toContain("when exclusion_violation then raise exception 'slot_unavailable'");
     expect(migration).toContain("idempotency_key uuid not null unique");
   });
+
+  it("keeps public bookings pending until the administrator confirms them", () => {
+    const migration = readFileSync("supabase/migrations/202607230004_pending_appointment_approval.sql", "utf8");
+    expect(migration).toContain("if auth.uid() is null then");
+    expect(migration).toContain("new.status := 'pending'");
+    expect(migration).toContain("if new.status = 'pending' then");
+    expect(migration).toContain("new.calendar_event_id := null");
+  });
 });

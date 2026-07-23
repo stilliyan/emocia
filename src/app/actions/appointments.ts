@@ -149,7 +149,16 @@ export async function bookAppointment(input: unknown): Promise<BookingActionStat
       return { error: "Записването не можа да бъде завършено. Опитайте отново." };
     }
     const result = data as { id: string; start?: string; end?: string; duplicate?: boolean };
-    return { id: result.id, start: result.start, end: result.end, duplicate: result.duplicate, success: "Вашият час е записан успешно." };
+    const createdFromAdmin = (parsed.data.currentUrl ?? "").startsWith("/admin/");
+    return {
+      id: result.id,
+      start: result.start,
+      end: result.end,
+      duplicate: result.duplicate,
+      success: createdFromAdmin
+        ? "Записването е създадено."
+        : "Заявката за час е изпратена. Очаквайте потвърждение по телефона.",
+    };
   } catch {
     return { error: "Записването не можа да бъде завършено. Опитайте отново." };
   }
@@ -166,6 +175,7 @@ export async function changeAppointmentStatus(id: string, status: string): Promi
       if (missingBookingSchema(error)) return { error: "Записванията изискват последната Supabase migration.", setupRequired: true };
       return { error: "Статусът не можа да бъде променен." };
     }
+    revalidatePath("/admin");
     revalidatePath("/admin/appointments");
     return { success: "Статусът беше обновен." };
   } catch (error) {
@@ -325,6 +335,25 @@ export async function cancelAppointmentRequest(id: string): Promise<AppointmentR
     if (error) return { error: "Заявката не можа да бъде отказана." };
     revalidatePath("/admin");
     return { success: "Заявката е отказана." };
+  } catch (error) {
+    return { error: getAdminErrorMessage(error) };
+  }
+}
+
+export async function markAppointmentInquiryHandled(id: string): Promise<AppointmentRequestState> {
+  const parsed = entityIdSchema.safeParse(id);
+  if (!parsed.success) return { error: "Невалидно запитване." };
+  try {
+    const { supabase } = await requireAdmin();
+    const { error } = await supabase
+      .from("appointment_requests")
+      .update({ status: "confirmed" })
+      .eq("id", parsed.data)
+      .eq("source", "contact")
+      .eq("status", "pending");
+    if (error) return { error: "Запитването не можа да бъде отбелязано като обработено." };
+    revalidatePath("/admin");
+    return { success: "Запитването е отбелязано като обработено." };
   } catch (error) {
     return { error: getAdminErrorMessage(error) };
   }
