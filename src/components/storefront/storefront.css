@@ -24,6 +24,7 @@
   --storefront-muted: var(--storefront-text-muted);
   --storefront-surface: #f7f8fa;
   --storefront-blue: #1b364f;
+  --storefront-cover-overlap: 3px;
   --text-display-size: clamp(64px, 6vw, 80px);
   --text-display-weight: 300;
   --text-display-line-height: 1;
@@ -195,7 +196,26 @@
 }
 
 .storefront-hero-sticky { position: relative; }
-.storefront-content-stack { position: relative; z-index: 2; display: flow-root; background: var(--storefront-surface); }
+.storefront-content-stack {
+  position: relative;
+  z-index: 2;
+  display: flow-root;
+  isolation: isolate;
+  background: var(--storefront-surface);
+}
+.storefront-homepage > .storefront-hero-sticky + .storefront-content-stack {
+  margin-top: var(--storefront-cover-overlap);
+}
+.storefront-content-stack::before {
+  position: absolute;
+  top: calc(-1 * var(--storefront-cover-overlap));
+  right: 0;
+  left: 0;
+  height: calc(var(--storefront-cover-overlap) + 1px);
+  pointer-events: none;
+  background: var(--storefront-surface);
+  content: "";
+}
 .storefront-content-stack:last-child { padding-bottom: 0; }
 
 .storefront-hero {
@@ -1545,8 +1565,20 @@
 }
 
 @media (max-width: 768px) {
-  .storefront-hero-sticky { position: sticky; top: 0; z-index: 1; height: 100svh; min-height: 640px; }
-  .storefront-hero { height: 100%; min-height: 100%; margin: 0; }
+  .storefront-hero-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    height: auto;
+    min-height: max(640px, 100vh);
+    min-height: max(640px, 100lvh);
+  }
+  .storefront-hero {
+    height: auto;
+    min-height: max(640px, 100vh);
+    min-height: max(640px, 100lvh);
+    margin: 0;
+  }
   .storefront-header {
     box-sizing: border-box;
     inset: 0 0 auto;
@@ -1878,8 +1910,7 @@
 }
 
 @media (max-width: 480px) {
-  .storefront-hero { min-height: 100%; }
-  .storefront-hero__content { bottom: 52px; }
+  .storefront-hero__content { bottom: calc(52px + env(safe-area-inset-bottom)); }
   .storefront-hero__content h1 {
     font-size: var(--text-display-size);
     line-height: var(--text-display-line-height);

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { StorefrontHomepage } from "@/components/storefront/homepage";
+import { HomepageReloadScrollReset } from "@/components/storefront/homepage-reload-scroll-reset";
 import { getStorefrontContent, getStorefrontSettings } from "@/lib/storefront-data";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -26,5 +27,10 @@ export const viewport: Viewport = {
 };
 
 export default function Home() {
-  return <StorefrontHomepage />;
+  return (
+    <>
+      <HomepageReloadScrollReset />
+      <StorefrontHomepage />
+    </>
+  );
 }
