@@ -151,7 +151,7 @@ body:has(.storefront-homepage) {
   background-image: linear-gradient(
     to bottom,
     #4a83ae 0,
-    #4a83ae 100lvh,
-    #f7f8fa 100lvh
+    #4a83ae 100svh,
+    #f7f8fa 100svh
   );
 }
