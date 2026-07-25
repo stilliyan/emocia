@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { getStorefrontContent, getStorefrontSettings } from "@/lib/storefront-data";
 import { AppointmentDialog } from "./appointment-dialog";
+import { AnimatedManifestoQuote } from "./animated-copy";
 import { ScrollRevealSection } from "./scroll-reveal-section";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
@@ -33,21 +34,21 @@ const storyChapters = [
 
 const values = [
   {
-    number: "01",
+    eyebrow: "Внимание",
     title: "Лично отношение",
     copy: "Вслушваме се във вас и ви насочваме без натиск, с внимание към усещането, което търсите.",
     image: "/storefront/value-personal-attention.png",
     alt: "Ръка върху фина дантела на булчинска рокля",
   },
   {
-    number: "02",
+    eyebrow: "Опит",
     title: "Опит, който се усеща",
     copy: "Повече от две десетилетия познание за силуетите, материите и малките детайли, които променят всичко.",
     image: "/storefront/value-experience.png",
     alt: "Ръчна работа по копчета на булчинска рокля",
   },
   {
-    number: "03",
+    eyebrow: "Подбор",
     title: "Селекция с характер",
     copy: "Подбираме модели, които съчетават съвременна линия, прецизна изработка и присъствие.",
     image: "/storefront/value-selection.png",
@@ -150,8 +151,14 @@ export async function AboutPage() {
             sizes="100vw"
           />
           <div className="storefront-about-page__quote-shade" aria-hidden="true" />
-          <div className="storefront-about-page__quote-copy">
-            <p id="about-quote-title">„Всяка специална рокля има своята емоция. Нашата работа е да ви помогнем да откриете вашата.“</p>
+          <div id="about-quote-title" className="storefront-about-page__quote-copy">
+            <AnimatedManifestoQuote
+              lines={[
+                "„Всяка специална рокля има своята",
+                "емоция. Нашата работа е да ви",
+                "помогнем да откриете вашата.“",
+              ]}
+            />
             <span>Veselina M.</span>
           </div>
         </ScrollRevealSection>
@@ -174,10 +181,8 @@ export async function AboutPage() {
                 </div>
                 <div className="storefront-about-page__value-copy">
                   <div className="storefront-about-page__value-heading">
+                    <span className="storefront-about-page__value-eyebrow">{value.eyebrow}</span>
                     <h3>{value.title}</h3>
-                    <span className={`storefront-about-page__value-number ${instrumentSerif.className}`} aria-hidden="true">
-                      {value.number}
-                    </span>
                   </div>
                   <p>{value.copy}</p>
                 </div>
