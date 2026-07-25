@@ -1,6 +1,14 @@
 "use client";
 
+import { Instrument_Serif } from "next/font/google";
 import { useEffect, useRef, useState } from "react";
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: "normal",
+  display: "swap",
+});
 
 const stats = [
   { target: 300, suffix: "+", label: "Доволни булки" },
@@ -51,8 +59,11 @@ export function AnimatedStats() {
     <div ref={rootRef} className="storefront-about__stats">
       {stats.map(({ target, suffix, label }, index) => (
         <div key={label} aria-label={`${target}${suffix} ${label}`}>
-          <strong aria-hidden="true">{values[index]}{suffix}</strong>
-          <span aria-hidden="true">{label}</span>
+          <strong className={`statNumber ${instrumentSerif.className}`} aria-hidden="true">
+            <span className="statValue">{values[index]}</span>
+            <span className="statSymbol">{suffix}</span>
+          </strong>
+          <span className="statLabel" aria-hidden="true">{label}</span>
         </div>
       ))}
     </div>

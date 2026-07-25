@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Instrument_Serif } from "next/font/google";
 import { AnimatedHeroTitle, AnimatedManifestoQuote } from "./animated-copy";
 import { AnimatedStats } from "./animated-stats";
 import { ProductRail } from "./product-rail";
@@ -9,6 +10,13 @@ import { AppointmentDialog } from "./appointment-dialog";
 import { StorefrontContactFooterExperience } from "./contact-footer-experience";
 import { FacebookIcon, InstagramIcon, TikTokIcon } from "./social-icons";
 import { getAllStorefrontCollections, getStorefrontContent, getStorefrontMediaUrl, getStorefrontSettings } from "@/lib/storefront-data";
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: "normal",
+  display: "swap",
+});
 import "./storefront.css";
 
 const testimonials = [
@@ -122,8 +130,14 @@ export async function StorefrontHomepage() {
 
       <section className="storefront-feature" aria-labelledby="feature-title">
         <div className="storefront-feature__copy">
-          <p className="storefront-eyebrow">Модел на месеца</p>
-          <h2 id="feature-title">{featureName}</h2>
+          <div className="storefront-feature__header">
+            <span className={`storefront-feature__number ${instrumentSerif.className}`} aria-hidden="true">01</span>
+            <span className="storefront-feature__divider" aria-hidden="true" />
+            <div className="storefront-feature__heading">
+              <p className="storefront-eyebrow">Модел на месеца</p>
+              <h2 id="feature-title">{featureName}</h2>
+            </div>
+          </div>
           <p className="storefront-feature__collection">{featuredProduct?.collection ? `Колекция „${featuredProduct.collection}“` : "Колекция „Небесна нежност“"}</p>
           <p className="storefront-feature__description">{featureDescription}</p>
           <dl>
