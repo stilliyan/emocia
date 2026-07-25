@@ -4,6 +4,7 @@ import { AppointmentDialog } from "./appointment-dialog";
 import { ScrollRevealSection } from "./scroll-reveal-section";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
+import { instrumentSerif } from "./storefront-fonts";
 import "./storefront.css";
 
 const storyChapters = [
@@ -32,16 +33,25 @@ const storyChapters = [
 
 const values = [
   {
+    number: "01",
     title: "Лично отношение",
     copy: "Вслушваме се във вас и ви насочваме без натиск, с внимание към усещането, което търсите.",
+    image: "/storefront/value-personal-attention.png",
+    alt: "Ръка върху фина дантела на булчинска рокля",
   },
   {
+    number: "02",
     title: "Опит, който се усеща",
     copy: "Повече от две десетилетия познание за силуетите, материите и малките детайли, които променят всичко.",
+    image: "/storefront/value-experience.png",
+    alt: "Ръчна работа по копчета на булчинска рокля",
   },
   {
+    number: "03",
     title: "Селекция с характер",
     copy: "Подбираме модели, които съчетават съвременна линия, прецизна изработка и присъствие.",
+    image: "/storefront/value-selection.png",
+    alt: "Панделка и дантела върху завършена булчинска рокля",
   },
 ] as const;
 
@@ -121,10 +131,7 @@ export async function AboutPage() {
                 />
               </div>
               <div className="storefront-about-page__chapter-copy">
-                <div className="storefront-about-page__timeline" aria-hidden="true">
-                  <span />
-                </div>
-                <span aria-hidden="true">{chapter.number}</span>
+                <span className={`storefront-about-page__chapter-number ${instrumentSerif.className}`} aria-hidden="true">{chapter.number}</span>
                 <h2 id={`about-chapter-${index + 1}`}>{chapter.title}</h2>
                 <p>{chapter.copy}</p>
               </div>
@@ -157,8 +164,23 @@ export async function AboutPage() {
           <div className="storefront-about-page__values-grid">
             {values.map((value) => (
               <article key={value.title}>
-                <h3>{value.title}</h3>
-                <p>{value.copy}</p>
+                <div className="storefront-about-page__value-media">
+                  <Image
+                    src={value.image}
+                    alt={value.alt}
+                    fill
+                    sizes="(max-width: 640px) calc(100vw - 64px), (max-width: 1024px) calc((100vw - 96px) / 3), 33vw"
+                  />
+                </div>
+                <div className="storefront-about-page__value-copy">
+                  <div className="storefront-about-page__value-heading">
+                    <h3>{value.title}</h3>
+                    <span className={`storefront-about-page__value-number ${instrumentSerif.className}`} aria-hidden="true">
+                      {value.number}
+                    </span>
+                  </div>
+                  <p>{value.copy}</p>
+                </div>
               </article>
             ))}
           </div>

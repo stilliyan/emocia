@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Instrument_Serif } from "next/font/google";
 import { AnimatedHeroTitle, AnimatedManifestoQuote } from "./animated-copy";
 import { AnimatedStats } from "./animated-stats";
 import { ProductRail } from "./product-rail";
@@ -10,13 +9,7 @@ import { AppointmentDialog } from "./appointment-dialog";
 import { StorefrontContactFooterExperience } from "./contact-footer-experience";
 import { FacebookIcon, InstagramIcon, TikTokIcon } from "./social-icons";
 import { getAllStorefrontCollections, getStorefrontContent, getStorefrontMediaUrl, getStorefrontSettings } from "@/lib/storefront-data";
-
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: "normal",
-  display: "swap",
-});
+import { instrumentSerif } from "./storefront-fonts";
 import "./storefront.css";
 
 const testimonials = [

@@ -1,14 +1,7 @@
 "use client";
 
-import { Instrument_Serif } from "next/font/google";
 import { useEffect, useRef, useState } from "react";
-
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: "normal",
-  display: "swap",
-});
+import { instrumentSerif } from "./storefront-fonts";
 
 const stats = [
   { target: 300, suffix: "+", label: "Доволни булки" },
