@@ -169,13 +169,14 @@ export async function AboutPage() {
         >
           <h2 id="about-values-title">Начинът, по който работим</h2>
           <div className="storefront-about-page__values-grid">
-            {values.map((value) => (
+            {values.map((value, index) => (
               <article key={value.title}>
                 <div className="storefront-about-page__value-media">
                   <Image
                     src={value.image}
                     alt={value.alt}
                     fill
+                    loading={index === 0 ? "eager" : "lazy"}
                     sizes="(max-width: 640px) calc(100vw - 64px), (max-width: 1024px) calc((100vw - 96px) / 3), 33vw"
                   />
                 </div>

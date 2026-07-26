@@ -38,6 +38,7 @@ const sections: LegalSection[] = [
 export default function CookiePolicyPage() {
   return (
     <LegalPage
+      className="storefront-legal-page--cookies"
       title="Политика за бисквитките"
       intro="Кратко и разбираемо обяснение какви бисквитки може да използва сайтът."
       sections={sections}

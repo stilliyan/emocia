@@ -32,7 +32,6 @@ export function StorefrontBlogArticlePage({ article }: { article: StorefrontBlog
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd).replace(/</g, "\\u003c") }}
       />
-
       <article>
         <header className="storefront-article-header">
           <Link href="/blog" className="storefront-article-back">

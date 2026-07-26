@@ -21,6 +21,11 @@ const desktopNavigation = [
   { label: "Контакти", href: "/kontakti" },
 ] as const;
 
+const mobileNavigation = [
+  { label: "За нас", href: "/za-nas" },
+  ...desktopNavigation,
+] as const;
+
 export function SiteHeader({
   variant = "overlay",
   hideOnMobileAtFooter = true,
@@ -305,7 +310,7 @@ export function SiteHeader({
       >
         <div className="storefront-mobile-drawer__panel">
           <nav aria-label="Мобилна навигация" className="storefront-mobile-drawer__links">
-            {desktopNavigation.map(({ label, href }) => (
+            {mobileNavigation.map(({ label, href }) => (
               <Link
                 key={href}
                 href={href}

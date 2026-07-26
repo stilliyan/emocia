@@ -85,6 +85,7 @@ export function CollectionCatalogue({
   const hasAccessoryFilter = products.some((product) => product.category);
   const hasFilter = hasSilhouetteFilter || hasAccessoryFilter;
   const hasActiveFilter = hasSilhouetteFilter ? silhouette !== "all" : accessoryCategory !== "all";
+  const activeFilterCount = Number(silhouette !== "all") + Number(accessoryCategory !== "all");
 
   const filteredProducts = useMemo(() => {
     if (hasSilhouetteFilter && silhouette !== "all") {
@@ -144,38 +145,42 @@ export function CollectionCatalogue({
   return (
     <section className="storefront-collection-catalogue" aria-label="Модели в колекцията">
       <div className="storefront-collection-toolbar">
-        {hasFilter ? (
-          <div className="storefront-collection-filter">
-            <button
-              ref={filterTriggerRef}
-              className="storefront-collection-filter__trigger"
-              type="button"
-              aria-haspopup="dialog"
-              aria-expanded={isFilterOpen}
-              onClick={() => setIsFilterOpen(true)}
-            >
-              <SlidersHorizontal aria-hidden="true" />
-              Филтри
-            </button>
+        <div className="storefront-collection-toolbar__catalogue-controls">
+          <p className="storefront-collection-toolbar__count">{filteredProducts.length} модела</p>
+          <div className="storefront-collection-toolbar__actions">
+            {hasFilter ? (
+              <div className="storefront-collection-filter">
+                <button
+                  ref={filterTriggerRef}
+                  className="storefront-collection-filter__trigger"
+                  type="button"
+                  aria-haspopup="dialog"
+                  aria-expanded={isFilterOpen}
+                  onClick={() => setIsFilterOpen(true)}
+                >
+                  <SlidersHorizontal aria-hidden="true" />
+                  Филтри
+                  {hasActiveFilter ? <span className="storefront-collection-filter__badge">{activeFilterCount}</span> : null}
+                </button>
 
-            {hasActiveFilter ? (
-              <button
-                className="storefront-collection-filter__reset"
-                type="button"
-                onClick={() => {
-                  setSilhouette("all");
-                  setAccessoryCategory("all");
-                  setVisibleCount(PRODUCTS_PER_PAGE);
-                }}
-              >
-                <span>
-                  <X aria-hidden="true" />
-                  Изчисти
-                </span>
-              </button>
-            ) : null}
+                {hasActiveFilter ? (
+                  <button
+                    className="storefront-collection-filter__reset"
+                    type="button"
+                    onClick={() => {
+                      setSilhouette("all");
+                      setAccessoryCategory("all");
+                      setVisibleCount(PRODUCTS_PER_PAGE);
+                    }}
+                  >
+                    <span>
+                      <X aria-hidden="true" />
+                      Изчисти
+                    </span>
+                  </button>
+                ) : null}
 
-            <dialog
+                <dialog
               ref={filterDialogRef}
               className="storefront-collection-filter__dialog"
               aria-labelledby="collection-filter-title"
@@ -260,27 +265,31 @@ export function CollectionCatalogue({
                   </div>
                 </fieldset>
               </div>
-            </dialog>
-          </div>
-        ) : null}
+                </dialog>
+              </div>
+            ) : null}
 
-        <div className="storefront-collection-view" aria-label="Размер на изображенията">
-          <button
-            type="button"
-            aria-label="Стандартен изглед"
-            aria-pressed={gridView === "standard"}
-            onClick={() => setGridView("standard")}
-          >
-            <Grid2X2 aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            aria-label="Големи изображения"
-            aria-pressed={gridView === "large"}
-            onClick={() => setGridView("large")}
-          >
-            <Square aria-hidden="true" />
-          </button>
+            {hasFilter ? <span className="storefront-collection-toolbar__divider" aria-hidden="true" /> : null}
+
+            <div className="storefront-collection-view" aria-label="Размер на изображенията">
+              <button
+                type="button"
+                aria-label="Стандартен изглед"
+                aria-pressed={gridView === "standard"}
+                onClick={() => setGridView("standard")}
+              >
+                <Grid2X2 aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                aria-label="Големи изображения"
+                aria-pressed={gridView === "large"}
+                onClick={() => setGridView("large")}
+              >
+                <Square aria-hidden="true" />
+              </button>
+            </div>
+          </div>
         </div>
 
         <span className="sr-only" aria-live="polite">{filteredProducts.length} модела</span>

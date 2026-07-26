@@ -48,6 +48,7 @@ const sections: LegalSection[] = [
 export default function TermsPage() {
   return (
     <LegalPage
+      className="storefront-legal-page--terms"
       title="Условия за използване"
       intro="Основните правила за използване на сайта и изпращане на заявка за проба."
       sections={sections}

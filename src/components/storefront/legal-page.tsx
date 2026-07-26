@@ -11,14 +11,15 @@ export type LegalSection = {
 };
 
 type LegalPageProps = {
+  className?: string;
   title: string;
   intro: string;
   sections: readonly LegalSection[];
 };
 
-export function LegalPage({ title, intro, sections }: LegalPageProps) {
+export function LegalPage({ className, title, intro, sections }: LegalPageProps) {
   return (
-    <main className="storefront storefront-legal-page">
+    <main className={`storefront storefront-legal-page ${className ?? ""}`}>
       <SiteHeader variant="light" />
       <article className="storefront-legal">
         <header className="storefront-legal__header">
