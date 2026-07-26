@@ -3565,7 +3565,13 @@ body[data-scroll-locked]:has(.storefront-booking-dialog) {
 
   .storefront-product-detail {
     gap: 0;
-    padding: 80px 0 var(--storefront-space-8);
+    padding: 0 0 var(--storefront-space-8);
+  }
+
+  .storefront-product-page__content,
+  .storefront-product-gallery-shell {
+    margin-top: 0;
+    padding-top: 0;
   }
 
   .storefront-product-gallery-shell {
