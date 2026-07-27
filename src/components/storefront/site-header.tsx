@@ -6,6 +6,8 @@ import { type CSSProperties, type MouseEvent, useCallback, useEffect, useRef, us
 import { AppointmentDialog } from "./appointment-dialog";
 import { StorefrontLogo } from "./logo";
 import { isPublicNavigationActive } from "./public-navigation";
+import { consumeProductOriginRestore } from "./product-navigation";
+import { FacebookIcon, InstagramIcon, TikTokIcon } from "./social-icons";
 
 type SiteHeaderProps = {
   variant?: "overlay" | "light";
@@ -22,8 +24,15 @@ const desktopNavigation = [
 ] as const;
 
 const mobileNavigation = [
+  { label: "Начало", href: "/" },
   { label: "За нас", href: "/za-nas" },
   ...desktopNavigation,
+] as const;
+
+const mobileSocialLinks = [
+  { label: "TikTok", href: "https://www.tiktok.com/@emocia_butik", icon: TikTokIcon },
+  { label: "Facebook", href: "https://www.facebook.com/p/%D0%91%D1%83%D1%82%D0%B8%D0%BA-%D0%95%D0%BC%D0%BE%D1%86%D0%B8%D1%8F-100021298455926/?locale=bg_BG", icon: FacebookIcon },
+  { label: "Instagram", href: "https://www.instagram.com/butik.emocia/", icon: InstagramIcon },
 ] as const;
 
 export function SiteHeader({
@@ -137,6 +146,20 @@ export function SiteHeader({
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [closeMobileMenu, mobileMenuVisible]);
+
+  useEffect(() => {
+    const savedScrollY = consumeProductOriginRestore();
+    if (savedScrollY === null) return;
+
+    const restoreScrollPosition = () => {
+      window.scrollTo({ top: savedScrollY, left: 0, behavior: "auto" });
+    };
+
+    restoreScrollPosition();
+    const frame = requestAnimationFrame(restoreScrollPosition);
+
+    return () => cancelAnimationFrame(frame);
+  }, [pathname]);
 
   useEffect(() => {
     const contentSection = isLight
@@ -337,6 +360,13 @@ export function SiteHeader({
             >
               Запази час за проба
             </AppointmentDialog>
+            <div className="storefront-mobile-drawer__socials" aria-label="Социални мрежи">
+              {mobileSocialLinks.map(({ label, href, icon: Icon }) => (
+                <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label}>
+                  <Icon aria-hidden="true" />
+                </a>
+              ))}
+            </div>
           </div>
 
           <span className="sr-only" aria-live="polite">

@@ -2,24 +2,27 @@
 
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { clearProductOrigin, hasMatchingProductOrigin } from "./product-navigation";
+import { prepareProductOriginRestore } from "./product-navigation";
 
 type ProductBackButtonProps = {
   fallbackHref: string;
   label: string;
+  className?: string;
 };
 
-export function ProductBackButton({ fallbackHref, label }: ProductBackButtonProps) {
+export function ProductBackButton({ fallbackHref, label, className }: ProductBackButtonProps) {
   const router = useRouter();
 
   function handleBack() {
-    const canReturnToOrigin = hasMatchingProductOrigin(window.location.pathname)
-      && window.history.length > 1;
+    const origin = prepareProductOriginRestore(window.location.pathname);
 
-    clearProductOrigin();
-
-    if (canReturnToOrigin) {
+    if (origin && window.history.length > 1) {
       router.back();
+      return;
+    }
+
+    if (origin) {
+      router.push(origin.from, { scroll: false });
       return;
     }
 
@@ -27,7 +30,11 @@ export function ProductBackButton({ fallbackHref, label }: ProductBackButtonProp
   }
 
   return (
-    <button type="button" className="storefront-product-info__back" onClick={handleBack}>
+    <button
+      type="button"
+      className={["storefront-product-info__back", className].filter(Boolean).join(" ")}
+      onClick={handleBack}
+    >
       <ChevronLeft aria-hidden="true" />
       {label}
     </button>

@@ -84,6 +84,7 @@ export function ProductRail({
           name={product.name}
           price={formatStorefrontPrice(product.price)}
           sizes="(max-width: 640px) 76vw, (max-width: 1024px) 38vw, 23vw"
+          preserveOrigin={false}
         />
       ))}
     </PinnedHorizontalRail>

@@ -113,6 +113,12 @@ export function ProductDetailPage({ collection, product }: ProductDetailPageProp
                 </>
               )}
             </div>
+
+            <ProductBackButton
+              fallbackHref={`/${collection.slug}`}
+              label={`Към ${collection.title}`}
+              className="storefront-product-info__back--bottom"
+            />
           </aside>
 
           <ProductGallery product={product} />

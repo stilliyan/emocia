@@ -15,6 +15,7 @@ export function ProductCard({
   price,
   sizes,
   showCategory = true,
+  preserveOrigin = true,
 }: {
   href: string;
   image: string;
@@ -24,14 +25,15 @@ export function ProductCard({
   price?: string | null;
   sizes: string;
   showCategory?: boolean;
+  preserveOrigin?: boolean;
 }) {
   return (
     <Link
       href={href}
       className="storefront-collection-card-link"
-      onClick={(event: MouseEvent<HTMLAnchorElement>) => {
+      onClick={preserveOrigin ? (event: MouseEvent<HTMLAnchorElement>) => {
         if (!event.defaultPrevented) rememberProductOrigin(href);
-      }}
+      } : undefined}
     >
       <article className="storefront-collection-card">
         <div className="storefront-collection-card__media">
