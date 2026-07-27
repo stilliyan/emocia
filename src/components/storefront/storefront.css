@@ -1716,6 +1716,10 @@
     transition: opacity .32s ease, transform .48s cubic-bezier(.22, 1, .36, 1);
   }
   .storefront-mobile-drawer--open .storefront-mobile-drawer__panel { transform: translateX(0); }
+  @keyframes storefront-mobile-menu-link-in {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
   .storefront-mobile-drawer--navigating .storefront-mobile-drawer__panel {
     opacity: .985;
     transform: translateX(12px);
@@ -1742,7 +1746,13 @@
     font-weight: 300;
     letter-spacing: -.02em;
     line-height: var(--text-navigation-line-height);
+    opacity: 0;
+    transform: translateY(18px);
     transition: color .22s ease, opacity .3s ease, transform .38s cubic-bezier(.22, 1, .36, 1);
+  }
+  .storefront-mobile-drawer--open .storefront-mobile-drawer__links a {
+    animation: storefront-mobile-menu-link-in .48s cubic-bezier(.22, 1, .36, 1) both;
+    animation-delay: calc(80ms + var(--storefront-menu-link-index) * 55ms);
   }
   .storefront-mobile-drawer__link-label {
     position: relative;
@@ -1768,10 +1778,12 @@
   .storefront-mobile-drawer__links a:hover { opacity: .64; }
   .storefront-mobile-drawer__links a:focus-visible { outline: 2px solid var(--storefront-focus); outline-offset: -2px; }
   .storefront-mobile-drawer--navigating .storefront-mobile-drawer__links a:not([data-navigation-target="true"]) {
+    animation: none;
     opacity: .38;
     transform: translateX(-4px);
   }
   .storefront-mobile-drawer--navigating .storefront-mobile-drawer__links a[data-navigation-target="true"] {
+    animation: none;
     opacity: 1;
     transform: translateX(6px);
   }
@@ -3755,6 +3767,7 @@ body[data-scroll-locked]:has(.storefront-booking-dialog) {
   .storefront-mobile-drawer__links a,
   .storefront-mobile-drawer__link-label::after,
   .storefront-mobile-drawer__footer { transition: none !important; }
+  .storefront-mobile-drawer__links a { animation: none !important; opacity: 1; transform: none; }
   .storefront-mobile-drawer--navigating .storefront-mobile-drawer__panel,
   .storefront-mobile-drawer--navigating .storefront-mobile-drawer__links a,
   .storefront-mobile-drawer--navigating .storefront-mobile-drawer__footer { transform: none !important; }

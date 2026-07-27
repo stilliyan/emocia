@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { type MouseEvent, useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { type CSSProperties, type MouseEvent, useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { AppointmentDialog } from "./appointment-dialog";
 import { StorefrontLogo } from "./logo";
 import { isPublicNavigationActive } from "./public-navigation";
@@ -310,12 +310,13 @@ export function SiteHeader({
       >
         <div className="storefront-mobile-drawer__panel">
           <nav aria-label="Мобилна навигация" className="storefront-mobile-drawer__links">
-            {mobileNavigation.map(({ label, href }) => (
+            {mobileNavigation.map(({ label, href }, index) => (
               <Link
                 key={href}
                 href={href}
                 aria-current={isPublicNavigationActive(pathname, href) ? "page" : undefined}
                 data-navigation-target={activeNavigatingHref === href ? "true" : undefined}
+                style={{ "--storefront-menu-link-index": index } as CSSProperties}
                 onClick={(event) => navigateFromMobileMenu(event, href)}
               >
                 <span className="storefront-mobile-drawer__link-label">{label}</span>
