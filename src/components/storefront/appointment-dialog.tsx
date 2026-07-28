@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useMemo, useState, useTransition } from "react";
+import { useEffect, useId, useMemo, useRef, useState, useTransition } from "react";
 import { CalendarCheck, CalendarPlus, ChevronDown, ChevronLeft, ChevronRight, Clock3 } from "lucide-react";
 import { bookAppointment, getBookingAvailability, submitAppointmentRequest, type AppointmentRequestState, type BookingActionState } from "@/app/actions/appointments";
 import { Button } from "@/components/ui/button";
@@ -177,7 +177,14 @@ export function AppointmentRequestForm({ source, productName, productId, onSucce
 
 export function AppointmentDialog({ children, className, productName, productId, source, ariaLabel, open: controlledOpen, onOpenChange }: DialogProps) {
   const [internalOpen, setInternalOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const openedWithPointerRef = useRef(false);
+  const closeFocusFrameRef = useRef(0);
   const open = controlledOpen ?? internalOpen;
+
+  useEffect(() => {
+    return () => cancelAnimationFrame(closeFocusFrameRef.current);
+  }, []);
 
   function handleOpenChange(next: boolean) {
     if (controlledOpen === undefined) setInternalOpen(next);
@@ -186,8 +193,40 @@ export function AppointmentDialog({ children, className, productName, productId,
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      {children && <DialogTrigger asChild><button type="button" className={className} aria-label={ariaLabel}>{children}</button></DialogTrigger>}
-      <DialogContent className="storefront-public-dialog storefront-booking-dialog" aria-describedby="booking-dialog-description">
+      {children && (
+        <DialogTrigger asChild>
+          <button
+            ref={triggerRef}
+            type="button"
+            className={className}
+            aria-label={ariaLabel}
+            onPointerDown={() => {
+              openedWithPointerRef.current = true;
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                openedWithPointerRef.current = false;
+              }
+            }}
+          >
+            {children}
+          </button>
+        </DialogTrigger>
+      )}
+      <DialogContent
+        className="storefront-public-dialog storefront-booking-dialog"
+        aria-describedby="booking-dialog-description"
+        onCloseAutoFocus={(event) => {
+          if (!openedWithPointerRef.current) return;
+
+          event.preventDefault();
+          cancelAnimationFrame(closeFocusFrameRef.current);
+          closeFocusFrameRef.current = requestAnimationFrame(() => {
+            triggerRef.current?.blur();
+            openedWithPointerRef.current = false;
+          });
+        }}
+      >
         <BookingFlow source={source} productName={productName} productId={productId} onClose={() => handleOpenChange(false)} />
       </DialogContent>
     </Dialog>

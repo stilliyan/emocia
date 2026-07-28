@@ -3683,6 +3683,10 @@ body[data-scroll-locked]:has(.storefront-booking-dialog) {
     transform: none;
   }
 
+  .storefront-product-gallery-shell[data-product-slug="neve"] .storefront-product-gallery__item img {
+    object-fit: cover;
+  }
+
   .storefront-product-gallery__zoom {
     display: none;
   }
@@ -3690,6 +3694,21 @@ body[data-scroll-locked]:has(.storefront-booking-dialog) {
   .storefront-product-lightbox__close {
     top: max(12px, env(safe-area-inset-top));
     right: 12px;
+  }
+
+  .storefront-product-lightbox__stack {
+    gap: 0;
+    background: #eceef1;
+  }
+
+  .storefront-product-lightbox__frame {
+    height: 100dvh;
+    min-height: 100dvh;
+    aspect-ratio: auto;
+  }
+
+  .storefront-product-lightbox__frame img {
+    object-fit: cover;
   }
 
   .storefront-product-gallery__mobile-count {

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { ImageIcon, Maximize2, X } from "lucide-react";
-import { type MouseEvent, useRef, useState } from "react";
+import { type MouseEvent, useEffect, useRef, useState } from "react";
 import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { StorefrontCollectionProduct } from "@/lib/storefront-collections";
 import { getProductGalleryImages, getProductGalleryLayout } from "./product-gallery-model";
@@ -31,10 +31,16 @@ export function ProductGallery({ product }: ProductGalleryProps) {
   const lightboxRef = useRef<HTMLDivElement | null>(null);
   const lightboxFramesRef = useRef<Array<HTMLButtonElement | null>>([]);
   const lastTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const closeReasonRef = useRef<"escape" | "pointer" | null>(null);
+  const closeFocusFrameRef = useRef(0);
   const dragStartRef = useRef({ x: 0, scrollLeft: 0 });
   const mouseDraggingRef = useRef(false);
   const draggedRef = useRef(false);
   const suppressClickRef = useRef(false);
+
+  useEffect(() => {
+    return () => cancelAnimationFrame(closeFocusFrameRef.current);
+  }, []);
 
   const updateCurrentSlide = () => {
     const gallery = galleryRef.current;
@@ -96,8 +102,17 @@ export function ProductGallery({ product }: ProductGalleryProps) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <div className="storefront-product-gallery-shell">
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (nextOpen) closeReasonRef.current = null;
+        setOpen(nextOpen);
+      }}
+    >
+      <div
+        className="storefront-product-gallery-shell"
+        data-product-slug={product.slug}
+      >
         <div
           ref={galleryRef}
           className={`storefront-product-gallery storefront-product-gallery--${layout}`}
@@ -190,9 +205,30 @@ export function ProductGallery({ product }: ProductGalleryProps) {
             lightboxRef.current?.scrollTo({ top: frame?.offsetTop ?? 0, behavior: "instant" });
           });
         }}
+        onEscapeKeyDown={() => {
+          closeReasonRef.current = "escape";
+        }}
+        onPointerDownOutside={() => {
+          closeReasonRef.current = "pointer";
+        }}
         onCloseAutoFocus={(event) => {
           event.preventDefault();
-          lastTriggerRef.current?.focus({ preventScroll: true });
+          cancelAnimationFrame(closeFocusFrameRef.current);
+          const closeReason = closeReasonRef.current;
+
+          closeFocusFrameRef.current = requestAnimationFrame(() => {
+            if (closeReason === "escape") {
+              const activeElement = document.activeElement;
+
+              if (activeElement instanceof HTMLElement) {
+                activeElement.blur();
+              }
+            } else {
+              lastTriggerRef.current?.focus({ preventScroll: true });
+            }
+
+            closeReasonRef.current = null;
+          });
         }}
       >
         <DialogTitle className="sr-only">{product.name} в голям размер</DialogTitle>
@@ -209,7 +245,10 @@ export function ProductGallery({ product }: ProductGalleryProps) {
                 key={`${image.src}-${index}`}
                 className={`storefront-product-lightbox__frame ${viewClassName}`}
                 aria-label={`Затвори голямото изображение ${index + 1} на ${product.name}`}
-                onClick={() => setOpen(false)}
+                onClick={() => {
+                  closeReasonRef.current = "pointer";
+                  setOpen(false);
+                }}
               >
                 <Image
                   src={image.src}
@@ -228,6 +267,9 @@ export function ProductGallery({ product }: ProductGalleryProps) {
             type="button"
             className="storefront-product-lightbox__close"
             aria-label="Затвори голямото изображение"
+            onClick={() => {
+              closeReasonRef.current = "pointer";
+            }}
           >
             <X className="size-5" strokeWidth={1.5} />
           </button>
