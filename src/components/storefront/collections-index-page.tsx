@@ -12,7 +12,7 @@ export async function CollectionsIndexPage() {
   const collectionPaths = [bridalCollection, formalCollection].map((collection) => ({
     title: collection.title,
     href: `/${collection.slug}`,
-    image: collection.heroImage,
+    image: collection.thumbnailImage ?? collection.heroImage,
     alt: collection.heroAlt,
   }));
   const latestModels = [

@@ -8,7 +8,7 @@ import "./storefront.css";
 
 export function StorefrontCollectionPage({ collection }: { collection: StorefrontCollection }) {
   return (
-    <main className="storefront storefront-collection-page">
+    <main className={`storefront storefront-collection-page storefront-collection-page--${collection.slug}`}>
       <SiteHeader hideOnMobileAtFooter={false} />
 
       <div className="storefront-collection-page__foreground">

@@ -108,6 +108,7 @@ export async function StorefrontHomepage() {
             href="/oficialni-rokli"
             image={formal.heroImage}
             title={formal.title}
+            className="storefront-category--formal"
           />
         </section>
 
@@ -176,13 +177,15 @@ function CollectionCard({
   href,
   image,
   title,
+  className,
 }: {
   href: string;
   image: string;
   title: string;
+  className?: string;
 }) {
   return (
-    <Link href={href} className="storefront-category">
+    <Link href={href} className={`storefront-category${className ? ` ${className}` : ""}`}>
       <Image src={image} alt={title} fill sizes="(max-width: 768px) 100vw, 50vw" />
       <div className="storefront-category__blur" aria-hidden="true" />
       <div className="storefront-category__copy">

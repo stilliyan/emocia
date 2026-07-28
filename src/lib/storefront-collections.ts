@@ -37,6 +37,7 @@ export type StorefrontCollection = {
   description: string;
   heroImage: string;
   heroAlt: string;
+  thumbnailImage?: string;
   products: StorefrontCollectionProduct[];
 };
 
@@ -78,8 +79,9 @@ export const formalCollection: StorefrontCollection = {
   eyebrow: "Нова селекция",
   title: "Официални рокли",
   description: "Елегантни модели за балове, сватби и специални вечери, подбрани с внимание към силуета и движението.",
-  heroImage: "/storefront/gallery/client-04.webp",
-  heroAlt: "Елегантна официална рокля от селекцията на Бутик Емоция",
+  heroImage: "/storefront/formal-dresses-cover-v2.webp",
+  heroAlt: "Изумруденозелена официална рокля от селекцията на Бутик Емоция",
+  thumbnailImage: "/storefront/formal-dresses-thumbnail-v2.webp",
   products: [
     { name: "Рокля Амалия", slug: "amalia", image: "/storefront/gallery/client-03.webp", alt: "Официална рокля Амалия", silhouette: "straight" },
     { name: "Рокля Селеста", slug: "celesta", image: "/storefront/gallery/client-04.webp", alt: "Официална рокля Селеста", silhouette: "mermaid" },
